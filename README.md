@@ -49,4 +49,4 @@ express the outcome of the game in a manner appropriate to the overall style of 
 Our Planet. Is winning a matter of amassing resources from other players, or should our Save-Our-Planet hero be aiming to give all that they have (and more) to support the worthy ventures of a fellow 
 eco-warrior?<br>
 
-Further Documentation is in the [Project Wiki](https://gitlab2.eeecs.qub.ac.uk/40314121/my_team_project/-/wikis/Save-The-Planet-Wiki)<br>
+Further Documentation is in the [Project Wiki](https://gitlab2.eeecs.qub.ac.uk/CSC7083-2122/CSC7083-2122-G32/-/wikis/home)<br>
