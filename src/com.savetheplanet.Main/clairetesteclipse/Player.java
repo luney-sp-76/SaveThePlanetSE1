@@ -1,4 +1,4 @@
-package com.savetheplanet.Main.clairetesteclipse;
+package clairetesteclipse;
 
 public class Player {
 
