@@ -17,11 +17,11 @@ class PlayerTest {
     }
 
     @org.junit.jupiter.api.Test
-    void getPoints() {
+    void getPounds() {
     }
 
     @org.junit.jupiter.api.Test
-    void setPoints() {
+    void setPounds() {
     }
 
     @org.junit.jupiter.api.Test

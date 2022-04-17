@@ -3,12 +3,12 @@ package clairetesteclipse;
 public class Player {
 
     private String name;
-    private int points;
+    private int pounds;
 
     //constructor
-    public Player(String name, int points){
+    public Player(String name, int pounds){
         setName(name);
-        setPoints(points);
+        setPounds(pounds);
     }
 
     public String getName() {
@@ -19,17 +19,17 @@ public class Player {
         this.name = name;
     }
 
-    public int getPoints() {
-        return points;
+    public int getPounds() {
+        return pounds;
     }
 
-    public void setPoints(int points) {
-        this.points = points;
+    public void setPounds(int pounds) {
+        this.pounds = pounds;
     }
 
     @Override
     public String toString(){
-        return String.format("%s: %s%n%s: %d","Name ",this.name = getName(),"Points", this.points = getPoints());
+        return String.format("%s: %s%n%s: %d","Name ",this.name = getName(),"Pounds", this.pounds = getPounds());
     }
 
 
