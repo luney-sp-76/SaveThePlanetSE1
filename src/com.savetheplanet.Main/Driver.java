@@ -9,6 +9,12 @@ public class Driver {
 
             System.out.println(p1.toString());
 
+            Dice diceRoll = new Dice();
+            int move = diceRoll.roll();
+
+            //System.out.println(move);
+
+
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
         }
