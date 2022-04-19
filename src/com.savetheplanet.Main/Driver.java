@@ -4,6 +4,8 @@ public class Driver {
 
     public static void main(String[] args) {
 
+
+/*
         try {
             Player p1 = new Player("Dog");
 
@@ -11,12 +13,12 @@ public class Driver {
 
             Dice diceRoll = new Dice();
             int move = diceRoll.roll();
-
-            //System.out.println(move);
-
-
+System.out.println(move);
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
         }
+*/
+
+
     }
 }
