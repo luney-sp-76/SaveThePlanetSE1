@@ -5,6 +5,7 @@ public class Driver {
 
     public static void main(String[] args) {
         try {
+
             // Create Players
             List<Player> players = CreatePlayers.createPlayers();
             System.out.println(players);
@@ -20,12 +21,6 @@ public class Driver {
             System.out.println(players.get(1).getOwnedSquares());
             ((FundableSquare) board.get(2)).setDevLevel(2);
             System.out.println(players.get(1).getOwnedSquares());
-
-            Dice diceRoll = new Dice();
-            int move = diceRoll.roll();
-
-            //System.out.println(move);
-
 
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
