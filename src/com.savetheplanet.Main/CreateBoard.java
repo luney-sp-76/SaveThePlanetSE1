@@ -19,7 +19,6 @@ final class CreateBoard {
             Stream<String> squares = Files.lines(Path.of("squares.txt"));
 
             squares.forEach(line -> {
-
                 String[] arr = line.split(",");
                 String name = arr[0];
                 int field = Integer.parseInt(arr[1]);
@@ -27,7 +26,7 @@ final class CreateBoard {
                 if (field >= 3) {
                     board.add(new FundableSquare(name, field, fields.get(Integer.parseInt(arr[1])).split(",")));
                 } else {
-                    board.add(new Square(arr[0], Integer.parseInt(arr[1])));
+                    board.add(new Square(name, field));
                 }
             });
 
