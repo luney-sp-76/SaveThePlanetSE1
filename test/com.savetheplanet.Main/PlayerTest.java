@@ -9,15 +9,17 @@ import org.junit.jupiter.api.Test;
 class PlayerTest {
 
     Player p1;
-
+    FundableSquare s1;
     String validNameLower, validNameUpper, validNameMid;
     String invalidNameLengthLower, invalidNameLengthUpper;
     String invalidName1, invalidName2, invalidName3;
     int startingFunding;
 
     @BeforeEach
-    void setUp()  {
+    void setUp() {
         p1 = new Player();
+        s1 = new FundableSquare("Led Light bulbs", 3, new String[]{"Conserve", "3", "2", "200", "250", "30|50|100|200|350"});
+
         validNameLower = "ii";
         validNameUpper = "iiiiIiiiiIiiiiIiiiiIiiiiIiiiiI";
         validNameMid = "iiiiIiiiiIiiiiI";
@@ -74,5 +76,11 @@ class PlayerTest {
     @Test
     void fundingStartAmount() {
         assertEquals(startingFunding, 300);
+    }
+
+    @Test
+    void fundanbleSquareOwnership() {
+        p1.addOwnedSquare(s1);
+        assertEquals(p1.getOwnedSquares().get(0), s1);
     }
 }
