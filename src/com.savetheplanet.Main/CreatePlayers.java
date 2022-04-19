@@ -6,8 +6,7 @@ import java.util.Scanner;
 
 final class CreatePlayers {
 
-    public CreatePlayers() {
-    }
+    public CreatePlayers() {}
 
     static List<Player> createPlayers() {
         List<Player> players = new ArrayList<>();
@@ -48,7 +47,7 @@ final class CreatePlayers {
 
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getLocalizedMessage());
-                System.out.println("Please enter the name for player." + i);
+                System.out.println("Please enter the name for player " + i);
                 str = scan.nextLine();
             }
         }
