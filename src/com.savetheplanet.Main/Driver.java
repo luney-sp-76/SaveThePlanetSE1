@@ -7,7 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+
 
 public class Driver {
 
@@ -102,7 +102,7 @@ public class Driver {
     /**
 	 * Reads in the data from the provided csv and returns a list
 	 */
-	public static List<ChanceCard> readData() {
+public static List<ChanceCard> readData() {
 
 		List<ChanceCard> listFromFile = new ArrayList<ChanceCard>();
 		File file = new File("randomSquareAssignment.csv"); 
