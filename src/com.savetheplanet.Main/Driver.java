@@ -53,6 +53,7 @@ public class Driver {
 		System.out.println("Proof of concept: "+chance.getAssigned());
 		chance.fullDetails(chance);
 		System.out.println("Player post card: £"+p1.getFunding());
+
     }
 
     /**
@@ -106,6 +107,8 @@ public class Driver {
 				player.setFunding(player.getFunding() - square.getCost());
 				player.addOwnedSquare(square);
 				System.out.println("Congratulations! You are the proud owner of " + square.getName() + ".");
+			} else {
+				System.out.println("Sorry, you don't have enough money to purchase this.");
 			}
 		} else {
 			System.out.println("Sorry! " + square.getName() + " is not for sale.");
