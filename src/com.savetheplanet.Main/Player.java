@@ -1,6 +1,8 @@
 package com.savetheplanet.Main;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class Player {
@@ -19,6 +21,18 @@ public class Player {
 
     public List<FundableSquare> getOwnedSquares() {
         return ownedSquares;
+    }
+
+    public FundableSquare getLowestValueSquare(){
+
+        List<FundableSquare> ownedSquares = this.getOwnedSquares();
+        Collections.sort(ownedSquares, new Comparator<FundableSquare>(){
+            public int compare(FundableSquare o1, FundableSquare o2){
+                return o2.getCost() - o1.getCost();
+            }
+        });
+
+        return ownedSquares.get(0);
     }
 
     public void addOwnedSquare(FundableSquare square) {
@@ -62,4 +76,5 @@ public class Player {
                 ", funding=" + funding +
                 '}';
     }
+
 }
