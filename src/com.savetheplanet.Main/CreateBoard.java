@@ -17,8 +17,8 @@ final class CreateBoard {
         List<Square> board = new ArrayList<>();
 
         try {
-            List<String> fields = Files.lines(Paths.get("src/com.savetheplanet.Main/fields.txt")).collect(Collectors.toList());
-            Stream<String> squares = Files.lines(Paths.get("src/com.savetheplanet.Main/squares.txt"));
+            List<String> fields = Files.lines(Paths.get("fields.txt")).collect(Collectors.toList());
+            Stream<String> squares = Files.lines(Paths.get("squares.txt"));
 
             squares.forEach(line -> {
                 String[] arr = line.split(",");
