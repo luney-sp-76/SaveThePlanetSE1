@@ -1,3 +1,5 @@
+package com.savetheplanet.Main;
+
 public enum RandomSquareAssignment {
 	COLLECT_FUNDING,
 	WORKER_HOLIDAY,
