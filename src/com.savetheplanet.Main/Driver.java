@@ -16,8 +16,7 @@ public class Driver {
 
     public static void main(String[] args) {
         try {
-
-            // Create Players
+		    // Create Players
             List<Player> players = CreatePlayers.createPlayers();
             System.out.println(players);
 
