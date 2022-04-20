@@ -2,8 +2,10 @@ package com.savetheplanet.Main;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 final class CreateBoard {
@@ -15,8 +17,8 @@ final class CreateBoard {
         List<Square> board = new ArrayList<>();
 
         try {
-            List<String> fields = Files.lines(Path.of("fields.txt")).toList();
-            Stream<String> squares = Files.lines(Path.of("squares.txt"));
+            List<String> fields = Files.lines(Paths.get("fields.txt")).collect(Collectors.toList());
+            Stream<String> squares = Files.lines(Paths.get("squares.txt"));
 
             squares.forEach(line -> {
                 String[] arr = line.split(",");
