@@ -1,4 +1,6 @@
 package com.savetheplanet.Main;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.io.BufferedReader;
 import java.io.File;
@@ -115,12 +117,11 @@ public static List<ChanceCard> readData() {
 				String[] parts = line.split(",");
 
 				try {
-					if(parts.length==1) {
 					RandomSquareAssignment random = RandomSquareAssignment.valueOf(parts[0].toUpperCase());
-					ChanceCard card = new ChanceCard(random);
+					if(parts.length==1) {
+						ChanceCard card = new ChanceCard(random);
 					listFromFile.add(card);
 					} else {
-						RandomSquareAssignment random = RandomSquareAssignment.valueOf(parts[0].toUpperCase());
 						int move = Integer.parseInt(parts[1]);
 						ChanceCard card = new ChanceCard(random, move);
 						listFromFile.add(card);
