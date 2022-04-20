@@ -26,7 +26,6 @@ final class CreatePlayers {
             System.out.println(e.getLocalizedMessage());
         }
            return players;
-
     }
 
     public static Player validateName(Scanner scan, String str, List<Player> players, int i) {
@@ -52,7 +51,6 @@ final class CreatePlayers {
             }
         }
     }
-
 
     private static int playerCount(Scanner scan, String str) {
         while (true) {
