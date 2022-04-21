@@ -12,7 +12,6 @@ import java.util.Scanner;
 
 
 public class CreateTest {
-    Create create;
     List<Player> players;
     Scanner scan;
     Player p1, p2;
@@ -20,7 +19,6 @@ public class CreateTest {
 
     @BeforeEach
     void setUp() {
-        create = new Create();
         scan = new Scanner(System.in);
         players = new ArrayList<>();
         p1 = new Player();
@@ -33,10 +31,12 @@ public class CreateTest {
     @Test
     void testUniqueName() {
         // 2 players, p1 set to validName, p2 set to validName, then when it says no, is set to validName2.
-        ByteArrayInputStream in = new ByteArrayInputStream(("2" + System.lineSeparator() + validName +
-                System.lineSeparator() + validName + System.lineSeparator() + validName2).getBytes());
-        System.setIn(in);
-        players = create.players();
+        ByteArrayInputStream fakeScan = new ByteArrayInputStream(("2" + System.lineSeparator()
+                + validName + System.lineSeparator()
+                + validName + System.lineSeparator()
+                + validName2 + System.lineSeparator()).getBytes());
+        System.setIn(fakeScan);
+        players = Create.players();
 
         // Checks that p2's name is validName2.
         assertEquals(validName2, players.get(1).getName());
@@ -45,12 +45,12 @@ public class CreateTest {
     @Test
     void testNumberOfPlayers() {
         // Sets a number of invalid player counts, then a valid one and the correct number of players.
-        ByteArrayInputStream in = new ByteArrayInputStream(("-1" + System.lineSeparator() + "0" +
+        ByteArrayInputStream fakeScan = new ByteArrayInputStream(("-1" + System.lineSeparator() + "0" +
                 System.lineSeparator() + "dog" + System.lineSeparator() + "6" + System.lineSeparator() +
                 "3" + System.lineSeparator() + validName + System.lineSeparator() + validName2 + System.lineSeparator() + validName3).getBytes());
-        System.setIn(in);
+        System.setIn(fakeScan);
 
-        players = create.players();
+        players = Create.players();
 
         // checks the system has handled the errors as expected and ended with correct size.
         assertEquals(3, players.size());
