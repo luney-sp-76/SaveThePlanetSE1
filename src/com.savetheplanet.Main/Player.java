@@ -48,10 +48,12 @@ public class Player {
     }
 
     private boolean validateName(String name) {
+
+        if (name.matches("^.*[^a-zA-Z\\d].*$"))
+            throw new IllegalArgumentException("Name format error. Name contains illegal characters. Alphanumeric only, no spaces.");
         if (name.length() < 2 || name.length() > 30)
             throw new IllegalArgumentException("Name format error. Length must be between 2 and 30 characters.");
-        if (name.matches("^.*[^a-zA-Z0-9].*$"))
-            throw new IllegalArgumentException("Name format error. Name contains illegal characters. Alphanumeric only, no spaces.");
+
         return true;
     }
 
