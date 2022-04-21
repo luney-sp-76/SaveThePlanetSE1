@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
@@ -29,8 +28,6 @@ public class CreateTest {
         validName = "Bob";
         validName2 = "Bill";
         validName3 = "Bert";
-
-
     }
 
     @Test
@@ -43,8 +40,6 @@ public class CreateTest {
 
         // Checks that p2's name is validName2.
         assertEquals(validName2, players.get(1).getName());
-
-
     }
 
     @Test
