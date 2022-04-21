@@ -6,10 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 class PlayerTest {
 
     Player p1;
     FundableSquare s1;
+    FundableSquare s2;
+    List<FundableSquare> ownedSquares;
     String validNameLower, validNameUpper, validNameMid;
     String invalidNameLengthLower, invalidNameLengthUpper;
     String invalidName1, invalidName2, invalidName3;
@@ -82,5 +86,13 @@ class PlayerTest {
     void fundanbleSquareOwnership() {
         p1.addOwnedSquare(s1);
         assertEquals(p1.getOwnedSquares().get(0), s1);
+    }
+
+    @Test
+    void getLowestValueSquare() {
+        s2 = new FundableSquare("Led Light bulbs", 3, new String[]{"Conserve", "3", "2", "100", "250", "30|50|100|200|350"});
+        p1.addOwnedSquare(s1);
+        p1.addOwnedSquare(s2);
+        assertEquals(p1.getLowestValueSquare(), s2);
     }
 }
