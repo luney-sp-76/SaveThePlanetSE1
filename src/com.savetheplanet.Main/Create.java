@@ -161,6 +161,7 @@ final class Create {
         System.out.println("Please enter the name for player " + i);
         String str = scan.nextLine();
 
+        System.out.println(str);
         while (true) {
             try {
                 // uniqueness check, goes through all existing players and checks entry vs name
@@ -176,10 +177,8 @@ final class Create {
                 return p;
 
             } catch (IllegalArgumentException e) {
-                System.out.println(str);
                 System.err.println(e.getLocalizedMessage());
                 System.out.println("Please enter the name for player " + i);
-                scan.nextLine();
                 timer = timerReset(timer);
                 str = scan.nextLine();
             } finally {
@@ -190,6 +189,7 @@ final class Create {
 
     /**
      * https://www.youtube.com/watch?v=9jK-NcRmVcw
+     *
      * @return Jaszon
      */
     private static Timer timer() {
@@ -208,6 +208,7 @@ final class Create {
         }, 5000, 5000);
         return timer;
     }
+
     // Resets the timer.
     private static Timer timerReset(Timer timer) {
         timer.cancel();
