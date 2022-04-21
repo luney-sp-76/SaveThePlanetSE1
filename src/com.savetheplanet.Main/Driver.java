@@ -13,7 +13,7 @@ public class Driver {
     //Player collects £500 when passing "Collect Funding" square
     private static final int COLLECT = 500;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
         try {
             // Create Players
             players = Create.players();
@@ -65,7 +65,7 @@ public class Driver {
         }
     }
 
-    private static void saveGame() {
+    private static void saveGame() throws IOException{
 
         try {
             FileOutputStream fos = new FileOutputStream("board.sav");
@@ -86,7 +86,7 @@ public class Driver {
     }
 
     @SuppressWarnings("unchecked")
-    public static void loadGame() {
+    public static void loadGame() throws Exception{
 
         try {
             FileInputStream fis = new FileInputStream("board.sav");
