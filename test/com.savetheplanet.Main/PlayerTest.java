@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 class PlayerTest {
 
     Player p1;
@@ -91,6 +93,6 @@ class PlayerTest {
         s2 = new FundableSquare("Led Light bulbs", 3, new String[]{"Conserve", "3", "2", "100", "250", "30|50|100|200|350"});
         p1.addOwnedSquare(s1);
         p1.addOwnedSquare(s2);
-        assetEquals(p1.getLowestValueSquare(), s2);
+        assertEquals(p1.getLowestValueSquare(), s2);
     }
 }
