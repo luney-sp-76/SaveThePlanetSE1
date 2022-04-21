@@ -33,6 +33,7 @@ public class Driver {
             ((FundableSquare) board.get(2)).setDevLevel(2);
             System.out.println(players.get(1).getOwnedSquares());
 
+
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
         }
@@ -53,6 +54,7 @@ public class Driver {
 		System.out.println("Proof of concept: "+chance.getAssigned());
 		chance.fullDetails(chance);
 		System.out.println("Player post card: £"+p1.getFunding());
+
 
     }
 
@@ -102,7 +104,7 @@ public class Driver {
 
 	public static void purchaseSquare(Player player, FundableSquare square){
 		if(square.getOwner() == null){
-			if(player.getFunding() > square.getCost()){
+			if(player.getFunding() >= square.getCost()){
 				square.setOwner(player);
 				player.setFunding(player.getFunding() - square.getCost());
 				player.addOwnedSquare(square);
@@ -129,7 +131,7 @@ public class Driver {
 		if(square.getOwner() != null && square.getOwner() != player){
 			Player owner = square.getOwner();
 			int rates = square.getRatesBill();
-			if(player.getFunding() > rates) {
+			if(player.getFunding() >= rates) {
 				player.setFunding(player.getFunding() - rates);
 				owner.setFunding(owner.getFunding() + rates);
 			} else {

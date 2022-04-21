@@ -28,7 +28,7 @@ public class Player {
         List<FundableSquare> ownedSquares = this.getOwnedSquares();
         Collections.sort(ownedSquares, new Comparator<FundableSquare>(){
             public int compare(FundableSquare o1, FundableSquare o2){
-                return o2.getCost() - o1.getCost();
+                return o1.getCost() - o2.getCost();
             }
         });
 
