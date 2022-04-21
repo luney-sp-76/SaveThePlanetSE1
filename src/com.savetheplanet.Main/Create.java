@@ -161,7 +161,6 @@ final class Create {
         System.out.println("Please enter the name for player " + i);
         String str = scan.nextLine();
 
-        System.out.println(str);
         while (true) {
             try {
                 // uniqueness check, goes through all existing players and checks entry vs name
