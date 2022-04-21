@@ -1,11 +1,12 @@
 package com.savetheplanet.Main;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class Player {
+public class Player implements Serializable {
 
     String name;
     int funding;

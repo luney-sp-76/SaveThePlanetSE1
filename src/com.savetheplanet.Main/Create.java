@@ -55,7 +55,7 @@ final class Create {
     }
 
     /**
-     * @return board reads fields and squares, List of Squares as Board.
+     * @return board - Returns List of Squares as Board.
      * Jaszon
      */
     static List<Square> board() {
@@ -74,7 +74,7 @@ final class Create {
                 int field = Integer.parseInt(arr[1]);
 
                 if (field >= 3) {
-                    board.add(new FundableSquare(name, field, fields.get(Integer.parseInt(arr[1])).split(",")));
+                    board.add(new FundableSquare(name, field, fields.get(field).split(",")));
                 } else {
                     board.add(new Square(name, field));
                 }
@@ -139,7 +139,6 @@ final class Create {
                 System.out.println("Please enter a number between 2 and 4.");
                 timer = timerReset(timer);
                 str = scan.nextLine();
-
             } finally {
                 timer.cancel();
             }
@@ -203,8 +202,8 @@ final class Create {
                 }
                 System.err.printf("\rYou have been idle for 1 minute.%nIf you are idle for another 1 minute the game will exit.%n");
                 warned = true;
-            } // 60000 for production
-        }, 5000, 5000);
+            }
+        }, 60000, 60000);
         return timer;
     }
 
