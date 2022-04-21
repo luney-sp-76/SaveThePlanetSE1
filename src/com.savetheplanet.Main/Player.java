@@ -14,7 +14,7 @@ public class Player {
 
     public Player(String name) {
         setName(name);
-        funding = 300;
+        funding = 500;
     }
 
     public List<FundableSquare> getOwnedSquares() {
