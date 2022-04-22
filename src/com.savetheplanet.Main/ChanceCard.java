@@ -58,7 +58,7 @@ public class ChanceCard {
 	/**
 	 * set move
 	 * 
-	 * @param move
+	 * @param action action
 	 * @throws IllegalArgumentException
 	 */
 	public void setData(int action) throws IllegalArgumentException {
@@ -73,7 +73,7 @@ public class ChanceCard {
 	/**
 	 * verify movement stat is within range
 	 * 
-	 * @param stat
+	 * @param data
 	 * @return
 	 */
 	private boolean validate(int data) {

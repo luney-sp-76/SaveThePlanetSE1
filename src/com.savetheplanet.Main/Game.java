@@ -1,29 +1,21 @@
 package com.savetheplanet.Main;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Game {
 
-    public static List<Square> board = new ArrayList<>();
-
-    public static List<Player> players = new ArrayList<>();
+    private static List<Square> board = new ArrayList<>();
+    private static List<Player> players = new ArrayList<>();
+    private static final Scanner MENU = new Scanner(System.in);
 
     private static final int COLLECT = 500;
 
-    public Game(){
-
+    public Game() {
     }
 
+    public static void playGame(String response) {
 
-
-
-    public static void playGame(String response){
-        response =response.toLowerCase();
-        switch(response){
+        switch (response.toLowerCase()) {
             case "y":
             case "yes":
                 initiateGameOptions();
@@ -33,10 +25,8 @@ public class Game {
                 quitOutsideOfGamePlay();
                 break;
             default:
-               Scanner scanStart = new Scanner(System.in);
-                System.out.println("Sorry please enter Y/yes or N/no");
-                playGame(scanStart.next());
-
+                System.out.println("Sorry please enter y/yes or y/no");
+                playGame(MENU.next());
         }
 
     }
@@ -44,15 +34,14 @@ public class Game {
     private static void quitOutsideOfGamePlay() {
         System.out.println("See You Next Time!");
         System.exit(1);
-
     }
 
     private static void initiateGameOptions() {
         System.out.println("Game Menu");
         System.out.println("----------");
-        Scanner menu = new Scanner(System.in);
+
         System.out.printf("1) new game%n2) restart game%n3)quit%n");
-        switch(menu.nextInt()){
+        switch (MENU.nextInt()) {
             case 1:
                 System.out.println("Ok Lets Go!");
                 playNewGame();
@@ -87,9 +76,7 @@ public class Game {
             ((FundableSquare) board.get(2)).setDevLevel(2);
             System.out.println(players.get(1).getOwnedSquares());
 
-
             //proof of concept testing
-
             System.out.println("Game initialised: " + players.get(0));
             collectFunding(players.get(0));
             System.out.println("Player passes GO: £" + players.get(0).getFunding());
@@ -106,11 +93,13 @@ public class Game {
             System.out.println(players.get(0).getName() + " post card: £" + players.get(0).getFunding());
 
 
-            saveGame();
+            Create.save(board, players);
+//            saveGame();
             board.clear();
             players.clear();
             System.out.println(board);
             System.out.println(players);
+//            loadGame();
             loadGame();
             System.out.println(board);
             System.out.println(players);
@@ -121,71 +110,36 @@ public class Game {
         }
     }
 
-
-    static void saveGame() {
-
-        try {
-            FileOutputStream fos = new FileOutputStream("board.sav");
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(board);
-
-            fos = new FileOutputStream("players.sav");
-            oos = new ObjectOutputStream(fos);
-            oos.writeObject(players);
-
-            oos.close();
-        } catch (IOException e) {
-            System.out.println("Save error.");
-            System.out.println(e.getMessage());
-
-        }
-
-    }
-
     @SuppressWarnings("unchecked")
-    public static void loadGame() {
+    private static void loadGame() {
+
+        System.out.println("Do you want to load a Saved Game? y/n");
 
         try {
-            FileInputStream fis = new FileInputStream("board.sav");
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            board = (List<Square>) ois.readObject();
+            HashMap<String, Object> load = Create.load(board, players);
 
+            assert load != null;
+            board = (List<Square>) load.get("Board");
+            players = (List<Player>) (load.get("Players"));
 
-            fis = new FileInputStream("players.sav");
-            ois = new ObjectInputStream(fis);
-            players = (List<Player>) ois.readObject();
-
-            ois.close();
         } catch (Exception e) {
-            System.out.println("Load game error");
             System.out.println(e.getMessage());
         }
     }
-
 
     /**
      * @param card   - Chance Card player has chosen
      * @param player - Current actor
-     * @return
      */
-    public static Player parseCard(ChanceCard card, Player player) {
+    public static void parseCard(ChanceCard card, Player player) {
 
         if (card.getAssigned() == RandomSquareAssignment.PAY) {
             int pay = card.getAction();
             player.setFunding(player.getFunding() - pay);
-            return player;
-        }
-
-        if (card.getAssigned() == RandomSquareAssignment.RECEIVE) {
+        } else if (card.getAssigned() == RandomSquareAssignment.RECEIVE) {
             player.setFunding(player.getFunding() + card.getAction());
-            return player;
-        }
-
-        if (card.getAssigned() == RandomSquareAssignment.COLLECT_FUNDING) {
+        } else if (card.getAssigned() == RandomSquareAssignment.COLLECT_FUNDING) {
             player.setFunding(player.getFunding() + COLLECT);
-            return player;
-        } else {
-            return player;
         }
     }
 
@@ -240,23 +194,21 @@ public class Game {
     /**
      * shuffles deck and returns the top card (first in List)
      *
-     * @param deck
-     * @return
+     * @param deck The Deck of Chance Cards
+     * @return A single Chance Card
      */
     static ChanceCard shuffleDeck(List<ChanceCard> deck) {
         Collections.shuffle(deck);
         return deck.get(0);
     }
 
-    public static Player collectFunding(Player player) {
+    public static void collectFunding(Player player) {
         player.setFunding((player.getFunding() + COLLECT));
-        return player;
     }
 
     public String open() {
-        Scanner prompt = new Scanner(System.in);
         System.out.println("Welcome To Save The Planet");
         System.out.println("Would you like to Play? y/n");
-        return prompt.next();
+        return MENU.next();
     }
 }

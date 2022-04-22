@@ -9,7 +9,8 @@ import java.util.stream.Stream;
 
 final class Create {
 
-    public Create() {
+    private Create() {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -185,7 +186,7 @@ final class Create {
     }
 
     /**
-     * https://www.youtube.com/watch?v=9jK-NcRmVcw
+     * 60-second timer with 2 phases.
      *
      * @return Jaszon
      */
@@ -211,5 +212,41 @@ final class Create {
         timer.cancel();
         timer = timer();
         return timer;
+    }
+
+
+
+    public static void save(List<Square> board, List<Player> players) {
+
+        HashMap<String, Object> saveGame = new HashMap<String, Object>();
+        saveGame.put("Board", board);
+        saveGame.put("Players", players);
+
+        try (FileOutputStream fos = new FileOutputStream("game1.sav");
+             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+            oos.writeObject(saveGame);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static HashMap<String, Object> load(List<Square> board, List<Player> players) {
+
+
+        try (FileInputStream fis = new FileInputStream("game1.sav");
+             ObjectInputStream ois = new ObjectInputStream(fis)) {
+
+//            FileTime creationTime = (FileTime) Files.getAttribute(Paths.get("game1.sav"), "creationTime");
+//            System.out.println(creationTime);
+
+
+            return (HashMap<String, Object>) ois.readObject();
+
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
