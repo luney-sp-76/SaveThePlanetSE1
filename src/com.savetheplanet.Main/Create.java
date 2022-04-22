@@ -16,7 +16,7 @@ final class Create {
      * Reads in the data from the provided csv and returns a list
      * - Andrew
      */
-    static List<ChanceCard> deck() throws IllegalArgumentException, FileNotFoundException, Exception{
+    static List<ChanceCard> deck() {
         List<ChanceCard> listFromFile = new ArrayList<>();
         File file = new File("randomSquareAssignment.csv");
         try (FileReader fr = new FileReader(file); BufferedReader reader = new BufferedReader(fr)) {
@@ -58,7 +58,7 @@ final class Create {
      * @return board - Returns List of Squares as Board.
      * Jaszon
      */
-    static List<Square> board() throws Exception {
+    static List<Square> board() {
 
         List<Square> board = new ArrayList<>();
 
@@ -90,8 +90,7 @@ final class Create {
      * @return players
      * Jaszon
      */
-    static List<Player> players() throws Exception{
-
+    static List<Player> players() {
 
         List<Player> players = new ArrayList<>();
         Scanner scan = new Scanner(System.in);
@@ -117,7 +116,7 @@ final class Create {
      * Jaszon
      */
 
-    private static int playerCount(Scanner scan) throws NumberFormatException {
+    private static int playerCount(Scanner scan)  {
 
         Timer timer = timer();
 
@@ -152,7 +151,7 @@ final class Create {
      * @return Player Checks name validity and keeps asking till they get it right.
      * Jaszon
      */
-    private static Player validateName(Scanner scan, List<Player> players, int i) throws IllegalArgumentException {
+    private static Player validateName(Scanner scan, List<Player> players, int i) {
 
         Timer timer = timer();
         Player p;

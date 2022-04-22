@@ -256,7 +256,7 @@ public class Game {
     public String open() {
         Scanner prompt = new Scanner(System.in);
         System.out.println("Welcome To Save The Planet");
-        System.out.println("Would you like to Play? Y/N");
+        System.out.println("Would you like to Play? y/n");
         return prompt.next();
     }
 }

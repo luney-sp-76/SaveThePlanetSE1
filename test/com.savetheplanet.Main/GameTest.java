@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-class DriverTest {
+class GameTest {
 
     Player p1;
     Player p2;
@@ -29,7 +29,7 @@ class DriverTest {
         int initialBalance = 500;
         p1.setFunding(initialBalance);
         int expectedBalance = initialBalance - s1.getCost();
-        Driver.purchaseSquare(p1, s1);
+        Game.purchaseSquare(p1, s1);
         ownedSquares = new ArrayList<FundableSquare>();
         ownedSquares.add(s1);
         assertEquals(p1.getFunding(), expectedBalance);
@@ -41,7 +41,7 @@ class DriverTest {
         int initialBalance = 50;
         p1.setFunding(initialBalance);
         int expectedBalance = initialBalance;
-        Driver.purchaseSquare(p1, s1);
+        Game.purchaseSquare(p1, s1);
         ownedSquares = new ArrayList<FundableSquare>();
         assertEquals(p1.getFunding(), expectedBalance);
         assertEquals(p1.getOwnedSquares(), ownedSquares);
@@ -53,7 +53,7 @@ class DriverTest {
         p1.setFunding(initialBalance);
         int expectedBalance = initialBalance;
         s1.setOwner(p2);
-        Driver.purchaseSquare(p1, s1);
+        Game.purchaseSquare(p1, s1);
         ownedSquares = new ArrayList<FundableSquare>();
         assertEquals(p1.getFunding(), expectedBalance);
         assertEquals(p1.getOwnedSquares(), ownedSquares);
@@ -68,7 +68,7 @@ class DriverTest {
         int p1_expectedBalance = initialBalance - rates;
         int p2_expectedBalance = initialBalance + rates;
         s1.setOwner(p2);
-        Driver.payRates(p1, s1);
+        Game.payRates(p1, s1);
         assertEquals(p1.getFunding(), p1_expectedBalance);
         assertEquals(p2.getFunding(), p2_expectedBalance);
     }
@@ -78,7 +78,7 @@ class DriverTest {
         int initialBalance = 5;
         p1.setFunding(initialBalance);
         s1.setOwner(p2);
-        Driver.payRates(p1, s1);
+        Game.payRates(p1, s1);
         assertEquals(p1.getFunding(), initialBalance);
     }
 
@@ -91,7 +91,7 @@ class DriverTest {
         p1.addOwnedSquare(s2);
         ownedSquares = new ArrayList<FundableSquare>();
         ownedSquares.add(s1);
-        Driver.liquidate(p1);
+        Game.liquidate(p1);
         assertEquals(p1.getFunding(), expectedBalance);
         assertEquals(p1.getOwnedSquares(), ownedSquares);
     }
