@@ -52,7 +52,7 @@ public class Player implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(String name) throws IllegalArgumentException {
 
         name = name.trim();
         if (validateName(name)) {
@@ -62,7 +62,7 @@ public class Player implements Serializable {
         }
     }
 
-    private boolean validateName(String name) {
+    private boolean validateName(String name) throws IllegalArgumentException {
 
         if (name.matches("^.*[^a-zA-Z\\d].*$"))
             throw new IllegalArgumentException("Name format error. Name contains illegal characters. Alphanumeric only, no spaces.");
