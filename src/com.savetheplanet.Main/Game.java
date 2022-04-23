@@ -227,7 +227,7 @@ public class Game implements Die{
     public static void collectFunding(Player player) {
         player.setFunding((player.getFunding() + COLLECT));
     }
-}
+
 
     @Override
     public int roll() throws InterruptedException {
