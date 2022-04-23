@@ -47,6 +47,7 @@ class FundableSquareTest {
         assertEquals(fs1.getDevLevel(), devLevel);
         assertArrayEquals(fs1.getRatesCosts(), ratesCosts);
         assertEquals(fs1.getStatus(), status);
+        assertEquals(fs1.getOwner(), null);
     }
 
     @Test

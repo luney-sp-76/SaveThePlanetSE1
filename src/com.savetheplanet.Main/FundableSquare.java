@@ -10,6 +10,7 @@ public class FundableSquare extends Square {
     private int devLevel;
     private int[] ratesCosts;
     private String status = "Available";
+    private Player owner;
 
 
     public FundableSquare(String name, int field, String[] data) {
@@ -19,6 +20,7 @@ public class FundableSquare extends Square {
         setCost(Integer.parseInt(data[3]));
         setDevCost(Integer.parseInt(data[4]));
         setRatesCosts(Arrays.stream(data[5].split("\\D")).mapToInt(Integer::parseInt).toArray());
+        setOwner(null);
     }
 
     public int getCost() {
@@ -75,6 +77,14 @@ public class FundableSquare extends Square {
 
     public void setFieldSize(int fieldSize) {
         this.fieldSize = fieldSize;
+    }
+
+    public Player getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Player owner) {
+        this.owner = owner;
     }
 
     @Override

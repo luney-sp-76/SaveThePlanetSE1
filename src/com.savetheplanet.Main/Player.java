@@ -1,9 +1,12 @@
 package com.savetheplanet.Main;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
-public class Player {
+public class Player implements Serializable {
 
     String name;
     int funding;
@@ -14,11 +17,18 @@ public class Player {
 
     public Player(String name) {
         setName(name);
-        funding = 300;
+        funding = 500;
     }
 
     public List<FundableSquare> getOwnedSquares() {
         return ownedSquares;
+    }
+
+    public FundableSquare getLowestValueSquare(){
+
+        List<FundableSquare> ownedSquares = this.getOwnedSquares();
+        ownedSquares.sort(Comparator.comparingInt(FundableSquare::getCost));
+        return ownedSquares.get(0);
     }
 
     public void addOwnedSquare(FundableSquare square) {
@@ -37,7 +47,7 @@ public class Player {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(String name) throws IllegalArgumentException {
 
         name = name.trim();
         if (validateName(name)) {
@@ -47,7 +57,7 @@ public class Player {
         }
     }
 
-    private boolean validateName(String name) {
+    private boolean validateName(String name) throws IllegalArgumentException {
 
         if (name.matches("^.*[^a-zA-Z\\d].*$"))
             throw new IllegalArgumentException("Name format error. Name contains illegal characters. Alphanumeric only, no spaces.");
@@ -64,4 +74,5 @@ public class Player {
                 ", funding=" + funding +
                 '}';
     }
+
 }

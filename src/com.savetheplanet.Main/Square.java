@@ -1,6 +1,8 @@
 package com.savetheplanet.Main;
 
-public class Square {
+import java.io.Serializable;
+
+public class Square implements Serializable {
     private String name;
     private int field;
 
