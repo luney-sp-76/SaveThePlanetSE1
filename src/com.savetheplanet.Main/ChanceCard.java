@@ -22,6 +22,7 @@ public class ChanceCard {
 	 */
 	public ChanceCard(RandomSquareAssignment assigned) {
 		setAssigned(assigned);
+
 	}
 	
 	public ChanceCard(RandomSquareAssignment assigned, int action) {
