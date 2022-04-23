@@ -27,7 +27,7 @@ final class Create {
         try (FileReader fr = new FileReader(file); BufferedReader reader = new BufferedReader(fr)) {
             reader.readLine();
             String line = reader.readLine();
-            while (line != null) {
+            while (line != null  && !line.isEmpty()) {
                 String[] parts = line.split(",");
                 try {
                     RandomSquareAssignment random = RandomSquareAssignment.valueOf(parts[0].toUpperCase());
