@@ -3,13 +3,16 @@ package com.savetheplanet.Main;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public class Game implements Die{
+public class Game implements IDie {
 
     private static List<Square> board = new ArrayList<>();
     private static List<Player> players = new ArrayList<>();
 
+    private static Timer timer = Create.timer();
     private static final Scanner MENU = new Scanner(System.in);
     private static final int COLLECT = 500;
+
+    private static int MOVE;
 
     public Game() {
         playGame();
@@ -18,8 +21,10 @@ public class Game implements Die{
     @SuppressWarnings("InfiniteLoopStatement")
     public static void playGame() {
 
+
         System.out.println("Welcome To Save The Planet");
         System.out.println("Would you like to Play? y/n");
+        timer = Create.timerReset(timer);
 
         while (true) {
             switch (MENU.nextLine().toLowerCase()) {
@@ -33,7 +38,6 @@ public class Game implements Die{
                     break;
                 default:
                     System.out.println("Sorry please enter y/yes or n/no");
-
             }
         }
     }
@@ -47,28 +51,34 @@ public class Game implements Die{
         System.out.println("Game Menu");
         System.out.println("----------");
 
+        timer = Create.timerReset(timer);
+
         System.out.printf("1) new game%n2) restart game%n3) quit%n");
-        switch (Integer.parseInt(MENU.nextLine())) {
-            case 1:
+        switch (MENU.nextLine()) {
+            case "1":
                 System.out.println("Ok Lets Go!");
+                timer.cancel();
                 playNewGame();
                 break;
-            case 2:
+            case "2":
                 loadGame();
                 // testing
                 System.out.println(players);
                 break;
-            case 3:
+            case "3":
                 quitOutsideOfGamePlay();
                 break;
             default:
                 System.out.println("that's not an option");
+                timer = Create.timerReset(timer);
                 initiateGameOptions();
         }
     }
 
     private static void playNewGame() {
         try {
+
+
             // Create Players
             players = Create.players();
             System.out.println(players);
@@ -76,6 +86,8 @@ public class Game implements Die{
             // Create Board/Squares
             board = Create.board();
             System.out.println(board);
+
+
 
             // light demo
             System.out.println(board.get(2));
@@ -88,6 +100,7 @@ public class Game implements Die{
             //proof of concept testing
             System.out.println("Game initialised: " + players.get(0));
             collectFunding(players.get(0));
+            System.out.printf("%n%s moves %d places.%n",players.get(0).getName(),move());
             System.out.println("Player passes GO: £" + players.get(0).getFunding());
             //read all Chance Cards
             List<ChanceCard> mainDeck = Create.deck();
@@ -100,6 +113,8 @@ public class Game implements Die{
             System.out.println("Proof of concept: " + chance.getAssigned());
             chance.fullDetails(chance);
             System.out.println(players.get(0).getName() + " post card: £" + players.get(0).getFunding());
+            MOVE = roll();
+            System.out.printf("%n%s moves %d places.%n",players.get(1).getName(),MOVE);
 
 
             // saveGame();
@@ -117,6 +132,8 @@ public class Game implements Die{
 
     private static void saveGame() {
 
+        timer = Create.timerReset(timer);
+
         System.out.println("Do you wish to save the game? y/n");
         if (!MENU.nextLine().toLowerCase().contains("y"))
             playGame();
@@ -127,6 +144,8 @@ public class Game implements Die{
 
     @SuppressWarnings("unchecked")
     private static void loadGame() {
+
+        timer = Create.timerReset(timer);
 
         System.out.println("Do you want to load a Saved Game? y/n");
         if (!MENU.nextLine().toLowerCase().contains("y"))
@@ -228,9 +247,12 @@ public class Game implements Die{
         player.setFunding((player.getFunding() + COLLECT));
     }
 
+ public static int move() throws InterruptedException {
+        MOVE = roll();
+        return MOVE;
+ }
 
-    @Override
-    public int roll() throws InterruptedException {
+    private static int roll() throws InterruptedException {
         //A message is displayed saying “Dice Rolling...”
         System.out.println("Dice Rolling...");
         //The dice roll takes a few seconds.
@@ -244,11 +266,9 @@ public class Game implements Die{
         return totalResult;
     }
 
-    private int randomNum(){
+    private static int randomNum() {
         int min = 1;
         int max = 6;
-        int result = (int)Math.floor(Math.random()*(max-min+1)+min);
-        return  result;
+        return (int) Math.floor(Math.random() * (max - min + 1) + min);
     }
-
 }

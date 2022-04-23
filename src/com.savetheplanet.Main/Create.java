@@ -193,7 +193,7 @@ final class Create {
      *
      * @return Jaszon
      */
-    private static Timer timer() {
+    static Timer timer() {
         java.util.Timer timer = new java.util.Timer();
         timer.schedule(new TimerTask() {
             boolean warned = false;
@@ -211,7 +211,7 @@ final class Create {
     }
 
     // Resets the timer.
-    private static Timer timerReset(Timer timer) {
+    static Timer timerReset(Timer timer) {
         timer.cancel();
         timer = timer();
         return timer;
