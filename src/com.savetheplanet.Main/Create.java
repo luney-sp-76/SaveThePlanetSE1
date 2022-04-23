@@ -2,8 +2,12 @@ package com.savetheplanet.Main;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -21,17 +25,16 @@ final class Create {
         List<ChanceCard> listFromFile = new ArrayList<>();
         File file = new File("randomSquareAssignment.csv");
         try (FileReader fr = new FileReader(file); BufferedReader reader = new BufferedReader(fr)) {
+            reader.readLine();
             String line = reader.readLine();
-            line = reader.readLine();
             while (line != null) {
                 String[] parts = line.split(",");
                 try {
+                    RandomSquareAssignment random = RandomSquareAssignment.valueOf(parts[0].toUpperCase());
                     if (parts.length == 1) {
-                        RandomSquareAssignment random = RandomSquareAssignment.valueOf(parts[0].toUpperCase());
                         ChanceCard card = new ChanceCard(random);
                         listFromFile.add(card);
                     } else {
-                        RandomSquareAssignment random = RandomSquareAssignment.valueOf(parts[0].toUpperCase());
                         int move = Integer.parseInt(parts[1]);
                         ChanceCard card = new ChanceCard(random, move);
                         listFromFile.add(card);
@@ -117,7 +120,7 @@ final class Create {
      * Jaszon
      */
 
-    private static int playerCount(Scanner scan)  {
+    private static int playerCount(Scanner scan) {
 
         Timer timer = timer();
 
@@ -215,38 +218,138 @@ final class Create {
     }
 
 
+    @SuppressWarnings("unchecked")
+    public static HashMap<String, Object> load(Scanner menu) {
 
-    public static void save(List<Square> board, List<Player> players) {
+        List<File> saves = loadFiles();
 
-        HashMap<String, Object> saveGame = new HashMap<String, Object>();
-        saveGame.put("Board", board);
-        saveGame.put("Players", players);
+        AtomicInteger count = new AtomicInteger(0);
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy - hh:mm:ss");
 
-        try (FileOutputStream fos = new FileOutputStream("game1.sav");
-             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
-            oos.writeObject(saveGame);
+        System.out.println("Which file would you like to load?");
+        saves.forEach(save -> System.out.println(count.incrementAndGet() + " " + save.getName() + " " + dateFormat.format(save.lastModified())));
+
+        String gameToLoad = pickGame(menu, saves);
+
+        if (gameToLoad != null)
+            try (FileInputStream fis = new FileInputStream("./saves/" + gameToLoad);
+                 ObjectInputStream ois = new ObjectInputStream(fis)) {
+
+                return (HashMap<String, Object>) ois.readObject();
+
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+
+            }
+        return null;
+    }
+
+    /**
+     * @param menu  scanner
+     * @param saves List of Files
+     * @return name of chosen File
+     */
+    private static String pickGame(Scanner menu, List<File> saves) {
+        while (true) {
+
+            switch (menu.nextLine()) {
+                case "0":
+                    return null;
+                case "1":
+                    return saves.get(0).getName();
+                case "2":
+                    return saves.get(1).getName();
+                case "3":
+                    return saves.get(2).getName();
+                default:
+                    System.out.println("Invalid input, 1-3 only to load a save, or 0 to exit to menu");
+            }
+        }
+    }
+
+    /**
+     * @return saves - List of the most recent 3 files from the save files dir, in chronological order.
+     */
+    public static List<File> loadFiles() {
+        List<File> saves = new ArrayList<>();
+        try (Stream<Path> l = Files.list(Paths.get("./saves/"))) {
+            saves = l.map(Path::toFile)
+                    .filter(f -> f.getName().endsWith(".sav"))
+                    .sorted(Comparator.comparing(File::lastModified))
+                    .collect(Collectors.toList());
+
+            if (saves.size() > 3)
+                saves = saves.subList(saves.size() - 3, saves.size());
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return saves;
     }
 
-    @SuppressWarnings("unchecked")
-    public static HashMap<String, Object> load(List<Square> board, List<Player> players) {
+    public static void save(Scanner menu, List<Square> board, List<Player> players) {
+
+        HashMap<String, Object> saveGame = new HashMap<>();
 
 
-        try (FileInputStream fis = new FileInputStream("game1.sav");
-             ObjectInputStream ois = new ObjectInputStream(fis)) {
+        saveGame.put("Board", board);
+        saveGame.put("Players", players);
 
-//            FileTime creationTime = (FileTime) Files.getAttribute(Paths.get("game1.sav"), "creationTime");
-//            System.out.println(creationTime);
+        List<File> saves = loadFiles();
 
+        String saveName = validateSaveName(menu, saves);
+        boolean write = true;
 
-            return (HashMap<String, Object>) ois.readObject();
-
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+        if (saves.size() == 3) {
+            write = memoryCardFull(menu, saves);
         }
-        return null;
+        System.out.println(saves.size());
+
+        if (write)
+            try (FileOutputStream fos = new FileOutputStream("./saves/" + saveName);
+                 ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+                oos.writeObject(saveGame);
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
     }
-}
+
+    private static boolean memoryCardFull(Scanner menu, List<File> saves) {
+
+
+        System.out.println("You already have 3 saved games, by continuing the oldest game " + saves.get(0).getName() + " will be removed. Do you want to continue y/n?");
+        if (menu.nextLine().toLowerCase().contains("y")) {
+            return saves.get(0).delete();
+
+        }
+        return false;
+    }
+
+    private static String validateSaveName(Scanner menu, List<File> saves) {
+
+        System.out.println("Enter name for the Save Game");
+        String str = menu.nextLine() + ".sav";
+
+        while (true) {
+            try {
+                System.out.println(str);
+                if (str.matches("^.*[^a-zA-Z\\d.].*$"))
+                    throw new IllegalArgumentException("Name format error. Name contains illegal characters. Alphanumeric only, no spaces.");
+                if (str.length() < 6 || str.length() > 34)
+                    throw new IllegalArgumentException("Name format error. Length must be between 2 and 30 characters.");
+                for (File f : saves) {
+                    if (str.equals(f.getName())) {
+                        throw new IllegalArgumentException("Names must be unique.");
+                    }
+                }
+                return str;
+            } catch (IllegalArgumentException e) {
+                System.err.println(e.getLocalizedMessage());
+                System.out.println("Please enter the name for the Save Game");
+                str = menu.nextLine() + ".sav";
+            }
+        }
+    }
+}// class

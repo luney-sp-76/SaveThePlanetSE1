@@ -6,29 +6,35 @@ public class Game {
 
     private static List<Square> board = new ArrayList<>();
     private static List<Player> players = new ArrayList<>();
-    private static final Scanner MENU = new Scanner(System.in);
 
+    private static final Scanner MENU = new Scanner(System.in);
     private static final int COLLECT = 500;
 
     public Game() {
+        playGame();
     }
 
-    public static void playGame(String response) {
+    @SuppressWarnings("InfiniteLoopStatement")
+    public static void playGame() {
 
-        switch (response.toLowerCase()) {
-            case "y":
-            case "yes":
-                initiateGameOptions();
-                break;
-            case "n":
-            case "no":
-                quitOutsideOfGamePlay();
-                break;
-            default:
-                System.out.println("Sorry please enter y/yes or y/no");
-                playGame(MENU.next());
+        System.out.println("Welcome To Save The Planet");
+        System.out.println("Would you like to Play? y/n");
+
+        while (true) {
+            switch (MENU.nextLine().toLowerCase()) {
+                case "y":
+                case "yes":
+                    initiateGameOptions();
+                    break;
+                case "n":
+                case "no":
+                    quitOutsideOfGamePlay();
+                    break;
+                default:
+                    System.out.println("Sorry please enter y/yes or n/no");
+
+            }
         }
-
     }
 
     private static void quitOutsideOfGamePlay() {
@@ -40,14 +46,16 @@ public class Game {
         System.out.println("Game Menu");
         System.out.println("----------");
 
-        System.out.printf("1) new game%n2) restart game%n3)quit%n");
-        switch (MENU.nextInt()) {
+        System.out.printf("1) new game%n2) restart game%n3) quit%n");
+        switch (Integer.parseInt(MENU.nextLine())) {
             case 1:
                 System.out.println("Ok Lets Go!");
                 playNewGame();
                 break;
             case 2:
                 loadGame();
+                // testing
+                System.out.println(players);
                 break;
             case 3:
                 quitOutsideOfGamePlay();
@@ -93,38 +101,51 @@ public class Game {
             System.out.println(players.get(0).getName() + " post card: £" + players.get(0).getFunding());
 
 
-            Create.save(board, players);
-//            saveGame();
+            // saveGame();
+            saveGame();
+            // wipes the lists to make sure we have persistence.
             board.clear();
             players.clear();
             System.out.println(board);
             System.out.println(players);
-//            loadGame();
-            loadGame();
-            System.out.println(board);
-            System.out.println(players);
-
 
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
         }
     }
 
+    private static void saveGame() {
+
+        System.out.println("Do you wish to save the game? y/n");
+        if (!MENU.nextLine().toLowerCase().contains("y"))
+            playGame();
+
+        Create.save(MENU, board, players);
+        System.out.println("S:A:V:E");
+    }
+
     @SuppressWarnings("unchecked")
     private static void loadGame() {
 
         System.out.println("Do you want to load a Saved Game? y/n");
+        if (!MENU.nextLine().toLowerCase().contains("y"))
+            playGame();
 
         try {
-            HashMap<String, Object> load = Create.load(board, players);
+            HashMap<String, Object> load = Create.load(MENU);
+
+            if (load == null)
+                playGame();
 
             assert load != null;
             board = (List<Square>) load.get("Board");
             players = (List<Player>) (load.get("Players"));
+            System.out.println("L:O:A:D");
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+
     }
 
     /**
@@ -204,11 +225,5 @@ public class Game {
 
     public static void collectFunding(Player player) {
         player.setFunding((player.getFunding() + COLLECT));
-    }
-
-    public String open() {
-        System.out.println("Welcome To Save The Planet");
-        System.out.println("Would you like to Play? y/n");
-        return MENU.next();
     }
 }
