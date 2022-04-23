@@ -27,7 +27,7 @@ final class Create {
         try (FileReader fr = new FileReader(file); BufferedReader reader = new BufferedReader(fr)) {
             reader.readLine();
             String line = reader.readLine();
-            while (line != null  && !line.isEmpty()) {
+            while (line != null && !line.isEmpty()) {
                 String[] parts = line.split(",");
                 try {
                     RandomSquareAssignment random = RandomSquareAssignment.valueOf(parts[0].toUpperCase());
@@ -352,4 +352,34 @@ final class Create {
             }
         }
     }
+
+    /**
+     * 60-second timer with 2 phases.
+     *
+     * @return Jaszon
+     */
+    static Timer timer() {
+        java.util.Timer timer = new java.util.Timer();
+        timer.schedule(new TimerTask() {
+            boolean warned = false;
+
+            public void run() {
+                if (warned) {
+                    System.out.println("You have been idle for 2 minutes. The Game will now exit.");
+                    System.exit(0);
+                }
+                System.err.printf("\rYou have been idle for 1 minute.%nIf you are idle for another 1 minute the game will exit.%n");
+                warned = true;
+            }
+        }, 3000, 3000);
+        return timer;
+    }
+
+    // Resets the timer.
+    static Timer timerReset(Timer timer) {
+        timer.cancel();
+        timer = timer();
+        return timer;
+    }
+
 }// class
