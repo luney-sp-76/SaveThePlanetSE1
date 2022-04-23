@@ -27,12 +27,7 @@ public class Player implements Serializable {
     public FundableSquare getLowestValueSquare(){
 
         List<FundableSquare> ownedSquares = this.getOwnedSquares();
-        Collections.sort(ownedSquares, new Comparator<FundableSquare>(){
-            public int compare(FundableSquare o1, FundableSquare o2){
-                return o1.getCost() - o2.getCost();
-            }
-        });
-
+        ownedSquares.sort(Comparator.comparingInt(FundableSquare::getCost));
         return ownedSquares.get(0);
     }
 
