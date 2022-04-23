@@ -9,7 +9,6 @@ public class FundableSquare extends Square {
     private int devCost;
     private int devLevel;
     private int[] ratesCosts;
-    private String status = "Available";
     private Player owner;
 
 
@@ -25,14 +24,6 @@ public class FundableSquare extends Square {
 
     public int getCost() {
         return cost;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 
     public void setCost(int cost) {
@@ -96,7 +87,6 @@ public class FundableSquare extends Square {
                 ", devCost=" + devCost +
                 ", devLevel=" + devLevel +
                 ", rates=" + getRatesBill() +
-                ", status='" + status + '\'' +
                 "} ";
     }
 }

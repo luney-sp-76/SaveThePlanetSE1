@@ -15,7 +15,6 @@ class FundableSquareTest {
     int cost;
     int devCost;
     int devLevel;
-    String status;
     int[] ratesCosts = {30, 50, 100, 200, 350};
     int majorDevCost;
     int level3Rates;
@@ -30,7 +29,6 @@ class FundableSquareTest {
         cost = 200;
         devCost = 250;
         devLevel = 0;
-        status = "Available";
         majorDevCost = 600;
         level3Rates = 200;
     }
@@ -46,7 +44,6 @@ class FundableSquareTest {
         assertEquals(fs1.getDevCost(), devCost);
         assertEquals(fs1.getDevLevel(), devLevel);
         assertArrayEquals(fs1.getRatesCosts(), ratesCosts);
-        assertEquals(fs1.getStatus(), status);
         assertEquals(fs1.getOwner(), null);
     }
 

@@ -96,5 +96,11 @@ class GameTest {
         assertEquals(p1.getOwnedSquares(), ownedSquares);
     }
 
+    //Trade tests to implement
+    //test no properties to trade
+    //test player doesn't want to trade
+    //test direct swap
+    //test swap w/ value difference
+    //test swap w/value difference w/ no funding
 
 }
