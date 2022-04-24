@@ -92,7 +92,7 @@ public class Game implements IDie {
             // light demo
             System.out.println(board.get(2));
             players.get(1).addOwnedSquare((FundableSquare) board.get(2));
-            ((FundableSquare) board.get(2)).setStatus("Owned by: " + players.get(1).getName());
+            ((FundableSquare) board.get(2)).setOwner(players.get(1));
             System.out.println(players.get(1).getOwnedSquares());
             ((FundableSquare) board.get(2)).setDevLevel(2);
             System.out.println(players.get(1).getOwnedSquares());
@@ -115,7 +115,6 @@ public class Game implements IDie {
             System.out.println(players.get(0).getName() + " post card: £" + players.get(0).getFunding());
             MOVE = roll();
             System.out.printf("%n%s moves %d places.%n",players.get(1).getName(),MOVE);
-
 
             // saveGame();
             saveGame();
@@ -232,6 +231,69 @@ public class Game implements IDie {
         }
     }
 
+    public static void trade(Player traderPlayer, Player requestedPlayer){
+
+        FundableSquare offeredProperty = null;
+        FundableSquare requestedProperty = null;
+        boolean correctInput = false;
+        boolean confirmTrade = false;
+
+        if(!traderPlayer.getOwnedSquares().isEmpty() && !requestedPlayer.getOwnedSquares().isEmpty()) {
+            offeredProperty = selectProperty(traderPlayer, traderPlayer);
+
+            requestedProperty = selectProperty(traderPlayer, requestedPlayer);
+
+            System.out.println(requestedPlayer.getName() + ", do you want to trade " + requestedProperty.getName() + " for " + offeredProperty.getName() + "? y/n");
+
+            while (correctInput == false) {
+                switch (MENU.nextLine().toLowerCase()) {
+                    case "y":
+                    case "yes":
+                        confirmTrade = true;
+                        correctInput = true;
+                        break;
+                    case "n":
+                    case "no":
+                        confirmTrade = false;
+                        correctInput = true;
+                        break;
+                    default:
+                        System.out.println("Sorry please enter y/yes or n/no");
+                }
+            }
+
+            if(confirmTrade) {
+                int offeredPropertyCost = offeredProperty.getCost();
+                int requestedPropertyCost = requestedProperty.getCost();
+
+                if(offeredPropertyCost == requestedPropertyCost) {
+                    swapProperties(traderPlayer, requestedPlayer, offeredProperty, requestedProperty);
+                } else if(offeredPropertyCost != requestedPropertyCost) {
+
+                    int diff = offeredPropertyCost - requestedPropertyCost;
+
+                    if(diff>0){
+                        payPropertyDifferences(requestedPlayer, traderPlayer, diff);
+                        swapProperties(traderPlayer, requestedPlayer, offeredProperty, requestedProperty);
+                    } else {
+                        diff *= (-1);
+                        if(payPropertyDifferences(traderPlayer, requestedPlayer, diff)) {
+                            swapProperties(traderPlayer, requestedPlayer, offeredProperty, requestedProperty);
+                        }
+
+                    }
+
+                }
+
+            } else {
+                System.out.println("Sorry, " + traderPlayer.getName() + ". " + requestedPlayer.getName() + " doesn't want to trade right now.");
+            }
+
+        } else {
+            System.out.println("Sorry, you and " + requestedPlayer.getName() + " do not have enough properties to trade.");
+        }
+    }
+
     /**
      * shuffles deck and returns the top card (first in List)
      *
@@ -271,4 +333,54 @@ public class Game implements IDie {
         int max = 6;
         return (int) Math.floor(Math.random() * (max - min + 1) + min);
     }
+
+    private static FundableSquare selectProperty(Player selector, Player propertyOwner) {
+
+        int propertySelection = 0;
+        FundableSquare property = null;
+
+        System.out.println(selector.getName() + ", select the number of the property you'd like to trade.");
+        for (int i = 0; i < propertyOwner.getOwnedSquares().size(); i++) {
+            int position = i + 1;
+            System.out.println(position + ". " + propertyOwner.getOwnedSquares().get(i).getName());
+        }
+        try {
+            propertySelection = Integer.parseInt(MENU.nextLine());
+            if (propertySelection < 1 || propertySelection > propertyOwner.getOwnedSquares().size()) {
+                throw new NumberFormatException();
+            } else {
+                property = propertyOwner.getOwnedSquares().get(propertySelection - 1);
+                return property;
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("You have entered an invalid number.");
+            selectProperty(selector, propertyOwner);
+        }
+
+        return null;
+
+    }
+
+    private static void swapProperties(Player player1, Player player2, FundableSquare property1, FundableSquare property2){
+        player1.ownedSquares.remove(property1);
+        property1.setOwner(player2);
+        player2.addOwnedSquare(property1);
+        player2.ownedSquares.remove(property2);
+        property2.setOwner(player1);
+        player1.addOwnedSquare(property2);
+    }
+
+    private static boolean payPropertyDifferences(Player payer, Player payee, int cost){
+        if(payer.getFunding() >= cost) {
+            payer.setFunding(payer.getFunding() - cost);
+            System.out.println(payer.getName() + "'s Balance: £" + payer.getFunding());
+            payee.setFunding(payee.getFunding() + cost);
+            System.out.println(payee.getName() + "'s Balance: £" + payee.getFunding());
+            return true;
+        } else {
+            System.out.println("Sorry, " + payer.getName() + " cannot afford this trade. Trade cancelled.");
+            return false;
+        }
+    }
+
 }
