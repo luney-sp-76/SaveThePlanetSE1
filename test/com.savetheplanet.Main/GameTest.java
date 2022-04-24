@@ -6,8 +6,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 
 class GameTest {
@@ -16,6 +18,8 @@ class GameTest {
     Player p2;
     FundableSquare s1;
     FundableSquare s2;
+    FundableSquare s3;
+    FundableSquare s4;
     List<FundableSquare> ownedSquares;
 
 
@@ -24,15 +28,14 @@ class GameTest {
     void setUp() {
         p1 = new Player();
         p2 = new Player();
-        s1 = new FundableSquare("Led Light bulbs", 3, new String[]{"Conserve", "3", "2", "200", "250", "30|50|100|200|350"});
-        s2 = new FundableSquare("Led Light bulbs", 3, new String[]{"Conserve", "3", "2", "100", "250", "30|50|100|200|350"});
-
-
-
+        s1 = new FundableSquare("Led Light bulbs", 3, new String[]{"Conserve", "3", "2", "200", "250", "2", "30|50|100|200|350"});
+        s2 = new FundableSquare("Water Tap Timers", 3, new String[]{"Conserve", "3", "2", "100", "250", "2", "30|50|100|200|350"});
+        s3 = new FundableSquare("Public Transport", 3, new String[]{"Conserve", "3", "2", "50", "250", "2", "30|50|100|200|350"});
+        s4 = new FundableSquare("Thrift Store", 3, new String[]{"Conserve", "3", "2", "100", "250", "2", "30|50|100|200|350"});
     }
 
     @Test
-    void purchaseSquare_success() {
+    void testPurchaseSquare_success() {
         int initialBalance = 500;
         p1.setFunding(initialBalance);
         int expectedBalance = initialBalance - s1.getCost();
@@ -44,7 +47,7 @@ class GameTest {
     }
 
     @Test
-    void purchaseSquare_noFunding() {
+    void testPurchaseSquare_noFunding() {
         int initialBalance = 50;
         p1.setFunding(initialBalance);
         int expectedBalance = initialBalance;
@@ -55,7 +58,7 @@ class GameTest {
     }
 
     @Test
-    void purchaseSquare_owned() {
+    void testPurchaseSquare_owned() {
         int initialBalance = 500;
         p1.setFunding(initialBalance);
         int expectedBalance = initialBalance;
@@ -67,7 +70,7 @@ class GameTest {
     }
 
     @Test
-    void payRates_success() {
+    void testPayRates_success() {
         int initialBalance = 500;
         p1.setFunding(initialBalance);
         p2.setFunding(initialBalance);
@@ -81,7 +84,7 @@ class GameTest {
     }
 
     @Test
-    void payRates_noFunding() {
+    void testPayRates_noFunding() {
         int initialBalance = 5;
         p1.setFunding(initialBalance);
         s1.setOwner(p2);
@@ -90,7 +93,7 @@ class GameTest {
     }
 
     @Test
-    void liquidate() {
+    void testLiquidate() {
         int initialBalance = 100;
         p1.setFunding(initialBalance);
         int expectedBalance = initialBalance + s2.getCost();
@@ -115,7 +118,110 @@ class GameTest {
         }
     }
 
+    @Test
+    void testTrade_noProperties(){
+        List<FundableSquare> p1Properties = new ArrayList<>();
+        List<FundableSquare> p2Properties = new ArrayList<>();
 
+        p1.addOwnedSquare(s1);
+        p1Properties.add(s1);
 
+        Game.trade(p1, p2);
+        assertEquals(p1.getOwnedSquares(), p1Properties);
+        assertEquals(p2.getOwnedSquares(), p2Properties);
+    }
+
+    @Test
+    void testTrade_rejectRequest(){
+        List<FundableSquare> p1Properties = new ArrayList<>();
+        List<FundableSquare> p2Properties = new ArrayList<>();
+
+        p1.addOwnedSquare(s1);
+        p2.addOwnedSquare(s2);
+
+        p1Properties.add(s1);
+        p2Properties.add(s2);
+
+        ByteArrayInputStream fakeScan = new ByteArrayInputStream(("1" + System.lineSeparator() + "1" + System.lineSeparator() + "n" + System.lineSeparator()).getBytes());
+        Game.MENU = new Scanner(fakeScan);
+
+        Game.trade(p1, p2);
+        assertEquals(p1.getOwnedSquares(), p1Properties);
+        assertEquals(p2.getOwnedSquares(), p2Properties);
+    }
+
+    @Test
+    void testTrade_directSwap(){
+        List<FundableSquare> p1Properties = new ArrayList<>();
+        List<FundableSquare> p2Properties = new ArrayList<>();
+
+        p1.addOwnedSquare(s4);
+        p2.addOwnedSquare(s2);
+
+        p1Properties.add(s2);
+        p2Properties.add(s4);
+
+        ByteArrayInputStream fakeScan = new ByteArrayInputStream(("1" + System.lineSeparator() + "1" + System.lineSeparator() + "y" + System.lineSeparator()).getBytes());
+        Game.MENU = new Scanner(fakeScan);
+
+        Game.trade(p1, p2);
+        assertEquals(p1.getOwnedSquares(), p1Properties);
+        assertEquals(p2.getOwnedSquares(), p2Properties);
+    }
+
+    @Test
+    void testTrade_swapCostDifference(){
+        int initialBalance = 500;
+
+        List<FundableSquare> p1Properties = new ArrayList<>();
+        List<FundableSquare> p2Properties = new ArrayList<>();
+
+        p1.setFunding(initialBalance);
+        p2.setFunding(initialBalance);
+
+        p1.addOwnedSquare(s1);
+        p2.addOwnedSquare(s2);
+
+        p1Properties.add(s2);
+        p2Properties.add(s1);
+
+        int costDifference = s1.getCost() - s2.getCost();
+
+        ByteArrayInputStream fakeScan = new ByteArrayInputStream(("1" + System.lineSeparator() + "1" + System.lineSeparator() + "y" + System.lineSeparator()).getBytes());
+        Game.MENU = new Scanner(fakeScan);
+
+        Game.trade(p1, p2);
+        assertEquals(p1.getOwnedSquares(), p1Properties);
+        assertEquals(p2.getOwnedSquares(), p2Properties);
+        assertEquals(p1.getFunding(), (initialBalance + costDifference));
+        assertEquals(p2.getFunding(), (initialBalance - costDifference));
+    }
+
+    @Test
+    void testTrade_swapCostDifference_noFunding(){
+        int p1InitialBalance = 500;
+        int p2InitialBalance = 50;
+
+        List<FundableSquare> p1Properties = new ArrayList<>();
+        List<FundableSquare> p2Properties = new ArrayList<>();
+
+        p1.setFunding(p1InitialBalance);
+        p2.setFunding(p2InitialBalance);
+
+        p1.addOwnedSquare(s1);
+        p2.addOwnedSquare(s2);
+
+        p1Properties.add(s1);
+        p2Properties.add(s2);
+
+        ByteArrayInputStream fakeScan = new ByteArrayInputStream(("1" + System.lineSeparator() + "1" + System.lineSeparator() + "y" + System.lineSeparator()).getBytes());
+        Game.MENU = new Scanner(fakeScan);
+
+        Game.trade(p1, p2);
+        assertEquals(p1.getOwnedSquares(), p1Properties);
+        assertEquals(p2.getOwnedSquares(), p2Properties);
+        assertEquals(p1.getFunding(), p1InitialBalance);
+        assertEquals(p2.getFunding(), p2InitialBalance);
+    }
 
 }
