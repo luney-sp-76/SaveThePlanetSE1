@@ -19,10 +19,11 @@ class FundableSquareTest {
     int majorDevCost;
     int level3Rates;
 
+
     @BeforeEach
     void setUp() {
 
-        fs2 = new FundableSquare("Water Tap Timers", 3, new String[]{"Conserve", "3", "2", "200", "250", "30|50|100|200|350"});
+        fs2 = new FundableSquare("Water Tap Timers", 3, new String[]{"Conserve", "3", "2", "200", "250","1", "30|50|100|200|350"});
         name = "Led Light bulbs";
         field = 3;
         fieldSize = 2;
@@ -35,7 +36,7 @@ class FundableSquareTest {
 
     @Test
     void constructorGettersAndSetters() {
-        fs1 = new FundableSquare("Led Light bulbs", 3, new String[]{"Conserve", "3", "2", "200", "250", "30|50|100|200|350"});
+        fs1 = new FundableSquare("Led Light bulbs", 3, new String[]{"Conserve", "3", "2", "200", "250","1", "30|50|100|200|350"});
 
         assertEquals(fs1.getName(), name);
         assertEquals(fs1.getField(), field);
@@ -44,7 +45,7 @@ class FundableSquareTest {
         assertEquals(fs1.getDevCost(), devCost);
         assertEquals(fs1.getDevLevel(), devLevel);
         assertArrayEquals(fs1.getRatesCosts(), ratesCosts);
-        assertEquals(fs1.getOwner(), null);
+        assertNull(fs1.getOwner());
     }
 
     @Test
