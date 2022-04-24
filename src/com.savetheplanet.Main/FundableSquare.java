@@ -10,16 +10,18 @@ public class FundableSquare extends Square {
     private int devLevel;
     private int[] ratesCosts;
     private Player owner;
+    private int value;
 
 
     public FundableSquare(String name, int field, String[] data) {
-
         super(name, field);
         setFieldSize(Integer.parseInt(data[2]));
         setCost(Integer.parseInt(data[3]));
         setDevCost(Integer.parseInt(data[4]));
-        setRatesCosts(Arrays.stream(data[5].split("\\D")).mapToInt(Integer::parseInt).toArray());
+        setValue(Integer.parseInt(data[5]));
+        setRatesCosts(Arrays.stream(data[6].split("\\D")).mapToInt(Integer::parseInt).toArray());
         setOwner(null);
+
     }
 
     public int getCost() {
@@ -38,6 +40,20 @@ public class FundableSquare extends Square {
         }
     }
 
+    public int getValue() {
+
+        if (devLevel < 4)
+            return value + this.devLevel;
+
+        return (value + this.devLevel) + 1;
+
+
+    }
+
+    public void setValue(int value) {
+        this.value = value;
+    }
+
     public void setDevCost(int devCost) {
         this.devCost = devCost;
     }
@@ -47,6 +63,8 @@ public class FundableSquare extends Square {
     }
 
     public void setDevLevel(int devLevel) {
+
+
         this.devLevel = devLevel;
     }
 
@@ -81,12 +99,13 @@ public class FundableSquare extends Square {
     @Override
     public String toString() {
         return "FundableSquare{" +
-                 super.toString() +
+                super.toString() +
                 "fieldSize=" + fieldSize +
                 ", cost=" + cost +
                 ", devCost=" + devCost +
                 ", devLevel=" + devLevel +
                 ", rates=" + getRatesBill() +
+                ", owner='" + owner + '\'' +
                 "} ";
     }
 }

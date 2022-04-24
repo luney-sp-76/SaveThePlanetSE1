@@ -94,10 +94,11 @@ final class Create {
      * @return players
      * Jaszon
      */
-    static List<Player> players() {
+//    static List<Player> players() {
+    static List<Player> players(Scanner scan) {
 
         List<Player> players = new ArrayList<>();
-        Scanner scan = new Scanner(System.in);
+//        Scanner scan = new Scanner(System.in);
 
         try {
             int playersCount = playerCount(scan);
@@ -188,46 +189,17 @@ final class Create {
         }
     }
 
-    /**
-     * 60-second timer with 2 phases.
-     *
-     * @return Jaszon
-     */
-    static Timer timer() {
-        java.util.Timer timer = new java.util.Timer();
-        timer.schedule(new TimerTask() {
-            boolean warned = false;
-
-            public void run() {
-                if (warned) {
-                    System.out.println("You have been idle for 2 minutes. The Game will now exit.");
-                    System.exit(0);
-                }
-                System.err.printf("\rYou have been idle for 1 minute.%nIf you are idle for another 1 minute the game will exit.%n");
-                warned = true;
-            }
-        }, 60000, 60000);
-        return timer;
-    }
-
-    // Resets the timer.
-    static Timer timerReset(Timer timer) {
-        timer.cancel();
-        timer = timer();
-        return timer;
-    }
-
 
     @SuppressWarnings("unchecked")
     public static HashMap<String, Object> load(Scanner menu) {
 
         List<File> saves = loadFiles();
 
-        AtomicInteger count = new AtomicInteger(0);
+        AtomicInteger saveID = new AtomicInteger(0);
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy - hh:mm:ss");
 
         System.out.println("Which file would you like to load?");
-        saves.forEach(save -> System.out.println(count.incrementAndGet() + " " + save.getName() + " " + dateFormat.format(save.lastModified())));
+        saves.forEach(save -> System.out.println(saveID.incrementAndGet() + " " + save.getName() + " " + dateFormat.format(save.lastModified())));
 
         String gameToLoad = pickGame(menu, saves);
 
@@ -371,7 +343,7 @@ final class Create {
                 System.err.printf("\rYou have been idle for 1 minute.%nIf you are idle for another 1 minute the game will exit.%n");
                 warned = true;
             }
-        }, 3000, 3000);
+        }, 60000, 60000);
         return timer;
     }
 
