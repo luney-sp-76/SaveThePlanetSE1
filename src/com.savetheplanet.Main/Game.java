@@ -13,11 +13,11 @@ public class Game implements IDie {
 
     private static final int COLLECT = 500;
 
-    // TEST
-    public static ByteArrayInputStream fakeScan = new ByteArrayInputStream(("y" + System.lineSeparator() + "1" + System.lineSeparator() + "4" + System.lineSeparator() + "Dee" + System.lineSeparator() +
+    // TEST/
+     public static ByteArrayInputStream fakeScan = new ByteArrayInputStream(("y" + System.lineSeparator() + "1" + System.lineSeparator() + "4" + System.lineSeparator() + "Dee" + System.lineSeparator() +
             "Denis" + System.lineSeparator() + "Charlie" + System.lineSeparator() + "FrankReynolds" + System.lineSeparator()).getBytes());
 
-    private static final Scanner MENU = new Scanner(fakeScan);
+    public static Scanner MENU = new Scanner(fakeScan);
 
     private static int MOVE;
 
@@ -286,8 +286,9 @@ public class Game implements IDie {
                     int diff = offeredPropertyCost - requestedPropertyCost;
 
                     if (diff > 0) {
-                        payPropertyDifferences(requestedPlayer, traderPlayer, diff);
-                        swapProperties(traderPlayer, requestedPlayer, offeredProperty, requestedProperty);
+                        if(payPropertyDifferences(requestedPlayer, traderPlayer, diff)){
+                            swapProperties(traderPlayer, requestedPlayer, offeredProperty, requestedProperty);
+                        }
                     } else {
                         diff *= (-1);
                         if (payPropertyDifferences(traderPlayer, requestedPlayer, diff)) {

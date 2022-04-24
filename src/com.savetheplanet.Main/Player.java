@@ -84,7 +84,6 @@ public class Player implements Serializable {
                 "name='" + name + '\'' +
                 ", funding=" + funding +
                 ", totalValue=" + totalValue +
-
                 '}';
     }
 }
