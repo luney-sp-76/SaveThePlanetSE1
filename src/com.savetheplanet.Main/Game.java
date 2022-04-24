@@ -3,7 +3,7 @@ package com.savetheplanet.Main;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public class Game implements Die {
+public class Game implements IDie {
 
     private static List<Square> board = new ArrayList<>();
     private static List<Player> players = new ArrayList<>();
@@ -11,6 +11,8 @@ public class Game implements Die {
     private static Timer timer = Create.timer();
     private static final Scanner MENU = new Scanner(System.in);
     private static final int COLLECT = 500;
+
+    private static int MOVE;
 
     public Game() {
         playGame();
@@ -85,6 +87,8 @@ public class Game implements Die {
             board = Create.board();
             System.out.println(board);
 
+
+
             // light demo
             System.out.println(board.get(2));
             players.get(1).addOwnedSquare((FundableSquare) board.get(2));
@@ -96,6 +100,7 @@ public class Game implements Die {
             //proof of concept testing
             System.out.println("Game initialised: " + players.get(0));
             collectFunding(players.get(0));
+            System.out.printf("%n%s moves %d places.%n",players.get(0).getName(),move());
             System.out.println("Player passes GO: £" + players.get(0).getFunding());
             //read all Chance Cards
             List<ChanceCard> mainDeck = Create.deck();
@@ -108,6 +113,8 @@ public class Game implements Die {
             System.out.println("Proof of concept: " + chance.getAssigned());
             chance.fullDetails(chance);
             System.out.println(players.get(0).getName() + " post card: £" + players.get(0).getFunding());
+            MOVE = roll();
+            System.out.printf("%n%s moves %d places.%n",players.get(1).getName(),MOVE);
 
 
             // saveGame();
@@ -240,9 +247,12 @@ public class Game implements Die {
         player.setFunding((player.getFunding() + COLLECT));
     }
 
+ public static int move() throws InterruptedException {
+        MOVE = roll();
+        return MOVE;
+ }
 
-    @Override
-    public int roll() throws InterruptedException {
+    private static int roll() throws InterruptedException {
         //A message is displayed saying “Dice Rolling...”
         System.out.println("Dice Rolling...");
         //The dice roll takes a few seconds.
@@ -256,7 +266,7 @@ public class Game implements Die {
         return totalResult;
     }
 
-    private int randomNum() {
+    private static int randomNum() {
         int min = 1;
         int max = 6;
         return (int) Math.floor(Math.random() * (max - min + 1) + min);

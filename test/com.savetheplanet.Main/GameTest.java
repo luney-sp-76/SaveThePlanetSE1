@@ -1,12 +1,14 @@
 package com.savetheplanet.Main;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 class GameTest {
 
@@ -16,12 +18,17 @@ class GameTest {
     FundableSquare s2;
     List<FundableSquare> ownedSquares;
 
+
+
     @BeforeEach
     void setUp() {
         p1 = new Player();
         p2 = new Player();
         s1 = new FundableSquare("Led Light bulbs", 3, new String[]{"Conserve", "3", "2", "200", "250", "30|50|100|200|350"});
         s2 = new FundableSquare("Led Light bulbs", 3, new String[]{"Conserve", "3", "2", "100", "250", "30|50|100|200|350"});
+
+
+
     }
 
     @Test
@@ -95,6 +102,20 @@ class GameTest {
         assertEquals(p1.getFunding(), expectedBalance);
         assertEquals(p1.getOwnedSquares(), ownedSquares);
     }
+
+    @Test
+    void testRollResultIsWithinMaximumOf12() throws InterruptedException {
+        for (int i = 0; i < 20; i++) {
+            int testResult = Game.move();
+            if (testResult < 2){
+                fail("Number below range 2 - 12");
+            } else if (testResult > 12) {
+                fail("Number above range 2 - 12");
+            }
+        }
+    }
+
+
 
 
 }
