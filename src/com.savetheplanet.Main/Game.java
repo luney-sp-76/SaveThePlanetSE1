@@ -1,5 +1,6 @@
 package com.savetheplanet.Main;
 
+import java.io.ByteArrayInputStream;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -8,9 +9,15 @@ public class Game implements IDie {
     private static List<Square> board = new ArrayList<>();
     private static List<Player> players = new ArrayList<>();
 
-    private static Timer timer = Create.timer();
-    private static final Scanner MENU = new Scanner(System.in);
+    static Timer timer = Create.timer();
+
     private static final int COLLECT = 500;
+
+    // TEST
+    public static ByteArrayInputStream fakeScan = new ByteArrayInputStream(("y" + System.lineSeparator() + "1" + System.lineSeparator() + "4" + System.lineSeparator() + "Dee" + System.lineSeparator() +
+            "Denis" + System.lineSeparator() + "Charlie" + System.lineSeparator() + "FrankReynolds" + System.lineSeparator()).getBytes());
+
+    private static final Scanner MENU = new Scanner(fakeScan);
 
     private static int MOVE;
 
@@ -20,7 +27,6 @@ public class Game implements IDie {
 
     @SuppressWarnings("InfiniteLoopStatement")
     public static void playGame() {
-
 
         System.out.println("Welcome To Save The Planet");
         System.out.println("Would you like to Play? y/n");
@@ -80,27 +86,33 @@ public class Game implements IDie {
 
 
             // Create Players
-            players = Create.players();
-            System.out.println(players);
-
+//            ############################ TEST ###############
+//            players = Create.players();
+            players = Create.players(MENU);
+//            ############################ /TEST ###############
             // Create Board/Squares
             board = Create.board();
-            System.out.println(board);
-
 
 
             // light demo
-            System.out.println(board.get(2));
+            players.get(1).addOwnedSquare((FundableSquare) board.get(14));
+            ((FundableSquare) board.get(14)).setOwner(players.get(1));
+            ((FundableSquare) board.get(14)).setDevLevel(4);
+
+
+            players.get(0).addOwnedSquare((FundableSquare) board.get(13));
+            ((FundableSquare) board.get(13)).setOwner(players.get(0));
+            ((FundableSquare) board.get(13)).setDevLevel(4);
+
             players.get(1).addOwnedSquare((FundableSquare) board.get(2));
             ((FundableSquare) board.get(2)).setOwner(players.get(1));
-            System.out.println(players.get(1).getOwnedSquares());
-            ((FundableSquare) board.get(2)).setDevLevel(2);
-            System.out.println(players.get(1).getOwnedSquares());
+            ((FundableSquare) board.get(2)).setDevLevel(4);
+
 
             //proof of concept testing
             System.out.println("Game initialised: " + players.get(0));
             collectFunding(players.get(0));
-            System.out.printf("%n%s moves %d places.%n",players.get(0).getName(),move());
+            System.out.printf("%n%s moves %d places.%n", players.get(0).getName(), move());
             System.out.println("Player passes GO: £" + players.get(0).getFunding());
             //read all Chance Cards
             List<ChanceCard> mainDeck = Create.deck();
@@ -113,16 +125,16 @@ public class Game implements IDie {
             System.out.println("Proof of concept: " + chance.getAssigned());
             chance.fullDetails(chance);
             System.out.println(players.get(0).getName() + " post card: £" + players.get(0).getFunding());
-            MOVE = roll();
-            System.out.printf("%n%s moves %d places.%n",players.get(1).getName(),MOVE);
 
-            // saveGame();
-            saveGame();
-            // wipes the lists to make sure we have persistence.
-            board.clear();
-            players.clear();
-            System.out.println(board);
-            System.out.println(players);
+
+            MOVE = roll();
+            System.out.printf("%n%s moves %d places.%n", players.get(1).getName(), MOVE);
+
+            //     saveGame();
+
+            Stats stats = new Stats(players);
+            stats.listPlayers();
+            System.exit(1);
 
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
@@ -231,14 +243,14 @@ public class Game implements IDie {
         }
     }
 
-    public static void trade(Player traderPlayer, Player requestedPlayer){
+    public static void trade(Player traderPlayer, Player requestedPlayer) {
 
         FundableSquare offeredProperty = null;
         FundableSquare requestedProperty = null;
         boolean correctInput = false;
         boolean confirmTrade = false;
 
-        if(!traderPlayer.getOwnedSquares().isEmpty() && !requestedPlayer.getOwnedSquares().isEmpty()) {
+        if (!traderPlayer.getOwnedSquares().isEmpty() && !requestedPlayer.getOwnedSquares().isEmpty()) {
             offeredProperty = selectProperty(traderPlayer, traderPlayer);
 
             requestedProperty = selectProperty(traderPlayer, requestedPlayer);
@@ -262,22 +274,22 @@ public class Game implements IDie {
                 }
             }
 
-            if(confirmTrade) {
+            if (confirmTrade) {
                 int offeredPropertyCost = offeredProperty.getCost();
                 int requestedPropertyCost = requestedProperty.getCost();
 
-                if(offeredPropertyCost == requestedPropertyCost) {
+                if (offeredPropertyCost == requestedPropertyCost) {
                     swapProperties(traderPlayer, requestedPlayer, offeredProperty, requestedProperty);
-                } else if(offeredPropertyCost != requestedPropertyCost) {
+                } else if (offeredPropertyCost != requestedPropertyCost) {
 
                     int diff = offeredPropertyCost - requestedPropertyCost;
 
-                    if(diff>0){
+                    if (diff > 0) {
                         payPropertyDifferences(requestedPlayer, traderPlayer, diff);
                         swapProperties(traderPlayer, requestedPlayer, offeredProperty, requestedProperty);
                     } else {
                         diff *= (-1);
-                        if(payPropertyDifferences(traderPlayer, requestedPlayer, diff)) {
+                        if (payPropertyDifferences(traderPlayer, requestedPlayer, diff)) {
                             swapProperties(traderPlayer, requestedPlayer, offeredProperty, requestedProperty);
                         }
 
@@ -309,10 +321,10 @@ public class Game implements IDie {
         player.setFunding((player.getFunding() + COLLECT));
     }
 
- public static int move() throws InterruptedException {
+    public static int move() throws InterruptedException {
         MOVE = roll();
         return MOVE;
- }
+    }
 
     private static int roll() throws InterruptedException {
         //A message is displayed saying “Dice Rolling...”
@@ -361,7 +373,7 @@ public class Game implements IDie {
 
     }
 
-    private static void swapProperties(Player player1, Player player2, FundableSquare property1, FundableSquare property2){
+    private static void swapProperties(Player player1, Player player2, FundableSquare property1, FundableSquare property2) {
         player1.ownedSquares.remove(property1);
         property1.setOwner(player2);
         player2.addOwnedSquare(property1);
@@ -370,8 +382,8 @@ public class Game implements IDie {
         player1.addOwnedSquare(property2);
     }
 
-    private static boolean payPropertyDifferences(Player payer, Player payee, int cost){
-        if(payer.getFunding() >= cost) {
+    private static boolean payPropertyDifferences(Player payer, Player payee, int cost) {
+        if (payer.getFunding() >= cost) {
             payer.setFunding(payer.getFunding() - cost);
             System.out.println(payer.getName() + "'s Balance: £" + payer.getFunding());
             payee.setFunding(payee.getFunding() + cost);

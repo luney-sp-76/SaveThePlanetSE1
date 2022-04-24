@@ -2,7 +2,6 @@ package com.savetheplanet.Main;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -10,6 +9,7 @@ public class Player implements Serializable {
 
     String name;
     int funding;
+    int totalValue;
     List<FundableSquare> ownedSquares = new ArrayList<>();
 
     public Player() {
@@ -18,13 +18,24 @@ public class Player implements Serializable {
     public Player(String name) {
         setName(name);
         funding = 500;
+        totalValue = 0;
+    }
+
+    public void calcTotalValue() {
+        this.totalValue = getOwnedSquares().stream().mapToInt(FundableSquare::getValue).sum();
+
+    }
+
+    public int getTotalValue() {
+        return totalValue;
+
     }
 
     public List<FundableSquare> getOwnedSquares() {
         return ownedSquares;
     }
 
-    public FundableSquare getLowestValueSquare(){
+    public FundableSquare getLowestValueSquare() {
 
         List<FundableSquare> ownedSquares = this.getOwnedSquares();
         ownedSquares.sort(Comparator.comparingInt(FundableSquare::getCost));
@@ -72,7 +83,8 @@ public class Player implements Serializable {
         return "Player{" +
                 "name='" + name + '\'' +
                 ", funding=" + funding +
+                ", totalValue=" + totalValue +
+
                 '}';
     }
-
 }
