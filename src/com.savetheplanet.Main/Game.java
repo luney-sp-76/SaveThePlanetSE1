@@ -14,8 +14,8 @@ public class Game implements IDie {
     private static final int COLLECT = 500;
 
     // TEST/
-     public static ByteArrayInputStream fakeScan = new ByteArrayInputStream(("y" + System.lineSeparator() + "1" + System.lineSeparator() + "4" + System.lineSeparator() + "Dee" + System.lineSeparator() +
-            "Denis" + System.lineSeparator() + "Charlie" + System.lineSeparator() + "FrankReynolds" + System.lineSeparator()).getBytes());
+    public static ByteArrayInputStream fakeScan = new ByteArrayInputStream(("y" + System.lineSeparator() + "1" + System.lineSeparator() + "4" + System.lineSeparator() + "Dee" + System.lineSeparator() +
+            "MyNameIsThirtyCharactersLoooog" + System.lineSeparator() + "Charlie" + System.lineSeparator() + "Frank" + System.lineSeparator()).getBytes());
 
     public static Scanner MENU = new Scanner(fakeScan);
 
@@ -108,6 +108,15 @@ public class Game implements IDie {
             ((FundableSquare) board.get(2)).setOwner(players.get(1));
             ((FundableSquare) board.get(2)).setDevLevel(4);
 
+            players.get(2).addOwnedSquare((FundableSquare) board.get(15));
+            ((FundableSquare) board.get(15)).setOwner(players.get(2));
+            ((FundableSquare) board.get(15)).setDevLevel(4);
+            players.get(2).addOwnedSquare((FundableSquare) board.get(4));
+            ((FundableSquare) board.get(4)).setOwner(players.get(2));
+            ((FundableSquare) board.get(4)).setDevLevel(4);
+
+//            players.get(2).setFunding(600);
+
 
             //proof of concept testing
             System.out.println("Game initialised: " + players.get(0));
@@ -135,6 +144,7 @@ public class Game implements IDie {
             Stats stats = new Stats(players);
             stats.full();
             stats.abr();
+            stats.end();
             System.exit(1);
 
         } catch (Exception e) {
@@ -286,7 +296,7 @@ public class Game implements IDie {
                     int diff = offeredPropertyCost - requestedPropertyCost;
 
                     if (diff > 0) {
-                        if(payPropertyDifferences(requestedPlayer, traderPlayer, diff)){
+                        if (payPropertyDifferences(requestedPlayer, traderPlayer, diff)) {
                             swapProperties(traderPlayer, requestedPlayer, offeredProperty, requestedProperty);
                         }
                     } else {
@@ -332,7 +342,7 @@ public class Game implements IDie {
         //A message is displayed saying “Dice Rolling...”
         System.out.println("Dice Rolling...");
         //The dice roll takes a few seconds.
-       // TimeUnit.SECONDS.sleep(3);
+        // TimeUnit.SECONDS.sleep(3);
         int die1Result = randomNum();
         int die2Result = randomNum();
         int totalResult = die1Result + die2Result;
