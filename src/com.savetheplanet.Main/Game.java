@@ -21,6 +21,7 @@ public class Game implements IDie {
 
     private static int MOVE;
 
+
     public Game() {
         playGame();
     }
