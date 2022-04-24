@@ -23,11 +23,10 @@ class GameTest {
     List<FundableSquare> ownedSquares;
 
 
-
     @BeforeEach
     void setUp() {
-        p1 = new Player();
-        p2 = new Player();
+        p1 = new Player("Mathew");
+        p2 = new Player("Neil");
         s1 = new FundableSquare("Led Light bulbs", 3, new String[]{"Conserve", "3", "2", "200", "250", "2", "30|50|100|200|350"});
         s2 = new FundableSquare("Water Tap Timers", 3, new String[]{"Conserve", "3", "2", "100", "250", "2", "30|50|100|200|350"});
         s3 = new FundableSquare("Public Transport", 3, new String[]{"Conserve", "3", "2", "50", "250", "2", "30|50|100|200|350"});
@@ -110,7 +109,7 @@ class GameTest {
     void testRollResultIsWithinMaximumOf12() throws InterruptedException {
         for (int i = 0; i < 20; i++) {
             int testResult = Game.move();
-            if (testResult < 2){
+            if (testResult < 2) {
                 fail("Number below range 2 - 12");
             } else if (testResult > 12) {
                 fail("Number above range 2 - 12");
@@ -119,7 +118,7 @@ class GameTest {
     }
 
     @Test
-    void testTrade_noProperties(){
+    void testTrade_noProperties() {
         List<FundableSquare> p1Properties = new ArrayList<>();
         List<FundableSquare> p2Properties = new ArrayList<>();
 
@@ -132,7 +131,7 @@ class GameTest {
     }
 
     @Test
-    void testTrade_rejectRequest(){
+    void testTrade_rejectRequest() {
         List<FundableSquare> p1Properties = new ArrayList<>();
         List<FundableSquare> p2Properties = new ArrayList<>();
 
@@ -151,7 +150,7 @@ class GameTest {
     }
 
     @Test
-    void testTrade_directSwap(){
+    void testTrade_directSwap() {
         List<FundableSquare> p1Properties = new ArrayList<>();
         List<FundableSquare> p2Properties = new ArrayList<>();
 
@@ -170,7 +169,7 @@ class GameTest {
     }
 
     @Test
-    void testTrade_swapCostDifference(){
+    void testTrade_swapCostDifference() {
         int initialBalance = 500;
 
         List<FundableSquare> p1Properties = new ArrayList<>();
@@ -198,7 +197,7 @@ class GameTest {
     }
 
     @Test
-    void testTrade_swapCostDifference_noFunding(){
+    void testTrade_swapCostDifference_noFunding() {
         int p1InitialBalance = 500;
         int p2InitialBalance = 50;
 

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -17,15 +18,17 @@ public class CreateTest {
     Player p1, p2;
     String validName, validName2, validName3;
 
+
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
         scan = new Scanner(System.in);
         players = new ArrayList<>();
-        p1 = new Player();
-        p2 = new Player();
         validName = "Bob";
         validName2 = "Bill";
         validName3 = "Bert";
+        p1 = new Player(validName);
+        p2 = new Player(validName2);
+        int read = System.in.read(new byte[System.in.available()]);
     }
 
     @Test
@@ -35,21 +38,29 @@ public class CreateTest {
                 + validName + System.lineSeparator()
                 + validName + System.lineSeparator()
                 + validName2 + System.lineSeparator()).getBytes());
+
         System.setIn(fakeScan);
         players = Create.players();
 
         // Checks that p2's name is validName2.
         assertEquals(validName2, players.get(1).getName());
+        System.out.println(players);
+
     }
 
     @Test
     void testNumberOfPlayers() {
         // Sets a number of invalid player counts, then a valid one and the correct number of players.
-        ByteArrayInputStream fakeScan = new ByteArrayInputStream(("-1" + System.lineSeparator() + "0" +
-                System.lineSeparator() + "dog" + System.lineSeparator() + "6" + System.lineSeparator() +
-                "3" + System.lineSeparator() + validName + System.lineSeparator() + validName2 + System.lineSeparator() + validName3).getBytes());
-        System.setIn(fakeScan);
+        ByteArrayInputStream fakeScan = new ByteArrayInputStream(("-1" + System.lineSeparator()
+                + "0" + System.lineSeparator()
+                + "dog" + System.lineSeparator()
+                + "6" + System.lineSeparator()
+                + "3" + System.lineSeparator()
+                + validName + System.lineSeparator()
+                + validName2 + System.lineSeparator()
+                + validName3 + System.lineSeparator()).getBytes());
 
+        System.setIn(fakeScan);
         players = Create.players();
 
         // checks the system has handled the errors as expected and ended with correct size.

@@ -12,9 +12,6 @@ public class Player implements Serializable {
     int totalValue;
     List<FundableSquare> ownedSquares = new ArrayList<>();
 
-    public Player() {
-    }
-
     public Player(String name) {
         setName(name);
         funding = 500;

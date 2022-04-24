@@ -94,17 +94,14 @@ final class Create {
      * @return players
      * Jaszon
      */
-//    static List<Player> players() {
-    static List<Player> players(Scanner scan) {
-
+    static List<Player> players() {
         List<Player> players = new ArrayList<>();
-//        Scanner scan = new Scanner(System.in);
 
         try {
-            int playersCount = playerCount(scan);
+            int playersCount = playerCount();
 
             for (int i = 1; i < playersCount + 1; i++) {
-                Player p = validateName(scan, players, i);
+                Player p = validateName(players, i);
                 players.add(p);
             }
 
@@ -116,17 +113,17 @@ final class Create {
     }
 
     /**
-     * @param scan Scanner
+     *
      * @return Checks that the number of players is a valid number between 2 and 4 and keeps asking until it gets one.
      * Jaszon
      */
 
-    private static int playerCount(Scanner scan) {
+    private static int playerCount() {
 
         Timer timer = timer();
 
         System.out.println("How many players? 2-4");
-        String str = scan.nextLine();
+        String str = Game.MENU.nextLine();
 
 
         while (true) {
@@ -142,7 +139,7 @@ final class Create {
                 System.err.println(e.getMessage().replaceFirst(".*", "Invalid number."));
                 System.out.println("Please enter a number between 2 and 4.");
                 timer = timerReset(timer);
-                str = scan.nextLine();
+                str = Game.MENU.nextLine();
             } finally {
                 timer.cancel();
             }
@@ -150,19 +147,19 @@ final class Create {
     }
 
     /**
-     * @param scan    Scanner
+     *
      * @param players List
      * @param i       player number
      * @return Player Checks name validity and keeps asking till they get it right.
      * Jaszon
      */
-    private static Player validateName(Scanner scan, List<Player> players, int i) {
+    private static Player validateName(List<Player> players, int i) {
 
         Timer timer = timer();
         Player p;
 
         System.out.println("Please enter the name for player " + i);
-        String str = scan.nextLine();
+        String str = Game.MENU.nextLine();
 
         while (true) {
             try {
@@ -182,7 +179,7 @@ final class Create {
                 System.err.println(e.getLocalizedMessage());
                 System.out.println("Please enter the name for player " + i);
                 timer = timerReset(timer);
-                str = scan.nextLine();
+                str = Game.MENU.nextLine();
             } finally {
                 timer.cancel();
             }
@@ -191,7 +188,7 @@ final class Create {
 
 
     @SuppressWarnings("unchecked")
-    public static HashMap<String, Object> load(Scanner menu) {
+    public static HashMap<String, Object> load( ) {
 
         List<File> saves = loadFiles();
 
@@ -201,7 +198,7 @@ final class Create {
         System.out.println("Which file would you like to load?");
         saves.forEach(save -> System.out.println(saveID.incrementAndGet() + " " + save.getName() + " " + dateFormat.format(save.lastModified())));
 
-        String gameToLoad = pickGame(menu, saves);
+        String gameToLoad = pickGame(saves);
 
         if (gameToLoad != null)
             try (FileInputStream fis = new FileInputStream("./saves/" + gameToLoad);
@@ -217,14 +214,14 @@ final class Create {
     }
 
     /**
-     * @param menu  scanner
+     *
      * @param saves List of Files
      * @return name of chosen File
      */
-    private static String pickGame(Scanner menu, List<File> saves) {
+    private static String pickGame(List<File> saves) {
         while (true) {
 
-            switch (menu.nextLine()) {
+            switch (Game.MENU.nextLine()) {
                 case "0":
                     return null;
                 case "1":
@@ -259,21 +256,20 @@ final class Create {
         return saves;
     }
 
-    public static void save(Scanner menu, List<Square> board, List<Player> players) {
+    public static void save(List<Square> board, List<Player> players) {
 
         HashMap<String, Object> saveGame = new HashMap<>();
-
 
         saveGame.put("Board", board);
         saveGame.put("Players", players);
 
         List<File> saves = loadFiles();
 
-        String saveName = validateSaveName(menu, saves);
+        String saveName = validateSaveName(saves);
         boolean write = true;
 
         if (saves.size() == 3) {
-            write = memoryCardFull(menu, saves);
+            write = memoryCardFull(saves);
         }
         System.out.println(saves.size());
 
@@ -288,21 +284,23 @@ final class Create {
             }
     }
 
-    private static boolean memoryCardFull(Scanner menu, List<File> saves) {
+    private static boolean memoryCardFull(List<File> saves) {
 
 
         System.out.println("You already have 3 saved games, by continuing the oldest game " + saves.get(0).getName() + " will be removed. Do you want to continue y/n?");
-        if (menu.nextLine().toLowerCase().contains("y")) {
+        if (Game.MENU.nextLine().toLowerCase().contains("y")) {
             return saves.get(0).delete();
 
         }
         return false;
     }
 
-    private static String validateSaveName(Scanner menu, List<File> saves) {
+    private static String validateSaveName(List<File> saves) {
+
+
 
         System.out.println("Enter name for the Save Game");
-        String str = menu.nextLine() + ".sav";
+        String str = Game.MENU.nextLine() + ".sav";
 
         while (true) {
             try {
@@ -320,7 +318,7 @@ final class Create {
             } catch (IllegalArgumentException e) {
                 System.err.println(e.getLocalizedMessage());
                 System.out.println("Please enter the name for the Save Game");
-                str = menu.nextLine() + ".sav";
+                str = Game.MENU.nextLine() + ".sav";
             }
         }
     }
