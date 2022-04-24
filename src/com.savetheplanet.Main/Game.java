@@ -133,7 +133,8 @@ public class Game implements IDie {
             //     saveGame();
 
             Stats stats = new Stats(players);
-            stats.listPlayers();
+            stats.full();
+            stats.abr();
             System.exit(1);
 
         } catch (Exception e) {
@@ -330,7 +331,7 @@ public class Game implements IDie {
         //A message is displayed saying “Dice Rolling...”
         System.out.println("Dice Rolling...");
         //The dice roll takes a few seconds.
-        TimeUnit.SECONDS.sleep(3);
+       // TimeUnit.SECONDS.sleep(3);
         int die1Result = randomNum();
         int die2Result = randomNum();
         int totalResult = die1Result + die2Result;
