@@ -29,8 +29,9 @@ class GameTest {
         p2 = new Player("Neil");
         s1 = new FundableSquare("Led Light bulbs", 3, new String[]{"Conserve", "3", "2", "200", "250", "2", "30|50|100|200|350"});
         s2 = new FundableSquare("Water Tap Timers", 3, new String[]{"Conserve", "3", "2", "100", "250", "2", "30|50|100|200|350"});
-        s3 = new FundableSquare("Public Transport", 3, new String[]{"Conserve", "3", "2", "50", "250", "2", "30|50|100|200|350"});
-        s4 = new FundableSquare("Thrift Store", 3, new String[]{"Conserve", "3", "2", "100", "250", "2", "30|50|100|200|350"});
+        s3 = new FundableSquare("Thrift Store", 3, new String[]{"Conserve", "3", "2", "100", "250", "2", "30|50|100|200|350"});
+        s4 = new FundableSquare("Public Transport", 3, new String[]{"Reduce", "4", "2", "50", "250", "2", "30|50|100|200|350"});
+
     }
 
     @Test
@@ -221,6 +222,70 @@ class GameTest {
         assertEquals(p2.getOwnedSquares(), p2Properties);
         assertEquals(p1.getFunding(), p1InitialBalance);
         assertEquals(p2.getFunding(), p2InitialBalance);
+    }
+
+    @Test
+    void testPlayersPreRollFourOptions(){
+        int p1InitialBalance = 500;
+        int p2InitialBalance = 50;
+
+        List<FundableSquare> p1Properties = new ArrayList<>();
+        List<FundableSquare> p2Properties = new ArrayList<>();
+
+        p1.setFunding(p1InitialBalance);
+        p2.setFunding(p2InitialBalance);
+
+        p1.addOwnedSquare(s1);
+        p1.addOwnedSquare(s2);
+        p1.addOwnedSquare(s3);
+
+
+        p1Properties.add(s1);
+        p1Properties.add(s2);
+        p1Properties.add(s3);
+        p2Properties.add(s4);
+        p1Properties.get(0).setOwner(p1);
+        p1Properties.get(1).setOwner(p1);
+        p1Properties.get(2).setOwner(p1);
+
+
+        ByteArrayInputStream fakeScan = new ByteArrayInputStream(("y" + System.lineSeparator() + "1" + System.lineSeparator() + "2" + System.lineSeparator() + "bob" +System.lineSeparator() + "jim" + System.lineSeparator() + "1" + System.lineSeparator() + "n" + System.lineSeparator()).getBytes());
+        Game.MENU = new Scanner(fakeScan);
+        Game.playGame();
+
+
+    }
+
+    @Test
+    void testPlayersPreRollThreeOptions(){
+        int p1InitialBalance = 500;
+        int p2InitialBalance = 50;
+
+        List<FundableSquare> p1Properties = new ArrayList<>();
+        List<FundableSquare> p2Properties = new ArrayList<>();
+
+        p1.setFunding(p1InitialBalance);
+        p2.setFunding(p2InitialBalance);
+
+        p1.addOwnedSquare(s1);
+        p1.addOwnedSquare(s2);
+        p1.addOwnedSquare(s3);
+
+
+        p1Properties.add(s1);
+        p1Properties.add(s2);
+        p1Properties.add(s3);
+        p2Properties.add(s4);
+        p1Properties.get(0).setOwner(p1);
+        p1Properties.get(1).setOwner(p1);
+        p1Properties.get(2).setOwner(p1);
+
+
+
+
+        ByteArrayInputStream fakeScan = new ByteArrayInputStream(("y" + System.lineSeparator() + "1" + System.lineSeparator() + "2" + System.lineSeparator() + "bob" +System.lineSeparator() + "jim" + System.lineSeparator() + "1" + System.lineSeparator() + "n" + System.lineSeparator()).getBytes());
+        Game.MENU = new Scanner(fakeScan);
+        Game.playGame();
     }
 
 }
