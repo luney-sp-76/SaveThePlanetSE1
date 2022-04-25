@@ -1,5 +1,8 @@
 package com.savetheplanet.Main;
 
+import javax.sound.sampled.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -126,42 +129,37 @@ public class Game implements IDie {
             //proof of concept testing
             System.out.println("Game initialised: ");// + players.get(0));
             collectFunding(players.get(0));
-            players.get(0).addOwnedSquare((FundableSquare) board.get(2));
-            players.get(0).addOwnedSquare((FundableSquare) board.get(4));
-//            ((FundableSquare) board.get(2)).setOwner(players.get(1));
-//            ((FundableSquare) board.get(2)).setDevLevel(4);
+            System.out.printf("%n%s moves %d places.%n", players.get(0).getName(), move());
+            System.out.println("Player passes GO: £" + players.get(0).getFunding());
+            //read all Chance Cards
+            List<ChanceCard> mainDeck = Create.deck();
+            //shuffle chance cards
+            ChanceCard chance = shuffleDeck(mainDeck);
+            System.out.println("Shuffling...\n");
+            //trace statements
+            parseCard(chance, players.get(0));
+            //chance.fullDetails();
+            System.out.println("Proof of concept: " + chance.getAssigned());
+            chance.fullDetails(chance);
+            System.out.println(players.get(0).getName() + " post card: £" + players.get(0).getFunding());
 
-
-            for(int i = 0; i < players.size();i++){
-                System.out.println(players.get(i).toString());
+            System.out.println("Real estate test");
+            if (players.get(2).getOwnedSquares().isEmpty()) {
+                System.out.println("Player " + players.get(2).getName() + " has no property");
+                System.out.println("This is where his squares would go, IF HE HAD ANY: " + players.get(2).getOwnedSquares());
+                System.out.println("Size of list of squares: " + players.get(2).getOwnedSquares().size());
             }
-            playersPreRollOptions(players.get(0));
 
-//            System.out.println("Player passes GO: £" + players.get(0).getFunding());
-//            //read all Chance Cards
-//            List<ChanceCard> mainDeck = Create.deck();
-//            //shuffle chance cards
-//            ChanceCard chance = shuffleDeck(mainDeck);
-//            System.out.println("Shuffling...\n");
-//            //trace statements
-//            parseCard(chance, players.get(0));
-//            //chance.fullDetails();
-//            System.out.println("Proof of concept: " + chance.getAssigned());
-//            chance.fullDetails(chance);
-//            System.out.println(players.get(0).getName() + " post card: £" + players.get(0).getFunding());
-//
-//
-//
-//
-//1
+            MOVE = roll();
+            System.out.printf("%n%s moves %d places.%n", players.get(1).getName(), MOVE);
 
-//            //     saveGame();
+            //     saveGame();
 
-//            Stats stats = new Stats(players);
-//            stats.full();
-//            //stats.abr();
-//            stats.end();
-            //System.exit(1);
+            Stats stats = new Stats(players);
+            stats.full();
+            stats.elide();
+            stats.end();
+            System.exit(1);
 
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
@@ -431,23 +429,88 @@ public class Game implements IDie {
         player.setFunding((player.getFunding() + COLLECT));
     }
 
-    public static int move() throws InterruptedException {
+    public static int move() throws InterruptedException, UnsupportedAudioFileException, LineUnavailableException, IOException {
         MOVE = roll();
         return MOVE;
     }
 
-    private static int roll() throws InterruptedException {
+    private static int roll() throws InterruptedException, UnsupportedAudioFileException, IOException, LineUnavailableException {
+
+
+        audio("dice");
+
         //A message is displayed saying “Dice Rolling...”
         System.out.println("Dice Rolling...");
+
+
         //The dice roll takes a few seconds.
-        TimeUnit.SECONDS.sleep(3);
+
         int die1Result = randomNum();
         int die2Result = randomNum();
+        diceGFX(die1Result, die2Result);
+        TimeUnit.SECONDS.sleep(2);
         int totalResult = die1Result + die2Result;
         //A message is then displayed saying “Die 1 is x, Die 2
         //is y. You will move forward x+y places.”
         System.out.printf("Die 1 is %d, Die 2 is %d...%nYou will move forward %d spaces.%n", die1Result, die2Result, totalResult);
         return totalResult;
+    }
+
+
+    private static void diceGFX(int die1, int die2) throws InterruptedException {
+        String t = "-------";
+        String b = "-------";
+        String d1 = String.format("%s%n|     |%n|  *  |%n|     |%n%s", t, b);
+        String d2 = String.format("%s%n|*    |%n|     |%n|    *|%n%s", t, b);
+        String d3 = String.format("%s%n|*    |%n|  *  |%n|    *|%n%s", t, b);
+        String d4 = String.format("%s%n|*   *|%n|     |%n|*   *|%n%s", t, b);
+        String d5 = String.format("%s%n|*   *|%n|  *  |%n|*   *|%n%s", t, b);
+        String d6 = String.format("%s%n|*   *|%n|*   *|%n|*   *|%n%s", t, b);
+
+        String m1 = "|*    |";
+        String m2 = "|*   *|";
+        String m3 = "|     |";
+        String m4 = "|  *  |";
+        String m5 = "|*   *|";
+        String m6 = "|    *|";
+        String m7 = "|*   *|";
+
+        String[] diceGFX = {d1, d2, d3, d4, d5, d6};
+        String[] diceParts = {m1, m2, m3, m4, m5, m6, m7};
+
+        String clear = String.format("%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n");
+
+
+        for (int i = 0; i < 8; i++) {
+
+            System.out.println(String.format("%s%n%s%n%s%n%s%n%s", t, diceParts[(randomNum()) - 1], diceParts[(randomNum()) - 1], diceParts[(randomNum()) - 1], b));
+
+
+            Thread.sleep(200);
+            System.out.println(clear);
+        }
+
+        System.out.printf(diceGFX[die1-1] + " %n%n" + diceGFX[die2-1]  +"%n") ;
+
+    }
+
+    private static void audio(String sound) {
+        try {
+            switch (sound) {
+                case "dice":
+                    File f = new File("./sounds/dice.wav");
+                    AudioInputStream ais = AudioSystem.getAudioInputStream(f);
+                    Clip dice = AudioSystem.getClip();
+                    dice.open(ais);
+                    dice.start();
+                    break;
+                default:
+                    break;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static int randomNum() {
