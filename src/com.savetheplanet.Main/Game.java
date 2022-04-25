@@ -125,9 +125,8 @@ public class Game implements IDie {
             ((FundableSquare) board.get(4)).setOwner(players.get(1));
             ((FundableSquare) board.get(4)).setDevLevel(4);
 
+
             //players.get(2).setFunding(600);
-
-
 
             //proof of concept testing
             System.out.println("Game initialised: ");// + players.get(0));
@@ -332,11 +331,19 @@ public class Game implements IDie {
     }
 
     public static void liquidate(Player player) {
+        int cost = 0;
         FundableSquare square = player.getLowestValueSquare();
-        int cost = square.getCost();
-        System.out.println("Seizing: " + square.getName() + ". You will be credited £" + cost);
-        player.ownedSquares.remove(square);
-        square.setOwner(null);
+
+        if(square.getDevLevel()>0){
+            square.setDevLevel(square.getDevLevel() - 1);
+            cost = square.getDevCost();
+            System.out.println("Undoing Development: " + square.getName() + ". You will be credited £" + cost);
+        } else {
+            cost = square.getCost();
+            System.out.println("Seizing: " + square.getName() + ". You will be credited £" + cost);
+            player.ownedSquares.remove(square);
+            square.setOwner(null);
+        }
         player.setFunding(player.getFunding() + cost);
         System.out.println("Balance: £" + player.getFunding());
     }
