@@ -104,66 +104,73 @@ public class Game implements IDie {
 
 
             // light demo
-//            players.get(1).addOwnedSquare((FundableSquare) board.get(14));
-//            ((FundableSquare) board.get(14)).setOwner(players.get(1));
-//            ((FundableSquare) board.get(14)).setDevLevel(4);
-//
-//
-//            players.get(0).addOwnedSquare((FundableSquare) board.get(13));
-//            ((FundableSquare) board.get(13)).setOwner(players.get(0));
-//            ((FundableSquare) board.get(13)).setDevLevel(4);
-//
-//            players.get(1).addOwnedSquare((FundableSquare) board.get(2));
-//            ((FundableSquare) board.get(2)).setOwner(players.get(1));
-//            ((FundableSquare) board.get(2)).setDevLevel(4);
-//
-//            players.get(1).addOwnedSquare((FundableSquare) board.get(15));
-//            ((FundableSquare) board.get(15)).setOwner(players.get(1));
-//            ((FundableSquare) board.get(15)).setDevLevel(4);
-//            players.get(0).addOwnedSquare((FundableSquare) board.get(4));
-//            ((FundableSquare) board.get(4)).setOwner(players.get(1));
-//            ((FundableSquare) board.get(4)).setDevLevel(4);
-//
-//            players.get(2).setFunding(600);
+            players.get(1).addOwnedSquare((FundableSquare) board.get(14));
+            ((FundableSquare) board.get(14)).setOwner(players.get(1));
+            ((FundableSquare) board.get(14)).setDevLevel(4);
+
+
+            players.get(0).addOwnedSquare((FundableSquare) board.get(13));
+            ((FundableSquare) board.get(13)).setOwner(players.get(0));
+            ((FundableSquare) board.get(13)).setDevLevel(4);
+
+            players.get(1).addOwnedSquare((FundableSquare) board.get(2));
+            ((FundableSquare) board.get(2)).setOwner(players.get(1));
+            ((FundableSquare) board.get(2)).setDevLevel(4);
+
+            players.get(1).addOwnedSquare((FundableSquare) board.get(15));
+            ((FundableSquare) board.get(15)).setOwner(players.get(1));
+            ((FundableSquare) board.get(15)).setDevLevel(4);
+            players.get(0).addOwnedSquare((FundableSquare) board.get(4));
+
+            ((FundableSquare) board.get(4)).setOwner(players.get(1));
+            ((FundableSquare) board.get(4)).setDevLevel(4);
+
+            //players.get(2).setFunding(600);
+
+
 
             //proof of concept testing
             System.out.println("Game initialised: ");// + players.get(0));
             collectFunding(players.get(0));
-            System.out.printf("%n%s moves %d places.%n", players.get(0).getName(), move());
-            System.out.println("Player passes GO: £" + players.get(0).getFunding());
-            //read all Chance Cards
-            List<ChanceCard> mainDeck = Create.deck();
-            //shuffle chance cards
-            ChanceCard chance = shuffleDeck(mainDeck);
-            System.out.println("Shuffling...\n");
-            //trace statements
-            parseCard(chance, players.get(0));
-            //chance.fullDetails();
-            System.out.println("Proof of concept: " + chance.getAssigned());
-            chance.fullDetails(chance);
-            System.out.println(players.get(0).getName() + " post card: £" + players.get(0).getFunding());
 
-            System.out.println("Real estate test");
-            if (players.get(2).getOwnedSquares().isEmpty()) {
-                System.out.println("Player " + players.get(2).getName() + " has no property");
-                System.out.println("This is where his squares would go, IF HE HAD ANY: " + players.get(2).getOwnedSquares());
-                System.out.println("Size of list of squares: " + players.get(2).getOwnedSquares().size());
+                playersPreRollOptions(players.get(0));
+                //System.out.printf("%n%s moves %d places.%n", players.get(0).getName(), move());
+                System.out.println("Player passes GO: £" + players.get(0).getFunding());
+                //read all Chance Cards
+                List<ChanceCard> mainDeck = Create.deck();
+                //shuffle chance cards
+                ChanceCard chance = shuffleDeck(mainDeck);
+                System.out.println("Shuffling...\n");
+                //trace statements
+                parseCard(chance, players.get(0));
+                //chance.fullDetails();
+                System.out.println("Proof of concept: " + chance.getAssigned());
+                chance.fullDetails(chance);
+                System.out.println(players.get(0).getName() + " post card: £" + players.get(0).getFunding());
+
+                System.out.println("Real estate test");
+                if (players.get(2).getOwnedSquares().isEmpty()) {
+                    System.out.println("Player " + players.get(2).getName() + " has no property");
+                    System.out.println("This is where his squares would go, IF HE HAD ANY: " + players.get(2).getOwnedSquares());
+                    System.out.println("Size of list of squares: " + players.get(2).getOwnedSquares().size());
+                }
+            playersPreRollOptions(players.get(1));
+
+
+                //System.out.printf("%n%s moves %d places.%n", players.get(1).getName(), move());
+
+                //     saveGame();
+
+                Stats stats = new Stats(players);
+                stats.full();
+                stats.elide();
+                stats.end();
+                System.exit(1);
+
+            } catch(Exception e){
+                System.out.println(e.getLocalizedMessage());
             }
 
-            MOVE = roll();
-            System.out.printf("%n%s moves %d places.%n", players.get(1).getName(), MOVE);
-
-            //     saveGame();
-
-            Stats stats = new Stats(players);
-            stats.full();
-            stats.elide();
-            stats.end();
-            System.exit(1);
-
-        } catch (Exception e) {
-            System.out.println(e.getLocalizedMessage());
-        }
     }
 
     /**
