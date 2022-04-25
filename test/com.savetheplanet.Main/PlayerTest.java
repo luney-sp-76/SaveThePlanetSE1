@@ -83,7 +83,7 @@ class PlayerTest {
     }
 
     @Test
-    void fundanbleSquareOwnership() {
+    void fundableSquareOwnership() {
         p1.addOwnedSquare(s1);
         assertEquals(p1.getOwnedSquares().get(0), s1);
     }
