@@ -1,9 +1,10 @@
 package com.savetheplanet.Main;
 
+import java.io.ByteArrayInputStream;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public class Game implements IDie {
+public class DummyGame implements IDie {
 
     private static List<Square> board = new ArrayList<>();
     private static List<Player> players = new ArrayList<>();
@@ -11,12 +12,10 @@ public class Game implements IDie {
     static Timer timer = Create.timer();
 
     private static final int COLLECT = 500;
-
     public static Scanner MENU = new Scanner(System.in);
-
     private static int MOVE;
 
-    public Game() {
+    public DummyGame() {
         playGame();
     }
 
@@ -63,9 +62,7 @@ public class Game implements IDie {
                 break;
             case "2":
                 loadGame();
-                // testing
                 loadedGame();
-                System.out.println(players);
                 break;
             case "3":
                 quitOutsideOfGamePlay();
@@ -89,15 +86,18 @@ public class Game implements IDie {
     private static void playNewGame() {
         try {
 
-            // Create Players
-            players = Create.players();
-            // Create Board/Squares
-            board = Create.board();
+            if (players.size() < 2) {
+                // Create Players
+                players = Create.players();
+                // Create Board/Squares
+                board = Create.board();
+            }
 
             // light demo
             players.get(1).addOwnedSquare((FundableSquare) board.get(14));
             ((FundableSquare) board.get(14)).setOwner(players.get(1));
             ((FundableSquare) board.get(14)).setDevLevel(4);
+
 
             players.get(0).addOwnedSquare((FundableSquare) board.get(13));
             ((FundableSquare) board.get(13)).setOwner(players.get(0));
@@ -107,11 +107,11 @@ public class Game implements IDie {
             ((FundableSquare) board.get(2)).setOwner(players.get(1));
             ((FundableSquare) board.get(2)).setDevLevel(4);
 
-            players.get(1).addOwnedSquare((FundableSquare) board.get(15));
-            ((FundableSquare) board.get(15)).setOwner(players.get(1));
+            players.get(2).addOwnedSquare((FundableSquare) board.get(15));
+            ((FundableSquare) board.get(15)).setOwner(players.get(2));
             ((FundableSquare) board.get(15)).setDevLevel(4);
-            players.get(0).addOwnedSquare((FundableSquare) board.get(4));
-            ((FundableSquare) board.get(4)).setOwner(players.get(1));
+            players.get(2).addOwnedSquare((FundableSquare) board.get(4));
+            ((FundableSquare) board.get(4)).setOwner(players.get(2));
             ((FundableSquare) board.get(4)).setDevLevel(4);
 
 //            players.get(2).setFunding(600);
@@ -144,7 +144,9 @@ public class Game implements IDie {
             stats.full();
             stats.elide();
             stats.end();
-            System.exit(1);
+
+
+            saveGame();
 
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
@@ -155,9 +157,9 @@ public class Game implements IDie {
 
         timer = Create.timerReset(timer);
 
-        System.out.println("Do you wish to save the game? y/n");
-        if (!MENU.nextLine().toLowerCase().contains("y"))
-            playGame();
+//        System.out.println("Do you wish to save the game? y/n");
+//        if (!MENU.nextLine().toLowerCase().contains("y"))
+//            playGame();
 
         Create.save(board, players);
         System.out.println("S:A:V:E");
@@ -341,7 +343,7 @@ public class Game implements IDie {
         //A message is displayed saying “Dice Rolling...”
         System.out.println("Dice Rolling...");
         //The dice roll takes a few seconds.
-         TimeUnit.SECONDS.sleep(3);
+        // TimeUnit.SECONDS.sleep(3);
         int die1Result = randomNum();
         int die2Result = randomNum();
         int totalResult = die1Result + die2Result;
