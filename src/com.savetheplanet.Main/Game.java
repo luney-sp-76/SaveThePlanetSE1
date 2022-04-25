@@ -189,37 +189,38 @@ public class Game implements IDie {
         String option1 = "1) Roll Dice";
         String option2 = "2) Trade Area";
         String option3 = "3) Develop Area";
-        String option4 = "4) Quit";
+        String option4 = "4) Save";
+        String option5 = "5) Quit";
 
         int count = 0;
 
         if (canDevelop(currentPlayer)) {
-            count = 5;
-            System.out.printf("%n%s%n%s%n%s%n%s%n", option1, option2, option3, option4);
+            count = 7;
+            System.out.printf("%n%s%n%s%n%s%n%s%n%s%n", option1, option2, option3, option4,option5);
 
         } else if (currentPlayer.getOwnedSquares().size() == 1) {
-            option4 = "3) Quit";
-            count = 2;
-            System.out.printf("%n%s%n%s%n%s%n", option1, option2, option4);
+            option4 = "3) Save";
+            count = 3;
+            System.out.printf("%n%s%n%s%n%s%n%s%n", option1, option2, option4,option5);
 
         } else {
-            option4 = "2) Quit";
+            option4 = "2) Save";
             count = 0;
-            System.out.printf("%n%s%n%s%n", option1, option4);
+            System.out.printf("%n%s%n%s%n%s%n", option1, option4, option5);
         }
 
 
         int option = MENU.nextInt() + count;
         switch (option) {
             case 1:
-            case 3:
-            case 6:
+            case 4:
+            case 8:
                 //roll dice
                 System.out.printf("you have chosen %s%n", option1);
                 System.out.printf("%n%s moves %d places.%n", currentPlayer.getName(), move());
                 break;
-            case 4:
-            case 7:
+            case 5:
+            case 9:
                 System.out.printf("you have chosen %s%n", option2);
                 //trade
                 System.out.println("Which Player would you like to trade with?");
@@ -234,13 +235,20 @@ public class Game implements IDie {
                 trade(currentPlayer, players.get(playerNum));
                 break;
 
-            case 8:
+            case 10:
                 System.out.printf("you have chosen %s%n", option3);
                 //develop
                 break;
             case 2:
-            case 5:
-            case 9:
+            case 6:
+            case 11:
+                //save
+                System.out.printf("you have chosen %s%n", option4);
+                break;
+            case 3:
+            case 7:
+            case 12:
+                //quit
                 System.out.printf("you have chosen %s%n", option4);
                 break;
             default:
