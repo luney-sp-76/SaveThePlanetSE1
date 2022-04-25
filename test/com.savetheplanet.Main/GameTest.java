@@ -6,7 +6,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -30,7 +33,7 @@ class GameTest {
         s1 = new FundableSquare("Led Light bulbs", 3, new String[]{"Conserve", "3", "2", "200", "250", "2", "30|50|100|200|350"});
         s2 = new FundableSquare("Water Tap Timers", 3, new String[]{"Conserve", "3", "2", "100", "250", "2", "30|50|100|200|350"});
         s3 = new FundableSquare("Thrift Store", 3, new String[]{"Conserve", "3", "2", "100", "250", "2", "30|50|100|200|350"});
-        s4 = new FundableSquare("Public Transport", 3, new String[]{"Reduce", "4", "2", "50", "250", "2", "30|50|100|200|350"});
+        s4 = new FundableSquare("Public Transport", 4, new String[]{"Reduce", "4", "2", "50", "250", "2", "30|50|100|200|350"});
 
     }
 
@@ -107,7 +110,7 @@ class GameTest {
     }
 
     @Test
-    void testRollResultIsWithinMaximumOf12() throws InterruptedException {
+    void testRollResultIsWithinMaximumOf12() throws InterruptedException, UnsupportedAudioFileException, LineUnavailableException, IOException {
         for (int i = 0; i < 20; i++) {
             int testResult = Game.move();
             if (testResult < 2) {
