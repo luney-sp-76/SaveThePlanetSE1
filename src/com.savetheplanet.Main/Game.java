@@ -24,7 +24,6 @@ public class Game implements IDie {
 
     private static int MOVE;
 
-
     public Game() {
         playGame();
     }
@@ -73,7 +72,6 @@ public class Game implements IDie {
             case "2":
                 loadGame();
                 // testing
-                loadedGame();
                 System.out.println(players);
                 break;
             case "3":
@@ -98,35 +96,38 @@ public class Game implements IDie {
     private static void playNewGame() {
         try {
 
+
             // Create Players
             players = Create.players();
             // Create Board/Squares
             board = Create.board();
 
+
             // light demo
-            players.get(1).addOwnedSquare((FundableSquare) board.get(14));
-            ((FundableSquare) board.get(14)).setOwner(players.get(1));
-            ((FundableSquare) board.get(14)).setDevLevel(4);
-
-            players.get(0).addOwnedSquare((FundableSquare) board.get(13));
-            ((FundableSquare) board.get(13)).setOwner(players.get(0));
-            ((FundableSquare) board.get(13)).setDevLevel(4);
-
-            players.get(1).addOwnedSquare((FundableSquare) board.get(2));
-            ((FundableSquare) board.get(2)).setOwner(players.get(1));
-            ((FundableSquare) board.get(2)).setDevLevel(4);
-
-            players.get(1).addOwnedSquare((FundableSquare) board.get(15));
-            ((FundableSquare) board.get(15)).setOwner(players.get(1));
-            ((FundableSquare) board.get(15)).setDevLevel(4);
-            players.get(0).addOwnedSquare((FundableSquare) board.get(4));
-            ((FundableSquare) board.get(4)).setOwner(players.get(1));
-            ((FundableSquare) board.get(4)).setDevLevel(4);
-
+//            players.get(1).addOwnedSquare((FundableSquare) board.get(14));
+//            ((FundableSquare) board.get(14)).setOwner(players.get(1));
+//            ((FundableSquare) board.get(14)).setDevLevel(4);
+//
+//
+//            players.get(0).addOwnedSquare((FundableSquare) board.get(13));
+//            ((FundableSquare) board.get(13)).setOwner(players.get(0));
+//            ((FundableSquare) board.get(13)).setDevLevel(4);
+//
+//            players.get(1).addOwnedSquare((FundableSquare) board.get(2));
+//            ((FundableSquare) board.get(2)).setOwner(players.get(1));
+//            ((FundableSquare) board.get(2)).setDevLevel(4);
+//
+//            players.get(1).addOwnedSquare((FundableSquare) board.get(15));
+//            ((FundableSquare) board.get(15)).setOwner(players.get(1));
+//            ((FundableSquare) board.get(15)).setDevLevel(4);
+//            players.get(0).addOwnedSquare((FundableSquare) board.get(4));
+//            ((FundableSquare) board.get(4)).setOwner(players.get(1));
+//            ((FundableSquare) board.get(4)).setDevLevel(4);
+//
 //            players.get(2).setFunding(600);
 
             //proof of concept testing
-            System.out.println("Game initialised: " + players.get(0));
+            System.out.println("Game initialised: ");// + players.get(0));
             collectFunding(players.get(0));
             System.out.printf("%n%s moves %d places.%n", players.get(0).getName(), move());
             System.out.println("Player passes GO: £" + players.get(0).getFunding());
@@ -164,6 +165,88 @@ public class Game implements IDie {
             System.out.println(e.getLocalizedMessage());
         }
     }
+
+    /**
+     * Calculates the options available to a player based on the number of squares owned
+     * distinguishes between 9 variations of menu items numbers
+     * 1 roll dice 2 trade 3 develop 4 quit
+     * or 1 roll dice 2 trade 3 quit
+     * or 1 roll dice 2 quit
+     *
+     * @param currentPlayer
+     * @throws InterruptedException
+     */
+    private static void playersPreRollOptions(Player currentPlayer) throws InterruptedException {
+        System.out.println("Choose your next move");
+        System.out.println("---------------------");
+        String option1 = "1) Roll Dice";
+        String option2 = "2) Trade Area";
+        String option3 = "3) Develop Area";
+        String option4 = "4) Quit";
+
+        int count = 0;
+
+        if (canDevelop(currentPlayer)) {
+            count = 5;
+            System.out.printf("%n%s%n%s%n%s%n%s%n",option1, option2, option3, option4);
+
+        }else if(currentPlayer.getOwnedSquares().size()==1) {
+                option4 = "3) Quit";
+                count = 2;
+            System.out.printf("%n%s%n%s%n%s%n",option1, option2, option4);
+
+        }else
+        {
+            option4 = "2) Quit";
+            count = 0;
+            System.out.printf("%n%s%n%s%n",option1, option4);
+                }
+
+
+
+           int option = MENU.nextInt()+count;
+            switch (option) {
+                case 1:
+                case 3:
+                case 6:
+                    //roll dice
+                    System.out.printf("you have chosen %s%n", option1);
+                    System.out.printf("%n%s moves %d places.%n", currentPlayer.getName(), move());
+                    break;
+                case 4:
+                case 7:
+                    System.out.printf("you have chosen %s%n", option2);
+                    //trade
+                    System.out.println("Which Player would you like to trade with?");
+                    int counter = 1;
+                    for(Player player :players){
+                        if (!currentPlayer.getName().equals(player.getName())) {
+                            System.out.println(counter + ") " + player.getName());
+                        }
+                        counter++;
+                    }
+                    int playerNum = MENU.nextInt()-1;
+                    trade(currentPlayer,players.get(playerNum));
+                    break;
+
+                case 8:
+                    System.out.printf("you have chosen %s%n", option3);
+                    //develop
+                    break;
+                case 2:
+                case 5:
+                case 9:
+                    System.out.printf("you have chosen %s%n", option4);
+                    break;
+                default:
+                    throw new IllegalArgumentException("that's not an option");
+                    //timer = Create.timerReset(timer);
+
+            }
+
+        }
+
+
 
     private static void saveGame() {
 
@@ -484,5 +567,47 @@ public class Game implements IDie {
             return false;
         }
     }
+
+    /**
+     * checks the number of the current players owned Fundable Squares against the maximum number of Fundable Squares in each field
+     * @param player is the currentPlayer for this turn
+     * @return true if the player owns the maximum number of Fundable Squares in any field
+     */
+    private static boolean canDevelop(Player player){
+        int conserve = 0;//max 2
+        int create = 0;//max 2
+        int reduce = 0;// max 3
+        int reuse = 0;//max 3
+        boolean ownsArea = false;
+        //check the players owned squares to see if they can develop
+        for (int i = 0; i < player.getOwnedSquares().size(); i++) {
+            if(player.getOwnedSquares().get(i).getField()==3){
+                conserve+=1;
+                if(conserve == 2)
+                    ownsArea = true;
+            }
+            if(player.getOwnedSquares().get(i).getField()==4){
+                reduce+=1;
+                if(reduce == 3)
+                    ownsArea=true;
+            }
+            if(player.getOwnedSquares().get(i).getField()==5){
+                reuse+=1;
+                if(reuse == 3)
+                    ownsArea = true;
+            }
+            if(player.getOwnedSquares().get(i).getField()==6){
+                create+=1;
+                if(create == 2)
+                    ownsArea = true;
+            }
+
+
+        }
+
+        return ownsArea;
+    }
+
+
 
 }
