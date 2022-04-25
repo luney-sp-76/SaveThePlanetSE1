@@ -21,9 +21,6 @@ class PlayerTest {
 
     @BeforeEach
     void setUp() {
-        p1 = new Player();
-        s1 = new FundableSquare("Led Light bulbs", 3, new String[]{"Conserve", "3", "2", "200", "250", "30|50|100|200|350"});
-
         validNameLower = "ii";
         validNameUpper = "iiiiIiiiiIiiiiIiiiiIiiiiIiiiiI";
         validNameMid = "iiiiIiiiiIiiiiI";
@@ -33,6 +30,9 @@ class PlayerTest {
         invalidName2 = "$$bigmoney";
         invalidName3 = "le-ah";
         startingFunding = 300;
+
+        p1 = new Player(validNameMid);
+        s1 = new FundableSquare("Led Light bulbs", 3, new String[]{"Conserve", "3", "2", "200", "250", "1", "30|50|100|200|350"});
     }
 
     @Test
@@ -90,7 +90,7 @@ class PlayerTest {
 
     @Test
     void getLowestValueSquare() {
-        s2 = new FundableSquare("Led Light bulbs", 3, new String[]{"Conserve", "3", "2", "100", "250", "30|50|100|200|350"});
+        s2 = new FundableSquare("Led Light bulbs", 3, new String[]{"Conserve", "3", "2", "100", "250", "1", "30|50|100|200|350"});
         p1.addOwnedSquare(s1);
         p1.addOwnedSquare(s2);
         assertEquals(p1.getLowestValueSquare(), s2);

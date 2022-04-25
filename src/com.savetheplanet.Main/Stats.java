@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
@@ -21,7 +20,7 @@ public class Stats {
         this.players = players;
     }
 
-    public void full() {
+    void full() {
         rank = new AtomicInteger(0);
 
         players.forEach(Player::calcTotalValue);
@@ -47,7 +46,7 @@ public class Stats {
         System.out.println();
     }
 
-    public void end() {
+    void end() {
 
         full();
         String winCondition = drawCheck();
@@ -60,6 +59,7 @@ public class Stats {
         System.out.println("`888'    `888'       888   888   888   888   888  888    .o  888");
         System.out.println("`8'      `8'       o888o o888o o888o o888o o888o `Y8bod8P' d888b");
         System.out.println();
+
         // this bold ansi escape doesn't work on every OS. Console is so limited man.
         System.out.printf("%-6s\u001B[1m %s!%n%s.%n", "Congratulations", players.get(0).getName(), "Won by " + winCondition);
     }
@@ -76,7 +76,6 @@ public class Stats {
         // Otherwise, remove the players with less Total Value than the winning amount.
         players = players.stream().filter(p -> p.getTotalValue() == players.get(0).totalValue).collect(toList());
 
-        System.out.println(players);
         // sort by funding, descending.
         players.sort(Comparator.comparing(Player::getFunding).reversed());
 
@@ -84,13 +83,12 @@ public class Stats {
         if (players.get(0).getFunding() > players.get(1).getFunding())
             return "Tie-break 1: Funding";
 
-        // if there is still no clear winner, they are chosen by random selection from those deadlocked.
+        // if there is still no clear winner, they are chosen by random selection from those remaining.
         Collections.shuffle(players);
         return "Tie-Break 2: Random Selection";
     }
 
-
-    public void abr() {
+    void elide() {
         rank = new AtomicInteger(0);
         players.forEach(Player::calcTotalValue);
 
@@ -108,4 +106,4 @@ public class Stats {
         });
         System.out.println();
     }
-}
+} //class

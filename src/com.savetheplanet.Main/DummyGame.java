@@ -3,16 +3,13 @@ package com.savetheplanet.Main;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public class Game implements IDie {
+public class DummyGame implements IDie {
 
     private static List<Square> board = new ArrayList<>();
     private static List<Player> players = new ArrayList<>();
 
     private static final int T60 = 60000;
-
-    // for 30 second with 15 second warning
-    private static final int T15 = 15000;
-
+    private static final int T30 = 30000;
     static Timer timer60 = Create.timer(T60);
 
     private static final int COLLECT = 500;
@@ -21,7 +18,7 @@ public class Game implements IDie {
 
     private static int MOVE;
 
-    public Game() {
+    public DummyGame() {
         playGame();
     }
 
@@ -63,12 +60,13 @@ public class Game implements IDie {
         switch (MENU.nextLine()) {
             case "1":
                 System.out.println("Ok Lets Go!");
-                timer.cancel();
+                timer60.cancel();
                 playNewGame();
                 break;
             case "2":
                 loadGame();
                 // testing
+                loadedGame();
                 System.out.println(players);
                 break;
             case "3":
@@ -93,18 +91,15 @@ public class Game implements IDie {
     private static void playNewGame() {
         try {
 
-
             // Create Players
             players = Create.players();
             // Create Board/Squares
             board = Create.board();
 
-
             // light demo
             players.get(1).addOwnedSquare((FundableSquare) board.get(14));
             ((FundableSquare) board.get(14)).setOwner(players.get(1));
             ((FundableSquare) board.get(14)).setDevLevel(4);
-
 
             players.get(0).addOwnedSquare((FundableSquare) board.get(13));
             ((FundableSquare) board.get(13)).setOwner(players.get(0));
@@ -148,7 +143,7 @@ public class Game implements IDie {
 
             Stats stats = new Stats(players);
             stats.full();
-            stats.abr();
+            stats.elide();
             stats.end();
             System.exit(1);
 
@@ -156,83 +151,6 @@ public class Game implements IDie {
             System.out.println(e.getLocalizedMessage());
         }
     }
-
-    private static void playersPreRollOptions(Player currentPlayer) throws InterruptedException {
-        System.out.println("Choose your next move");
-        System.out.println("---------------------");
-        String option1 = "";
-        String option2 = "";
-        String option3 = "";
-        String option4 = "";
-        //System.out.println(currentPlayer.getOwnedSquares());
-        int count = 0;
-        //timer = Create.timerReset(timer);
-
-
-
-                if (currentPlayer.getOwnedSquares().size()>=3) {
-                    option1 = "1) Trade Area";
-                    option2 = "2) Develop Area";
-                    option3 = "3) Roll Dice";
-                    option4 = "4) Quit";
-                    count = 4;
-
-
-            }else{
-                    if(currentPlayer.getOwnedSquares().size()<=2) {
-                        option1 = "1) Trade Area";
-                        option2 = "2) Roll Dice";
-                        option3 = "3) Quit";
-                        count = 1;
-
-                    }
-                }
-
-
-            System.out.printf("%n%s%n%s%n%s%n%s%n",option1, option2, option3, option4);
-           int option = MENU.nextInt()+count;
-            switch (option) {
-                case 2:
-                case 5:
-                    System.out.printf("you have chosen %s%n", option1);
-                    System.out.println("Which Player would you like to trade with?");
-                    int counter = 1;
-                    for(Player player :players){
-                        if (!currentPlayer.getName().equals(player.getName())) {
-                            System.out.println(counter + ") " + player.getName());
-                        }
-                        counter++;
-                    }
-                    int playerNum = MENU.nextInt()-1;
-                    trade(currentPlayer,players.get(playerNum));
-                    break;
-                case 3:
-                    System.out.printf("you have chosen %s%n", option2);
-                    System.out.printf("%n%s moves %d places.%n", currentPlayer.getName(), move());
-                    break;
-
-                case 6:
-                    System.out.printf("you have chosen %s%n", option2);
-                    System.out.println("you developed an area");
-                    break;
-
-                case 7:
-                    System.out.printf("you have chosen %s%n", option3);
-                    System.out.printf("%n%s moves %d places.%n", currentPlayer.getName(), move());
-                    break;
-                case 4:
-                case 8:
-                    System.out.printf("you have chosen %s%n", option4);
-                    break;
-                default:
-                    throw new IllegalArgumentException("that's not an option");
-                    //timer = Create.timerReset(timer);
-
-            }
-
-        }
-
-
 
     private static void saveGame() {
 
@@ -424,7 +342,7 @@ public class Game implements IDie {
         //A message is displayed saying “Dice Rolling...”
         System.out.println("Dice Rolling...");
         //The dice roll takes a few seconds.
-        TimeUnit.SECONDS.sleep(3);
+
         int die1Result = randomNum();
         int die2Result = randomNum();
         int totalResult = die1Result + die2Result;
