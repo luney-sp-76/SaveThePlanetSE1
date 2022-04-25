@@ -196,15 +196,17 @@ public class Game implements IDie {
 
         if (canDevelop(currentPlayer)) {
             count = 7;
-            System.out.printf("%n%s%n%s%n%s%n%s%n%s%n", option1, option2, option3, option4,option5);
+            System.out.printf("%n%s%n%s%n%s%n%s%n%s%n", option1, option2, option3, option4, option5);
 
         } else if (currentPlayer.getOwnedSquares().size() == 1) {
             option4 = "3) Save";
+            option5 = "4) Quit";
             count = 3;
             System.out.printf("%n%s%n%s%n%s%n%s%n", option1, option2, option4,option5);
 
         } else {
             option4 = "2) Save";
+            option5 = "3) Quit";
             count = 0;
             System.out.printf("%n%s%n%s%n%s%n", option1, option4, option5);
         }
@@ -249,7 +251,7 @@ public class Game implements IDie {
             case 7:
             case 12:
                 //quit
-                System.out.printf("you have chosen %s%n", option4);
+                System.out.printf("you have chosen %s%n", option5);
                 break;
             default:
                 throw new IllegalArgumentException("that's not an option");
