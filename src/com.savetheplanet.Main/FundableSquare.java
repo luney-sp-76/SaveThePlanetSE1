@@ -12,7 +12,6 @@ public class FundableSquare extends Square {
     private Player owner;
     private int value;
 
-
     public FundableSquare(String name, int field, String[] data) {
         super(name, field);
         setFieldSize(Integer.parseInt(data[2]));
@@ -21,7 +20,6 @@ public class FundableSquare extends Square {
         setValue(Integer.parseInt(data[5]));
         setRatesCosts(Arrays.stream(data[6].split("\\D")).mapToInt(Integer::parseInt).toArray());
         setOwner(null);
-
     }
 
     public int getCost() {

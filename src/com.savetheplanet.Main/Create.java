@@ -113,14 +113,13 @@ final class Create {
     }
 
     /**
-     *
      * @return Checks that the number of players is a valid number between 2 and 4 and keeps asking until it gets one.
      * Jaszon
      */
 
     private static int playerCount() {
 
-        Timer timer = timer();
+        Timer timer = timer(60000);
 
         System.out.println("How many players? 2-4");
         String str = Game.MENU.nextLine();
@@ -138,7 +137,7 @@ final class Create {
             } catch (NumberFormatException e) {
                 System.err.println(e.getMessage().replaceFirst(".*", "Invalid number."));
                 System.out.println("Please enter a number between 2 and 4.");
-                timer = timerReset(timer);
+                timer = timerReset(timer, 60000);
                 str = Game.MENU.nextLine();
             } finally {
                 timer.cancel();
@@ -147,7 +146,6 @@ final class Create {
     }
 
     /**
-     *
      * @param players List
      * @param i       player number
      * @return Player Checks name validity and keeps asking till they get it right.
@@ -155,7 +153,7 @@ final class Create {
      */
     private static Player validateName(List<Player> players, int i) {
 
-        Timer timer = timer();
+        Timer timer = timer(60000);
         Player p;
 
         System.out.println("Please enter the name for player " + i);
@@ -178,7 +176,7 @@ final class Create {
             } catch (IllegalArgumentException e) {
                 System.err.println(e.getLocalizedMessage());
                 System.out.println("Please enter the name for player " + i);
-                timer = timerReset(timer);
+                timer = timerReset(timer, 60000);
                 str = Game.MENU.nextLine();
             } finally {
                 timer.cancel();
@@ -188,7 +186,7 @@ final class Create {
 
 
     @SuppressWarnings("unchecked")
-    public static HashMap<String, Object> load( ) {
+    public static HashMap<String, Object> load() {
 
         List<File> saves = loadFiles();
 
@@ -214,7 +212,6 @@ final class Create {
     }
 
     /**
-     *
      * @param saves List of Files
      * @return name of chosen File
      */
@@ -298,7 +295,6 @@ final class Create {
     private static String validateSaveName(List<File> saves) {
 
 
-
         System.out.println("Enter name for the Save Game");
         String str = Game.MENU.nextLine() + ".sav";
 
@@ -328,27 +324,39 @@ final class Create {
      *
      * @return Jaszon
      */
-    static Timer timer() {
+    static Timer timer(int t) {
         java.util.Timer timer = new java.util.Timer();
         timer.schedule(new TimerTask() {
             boolean warned = false;
 
             public void run() {
-                if (warned) {
-                    System.out.println("You have been idle for 2 minutes. The Game will now exit.");
-                    System.exit(0);
+
+                if (t == 60000) {
+                    if (warned) {
+                        System.out.println("You have been idle for 2 minutes. The Game will now exit.");
+                        System.exit(0);
+                    }
+                    System.err.printf("\rYou have been idle for 1 minute.%nIf you are idle for another 1 minute the game will exit.%n");
+                    warned = true;
                 }
-                System.err.printf("\rYou have been idle for 1 minute.%nIf you are idle for another 1 minute the game will exit.%n");
-                warned = true;
+
+                if (t == 15000) {
+                    if (warned) {
+                        System.out.println("You have been idle for 30s - something is happening.");
+                        // action call.
+                    }
+                    System.err.printf("\rYou have been idle for 15 seconds.%nIf you are idle for another 15 seconds, something will happen%n");
+                    warned = true;
+                }
             }
-        }, 60000, 60000);
+        }, t, t);
         return timer;
     }
 
     // Resets the timer.
-    static Timer timerReset(Timer timer) {
+    static Timer timerReset(Timer timer, int t) {
         timer.cancel();
-        timer = timer();
+        timer = timer(t);
         return timer;
     }
 

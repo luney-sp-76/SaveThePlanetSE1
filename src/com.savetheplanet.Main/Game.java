@@ -8,13 +8,19 @@ public class Game implements IDie {
     private static List<Square> board = new ArrayList<>();
     private static List<Player> players = new ArrayList<>();
 
-    static Timer timer = Create.timer();
+    private static final int T60 = 60000;
+
+    // for 30 second with 15 second warning
+    private static final int T15 = 15000;
+
+    static Timer timer60 = Create.timer(T60);
 
     private static final int COLLECT = 500;
 
     public static Scanner MENU = new Scanner(System.in);
 
     private static int MOVE;
+
 
     public Game() {
         playGame();
@@ -25,7 +31,7 @@ public class Game implements IDie {
 
         System.out.println("Welcome To Save The Planet");
         System.out.println("Would you like to Play? y/n");
-        timer = Create.timerReset(timer);
+        timer60 = Create.timerReset(timer60, T60);
 
         while (true) {
             switch (MENU.nextLine().toLowerCase()) {
@@ -52,13 +58,13 @@ public class Game implements IDie {
         System.out.println("Game Menu");
         System.out.println("----------");
 
-        timer = Create.timerReset(timer);
+        timer60 = Create.timerReset(timer60, T60);
 
         System.out.printf("1) new game%n2) restart game%n3) quit%n");
         switch (MENU.nextLine()) {
             case "1":
                 System.out.println("Ok Lets Go!");
-                timer.cancel();
+                timer60.cancel();
                 playNewGame();
                 break;
             case "2":
@@ -72,7 +78,7 @@ public class Game implements IDie {
                 break;
             default:
                 System.out.println("that's not an option");
-                timer = Create.timerReset(timer);
+                timer60 = Create.timerReset(timer60, T60);
                 initiateGameOptions();
         }
     }
@@ -116,7 +122,6 @@ public class Game implements IDie {
 
 //            players.get(2).setFunding(600);
 
-
             //proof of concept testing
             System.out.println("Game initialised: " + players.get(0));
             collectFunding(players.get(0));
@@ -153,7 +158,7 @@ public class Game implements IDie {
 
     private static void saveGame() {
 
-        timer = Create.timerReset(timer);
+        timer60 = Create.timerReset(timer60, T60);
 
         System.out.println("Do you wish to save the game? y/n");
         if (!MENU.nextLine().toLowerCase().contains("y"))
@@ -166,7 +171,7 @@ public class Game implements IDie {
     @SuppressWarnings("unchecked")
     private static void loadGame() {
 
-        timer = Create.timerReset(timer);
+        timer60 = Create.timerReset(timer60, T60);
 
         System.out.println("Do you want to load a Saved Game? y/n");
         if (!MENU.nextLine().toLowerCase().contains("y"))
@@ -341,7 +346,7 @@ public class Game implements IDie {
         //A message is displayed saying “Dice Rolling...”
         System.out.println("Dice Rolling...");
         //The dice roll takes a few seconds.
-         TimeUnit.SECONDS.sleep(3);
+        TimeUnit.SECONDS.sleep(3);
         int die1Result = randomNum();
         int die2Result = randomNum();
         int totalResult = die1Result + die2Result;
