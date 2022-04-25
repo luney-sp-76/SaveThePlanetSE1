@@ -11,8 +11,7 @@ import java.util.List;
 class PlayerTest {
 
     Player p1;
-    FundableSquare s1;
-    FundableSquare s2;
+    FundableSquare s1, s2, s3, s4, s5;
     List<FundableSquare> ownedSquares;
     String validNameLower, validNameUpper, validNameMid;
     String invalidNameLengthLower, invalidNameLengthUpper;
@@ -89,10 +88,51 @@ class PlayerTest {
     }
 
     @Test
-    void getLowestValueSquare() {
-        s2 = new FundableSquare("Led Light bulbs", 3, new String[]{"Conserve", "3", "2", "100", "250", "1", "30|50|100|200|350"});
+    void getLowestValueSquare_uncontrolledArea() {
+
+        s1 = new FundableSquare("Water Tap Timers", 3, new String[]{"Conserve", "3", "2", "200", "250", "1", "30|50|100|200|350"});
+        s2 = new FundableSquare("Led Light bulbs", 3, new String[]{"Conserve", "3", "2", "200", "250", "1", "30|50|100|200|350"});
+        s2.setDevLevel(2);
+        s3 = new FundableSquare("Wind Turbines", 6, new String[]{"Create", "6", "2", "400", "500", "1", "30|50|100|200|350"});
+        s4 = new FundableSquare("Biogas", 6, new String[]{"Create", "6", "2", "400", "500", "1", "30|50|100|200|350"});
+        s5 = new FundableSquare("Public Transport", 4, new String[]{"Reduce", "4", "3", "300", "400", "1", "30|50|100|200|350"});
+
         p1.addOwnedSquare(s1);
         p1.addOwnedSquare(s2);
+        p1.addOwnedSquare(s3);
+        p1.addOwnedSquare(s4);
+        p1.addOwnedSquare(s5);
+
+        assertEquals(p1.getLowestValueSquare(), s5);
+    }
+
+    @Test
+    void getLowestValueSquare_controlledUndevelopedArea() {
+
+        s1 = new FundableSquare("Water Tap Timers", 3, new String[]{"Conserve", "3", "2", "200", "250", "1", "30|50|100|200|350"});
+        s2 = new FundableSquare("Led Light bulbs", 3, new String[]{"Conserve", "3", "2", "200", "250", "1", "30|50|100|200|350"});
+        s2.setDevLevel(2);
+        s3 = new FundableSquare("Wind Turbines", 6, new String[]{"Create", "6", "2", "400", "500", "1", "30|50|100|200|350"});
+        s4 = new FundableSquare("Biogas", 6, new String[]{"Create", "6", "2", "400", "500", "1", "30|50|100|200|350"});
+
+        p1.addOwnedSquare(s1);
+        p1.addOwnedSquare(s2);
+        p1.addOwnedSquare(s3);
+        p1.addOwnedSquare(s4);
+
+        assertEquals(p1.getLowestValueSquare(), s4);
+    }
+
+    @Test
+    void getLowestValueSquare_controlledDevelopedArea() {
+
+        s1 = new FundableSquare("Water Tap Timers", 3, new String[]{"Conserve", "3", "2", "200", "250", "1", "30|50|100|200|350"});
+        s2 = new FundableSquare("Led Light bulbs", 3, new String[]{"Conserve", "3", "2", "200", "250", "1", "30|50|100|200|350"});
+        s2.setDevLevel(2);
+
+        p1.addOwnedSquare(s1);
+        p1.addOwnedSquare(s2);
+
         assertEquals(p1.getLowestValueSquare(), s2);
     }
 }

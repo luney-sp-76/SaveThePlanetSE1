@@ -96,7 +96,7 @@ class GameTest {
     }
 
     @Test
-    void testLiquidate() {
+    void testLiquidate_propertyRemoval() {
         int initialBalance = 100;
         p1.setFunding(initialBalance);
         int expectedBalance = initialBalance + s2.getCost();
@@ -107,6 +107,25 @@ class GameTest {
         Game.liquidate(p1);
         assertEquals(p1.getFunding(), expectedBalance);
         assertEquals(p1.getOwnedSquares(), ownedSquares);
+    }
+
+    @Test
+    void testLiquidate_developmentRemoval() {
+        int initialBalance = 100;
+        int initialDevLevel = 2;
+        s2.setDevLevel(initialDevLevel);
+        p1.setFunding(initialBalance);
+        int expectedBalance = initialBalance + s2.getDevCost();
+        int expectedDevLevel = initialDevLevel - 1;
+        p1.addOwnedSquare(s1);
+        p1.addOwnedSquare(s2);
+        ownedSquares = new ArrayList<FundableSquare>();
+        ownedSquares.add(s1);
+        ownedSquares.add(s2);
+        Game.liquidate(p1);
+        assertEquals(p1.getFunding(), expectedBalance);
+        assertEquals(p1.getOwnedSquares(), ownedSquares);
+        assertEquals(s2.getDevLevel(), expectedDevLevel);
     }
 
     @Test
