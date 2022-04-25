@@ -15,7 +15,7 @@ public class Game implements IDie {
 
     // TEST/
     public static ByteArrayInputStream fakeScan = new ByteArrayInputStream(("y" + System.lineSeparator() + "1" + System.lineSeparator() + "4" + System.lineSeparator() + "Dee" + System.lineSeparator() +
-            "MyNameIsThirtyCharactersLoooog" + System.lineSeparator() + "Charlie" + System.lineSeparator() + "Frank" + System.lineSeparator()).getBytes());
+            "MyNameIsThirtyCharactersLoooog" + System.lineSeparator() + "Charlie" + System.lineSeparator() + "Frank" + System.lineSeparator() + "2" + System.lineSeparator() + 1 + System.lineSeparator() + 1 + System.lineSeparator()).getBytes());
 
     public static Scanner MENU = new Scanner(fakeScan);
 
@@ -53,7 +53,7 @@ public class Game implements IDie {
         System.exit(1);
     }
 
-    private static void initiateGameOptions() {
+    private static <playerIndexNumber> void initiateGameOptions() {
         System.out.println("Game Menu");
         System.out.println("----------");
 
@@ -120,8 +120,9 @@ public class Game implements IDie {
 
             //proof of concept testing
             System.out.println("Game initialised: " + players.get(0));
-            collectFunding(players.get(0));
-            System.out.printf("%n%s moves %d places.%n", players.get(0).getName(), move());
+            //collectFunding(players.get(0));
+            playersPreRollOptions(players.get(2));
+            //System.out.printf("%n%s moves %d places.%n", players.get(0).getName(), move());
             System.out.println("Player passes GO: £" + players.get(0).getFunding());
             //read all Chance Cards
             List<ChanceCard> mainDeck = Create.deck();
@@ -136,8 +137,8 @@ public class Game implements IDie {
             System.out.println(players.get(0).getName() + " post card: £" + players.get(0).getFunding());
 
 
-            MOVE = roll();
-            System.out.printf("%n%s moves %d places.%n", players.get(1).getName(), MOVE);
+
+            System.out.printf("%n%s moves %d places.%n", players.get(1).getName(), move());
 
             //     saveGame();
 
@@ -151,6 +152,83 @@ public class Game implements IDie {
             System.out.println(e.getLocalizedMessage());
         }
     }
+
+    private static void playersPreRollOptions(Player currentPlayer) throws InterruptedException {
+        System.out.println("Choose your next move");
+        System.out.println("---------------------");
+        String option1 = "";
+        String option2 = "";
+        String option3 = "";
+        String option4 = "";
+        //System.out.println(currentPlayer.getOwnedSquares());
+        int count = 0;
+        //timer = Create.timerReset(timer);
+
+
+
+                if (currentPlayer.getOwnedSquares().size()>=3) {
+                    option1 = "1) Trade Area";
+                    option2 = "2) Develop Area";
+                    option3 = "3) Roll Dice";
+                    option4 = "4) Quit";
+                    count = 4;
+
+
+            }else{
+                    if(currentPlayer.getOwnedSquares().size()<=2) {
+                        option1 = "1) Trade Area";
+                        option2 = "2) Roll Dice";
+                        option3 = "3) Quit";
+                        count = 1;
+
+                    }
+                }
+
+
+            System.out.printf("%n%s%n%s%n%s%n%s%n",option1, option2, option3, option4);
+           int option = MENU.nextInt()+count;
+            switch (option) {
+                case 2:
+                case 5:
+                    System.out.printf("you have chosen %s%n", option1);
+                    System.out.println("Which Player would you like to trade with?");
+                    int counter = 1;
+                    for(Player player :players){
+                        if (!currentPlayer.getName().equals(player.getName())) {
+                            System.out.println(counter + ") " + player.getName());
+                        }
+                        counter++;
+                    }
+                    int playerNum = MENU.nextInt()-1;
+                    trade(currentPlayer,players.get(playerNum));
+                    break;
+                case 3:
+                    System.out.printf("you have chosen %s%n", option2);
+                    System.out.printf("%n%s moves %d places.%n", currentPlayer.getName(), move());
+                    break;
+
+                case 6:
+                    System.out.printf("you have chosen %s%n", option2);
+                    System.out.println("you developed an area");
+                    break;
+
+                case 7:
+                    System.out.printf("you have chosen %s%n", option3);
+                    System.out.printf("%n%s moves %d places.%n", currentPlayer.getName(), move());
+                    break;
+                case 4:
+                case 8:
+                    System.out.printf("you have chosen %s%n", option4);
+                    break;
+                default:
+                    throw new IllegalArgumentException("that's not an option");
+                    //timer = Create.timerReset(timer);
+
+            }
+
+        }
+
+
 
     private static void saveGame() {
 
