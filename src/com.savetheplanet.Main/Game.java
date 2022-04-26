@@ -37,26 +37,9 @@ public class Game {
         try {
 
             // light demo
-            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(14));
-            ((FundableSquare) board.get(14)).setOwner(players.getPlayer(1));
-            ((FundableSquare) board.get(14)).setDevLevel(4);
 
 
-            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(13));
-            ((FundableSquare) board.get(13)).setOwner(players.getPlayer(0));
-            ((FundableSquare) board.get(13)).setDevLevel(4);
 
-            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(2));
-            ((FundableSquare) board.get(2)).setOwner(players.getPlayer(1));
-            ((FundableSquare) board.get(2)).setDevLevel(4);
-
-            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(15));
-            ((FundableSquare) board.get(15)).setOwner(players.getPlayer(1));
-            ((FundableSquare) board.get(15)).setDevLevel(4);
-            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(4));
-
-            ((FundableSquare) board.get(4)).setOwner(players.getPlayer(1));
-            ((FundableSquare) board.get(4)).setDevLevel(4);
 //
 //            playerOut(players.getPlayer(1));
 //            playerOut(players.getPlayer(2));
@@ -64,41 +47,50 @@ public class Game {
 //            developField(players.getPlayer(1));
 
 
-            //proof of concept testing
-            System.out.println("Game initialised: ");// + players.getPlayer(0));
-            collectFunding(players.getPlayer(0));
+            //proof of concept t System.out.println("Game initialised: ");// + players.getPlayer(0));esting
+           for(Player playerNew : players.getPlayers()) {
+               collectFunding(playerNew);
 
-            playersPreRollOptions(players.getPlayer(0));
+           }
+
+           while(true) {
+               for (Player playerNew : players.getPlayers()) {
+                   if (playerNew.turnsTaken != -1) {
+                       playersPreRollOptions(playerNew);
+                   }
+               }
+
+           }
             //System.out.printf("%n%s moves %d places.%n", players.getPlayer(0).getName(), move());
-            System.out.println("Player passes GO: £" + players.getPlayer(0).getFunding());
-            //read all Chance Cards
-            Deck deck = new Deck();
-            //shuffle chance cards
-            ChanceCard chance = deck.shuffle();
-            //trace statements
-            parseCard(chance, players.getPlayer(0));
-            //chance.fullDetails();
-            System.out.println("Proof of concept: " + chance.getAssigned());
-            chance.fullDetails(chance);
-            System.out.println(players.getPlayer(0).getName() + " post card: £" + players.getPlayer(0).getFunding());
+//            System.out.println("Player passes GO: £" + players.getPlayer(0).getFunding());
+//            //read all Chance Cards
+//            Deck deck = new Deck();
+//            //shuffle chance cards
+//            ChanceCard chance = deck.shuffle();
+//            //trace statements
+//            parseCard(chance, players.getPlayer(0));
+//            //chance.fullDetails();
+//            System.out.println("Proof of concept: " + chance.getAssigned());
+//            chance.fullDetails(chance);
+//            System.out.println(players.getPlayer(0).getName() + " post card: £" + players.getPlayer(0).getFunding());
+//
+//            System.out.println("Real estate test");
+//            if (players.getPlayer(1).getOwnedSquares().isEmpty()) {
+//                System.out.println("Player " + players.getPlayer(1).getName() + " has no property");
+//                System.out.println("This is where his squares would go, IF HE HAD ANY: " + players.getPlayer(1).getOwnedSquares());
+//                System.out.println("Size of list of squares: " + players.getPlayer(2).getOwnedSquares().size());
+//            }
+//            playersPreRollOptions(players.getPlayer(1));
+//
+//            System.out.printf("%n%s moves %d places.%n", players.getPlayer(1).getName(), move());
 
-            System.out.println("Real estate test");
-            if (players.getPlayer(1).getOwnedSquares().isEmpty()) {
-                System.out.println("Player " + players.getPlayer(1).getName() + " has no property");
-                System.out.println("This is where his squares would go, IF HE HAD ANY: " + players.getPlayer(1).getOwnedSquares());
-                System.out.println("Size of list of squares: " + players.getPlayer(2).getOwnedSquares().size());
-            }
-            playersPreRollOptions(players.getPlayer(1));
+            //saveGame();
 
-            System.out.printf("%n%s moves %d places.%n", players.getPlayer(1).getName(), move());
-
-            saveGame();
-
-            Stats stats = new Stats(players.getPlayers());
-            stats.full();
-            stats.elide();
-            stats.end();
-            System.exit(1);
+           //Stats stats = new Stats(players.getPlayers());
+//            stats.full();
+//            stats.elide();
+//            stats.end();
+//            System.exit(1);
 
         } catch (
                 Exception e) {
@@ -237,7 +229,16 @@ public class Game {
             case 8:
                 //roll dice
                 System.out.printf("you have chosen %s%n", option1);
-                System.out.printf("%n%s moves %d places.%n", currentPlayer.getName(), move());
+                MOVE = move();
+                System.out.printf("%n%s moves %d places.%n", currentPlayer.getName(), MOVE);
+                int location = currentPlayer.getLocation()+MOVE;
+                if(location >=15){
+                    location -=15;
+                }
+                currentPlayer.setLocation(location);
+                System.out.println(currentPlayer.getName() + " is on square " + board.get(currentPlayer.getLocation()).getName());
+                MOVE =0;
+
                 break;
             case 5:
             case 9:
@@ -270,6 +271,8 @@ public class Game {
             case 12:
                 //quit
                 System.out.printf("you have chosen %s%n", option5);
+                Stats stats = new Stats(players.getPlayers());
+                stats.end();
                 break;
             default:
                 throw new IllegalArgumentException("that's not an option");
