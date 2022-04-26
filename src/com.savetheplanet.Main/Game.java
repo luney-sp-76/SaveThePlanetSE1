@@ -1,19 +1,21 @@
 package com.savetheplanet.Main;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class Game {
 
     private static List<Square> board = new ArrayList<>();
-    private static List<Player> players = new ArrayList<>();
+    private static Players players = new Players();
     // for 30 second with 15 second warning
     static final int T15 = 15000;
     // 120 second with 60 seconds warning.
     static final int T60 = 60000;
 
     // ticktock motherfucker
-    static Timer timer60 = Create.timer(T60);
+    static Timer timer60 = Idle.timer(T60);
 
     private static final int COLLECT = 500;
 
@@ -35,64 +37,64 @@ public class Game {
         try {
 
             // light demo
-            players.get(1).addOwnedSquare((FundableSquare) board.get(14));
-            ((FundableSquare) board.get(14)).setOwner(players.get(1));
+            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(14));
+            ((FundableSquare) board.get(14)).setOwner(players.getPlayer(1));
             ((FundableSquare) board.get(14)).setDevLevel(4);
 
 
-            players.get(0).addOwnedSquare((FundableSquare) board.get(13));
-            ((FundableSquare) board.get(13)).setOwner(players.get(0));
+            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(13));
+            ((FundableSquare) board.get(13)).setOwner(players.getPlayer(0));
             ((FundableSquare) board.get(13)).setDevLevel(4);
 
-            players.get(1).addOwnedSquare((FundableSquare) board.get(2));
-            ((FundableSquare) board.get(2)).setOwner(players.get(1));
+            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(2));
+            ((FundableSquare) board.get(2)).setOwner(players.getPlayer(1));
             ((FundableSquare) board.get(2)).setDevLevel(4);
 
-            players.get(1).addOwnedSquare((FundableSquare) board.get(15));
-            ((FundableSquare) board.get(15)).setOwner(players.get(1));
+            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(15));
+            ((FundableSquare) board.get(15)).setOwner(players.getPlayer(1));
             ((FundableSquare) board.get(15)).setDevLevel(4);
-            players.get(0).addOwnedSquare((FundableSquare) board.get(4));
+            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(4));
 
-            ((FundableSquare) board.get(4)).setOwner(players.get(1));
+            ((FundableSquare) board.get(4)).setOwner(players.getPlayer(1));
             ((FundableSquare) board.get(4)).setDevLevel(4);
 //
-//            playerOut(players.get(1));
-//            playerOut(players.get(2));
-            //players.get(2).setFunding(600);
-//            developField(players.get(1));
+//            playerOut(players.getPlayer(1));
+//            playerOut(players.getPlayer(2));
+            //players.getPlayer(2).setFunding(600);
+//            developField(players.getPlayer(1));
 
 
             //proof of concept testing
-            System.out.println("Game initialised: ");// + players.get(0));
-            collectFunding(players.get(0));
+            System.out.println("Game initialised: ");// + players.getPlayer(0));
+            collectFunding(players.getPlayer(0));
 
-            playersPreRollOptions(players.get(0));
-            //System.out.printf("%n%s moves %d places.%n", players.get(0).getName(), move());
-            System.out.println("Player passes GO: £" + players.get(0).getFunding());
+            playersPreRollOptions(players.getPlayer(0));
+            //System.out.printf("%n%s moves %d places.%n", players.getPlayer(0).getName(), move());
+            System.out.println("Player passes GO: £" + players.getPlayer(0).getFunding());
             //read all Chance Cards
             Deck deck = new Deck();
             //shuffle chance cards
             ChanceCard chance = deck.shuffle();
             //trace statements
-            parseCard(chance, players.get(0));
+            parseCard(chance, players.getPlayer(0));
             //chance.fullDetails();
             System.out.println("Proof of concept: " + chance.getAssigned());
             chance.fullDetails(chance);
-            System.out.println(players.get(0).getName() + " post card: £" + players.get(0).getFunding());
+            System.out.println(players.getPlayer(0).getName() + " post card: £" + players.getPlayer(0).getFunding());
 
             System.out.println("Real estate test");
-            if (players.get(1).getOwnedSquares().isEmpty()) {
-                System.out.println("Player " + players.get(1).getName() + " has no property");
-                System.out.println("This is where his squares would go, IF HE HAD ANY: " + players.get(1).getOwnedSquares());
-                System.out.println("Size of list of squares: " + players.get(2).getOwnedSquares().size());
+            if (players.getPlayer(1).getOwnedSquares().isEmpty()) {
+                System.out.println("Player " + players.getPlayer(1).getName() + " has no property");
+                System.out.println("This is where his squares would go, IF HE HAD ANY: " + players.getPlayer(1).getOwnedSquares());
+                System.out.println("Size of list of squares: " + players.getPlayer(2).getOwnedSquares().size());
             }
-            playersPreRollOptions(players.get(1));
+            playersPreRollOptions(players.getPlayer(1));
 
-            System.out.printf("%n%s moves %d places.%n", players.get(1).getName(), move());
+            System.out.printf("%n%s moves %d places.%n", players.getPlayer(1).getName(), move());
 
             saveGame();
 
-            Stats stats = new Stats(players);
+            Stats stats = new Stats(players.getPlayers());
             stats.full();
             stats.elide();
             stats.end();
@@ -106,20 +108,74 @@ public class Game {
 
     private static void newGame() {
         try {
-            // Create Players
-            players = Create.players();
+            //create players
+            players.create();
+
             // Create Board/Squares
-            board = Create.board();
+            board = createBoard();
             playGame();
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
         }
     }
 
+    /**
+     * @return board - Returns List of Squares as Board.
+     * Jaszon
+     */
+    @SuppressWarnings("unchecked")
+    private static List<Square> createBoard() {
+
+//        List<Square> board = new ArrayList<>();
+//         try-with-resources to make sure the streams get closed.
+//        try (Stream<String> fieldsIn = Files.lines(Paths.get("fields.txt"));
+//             Stream<String> squares = Files.lines(Paths.get("squares.txt"))) {
+//
+//            List<String> fields = fieldsIn.collect(Collectors.toList());
+//
+//            squares.forEach(line -> {
+//                String[] arr = line.split(",");
+//                String name = arr[0];
+//                int field = Integer.parseInt(arr[1]);
+//
+//                if (field >= 3) {
+//                    board.add(new FundableSquare(name, field, fields.get(field).split(",")));
+//                } else {
+//                    board.add(new Square(name, field));
+//                }
+//            });
+
+
+//            try (
+//                    FileOutputStream fos = new FileOutputStream("board.dat");
+//                    ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+//                oos.writeObject(board);
+//
+//
+//            } catch (
+//                    IOException e) {
+//                e.printStackTrace();
+//            }
+        try (FileInputStream fis = new FileInputStream("board.dat");
+             ObjectInputStream ois = new ObjectInputStream(fis)) {
+
+            board = (List<Square>) ois.readObject();
+
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+
+        }
+        return board;
+//
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+    }
+
     @SuppressWarnings("unchecked")
     private static void loadGame(HashMap<String, Object> load) {
 
-        timer60 = Create.timerReset(timer60, T60);
+        timer60 = Idle.timerReset(timer60, T60);
 
         System.out.println("Do you want to load a Saved Game? y/n");
         if (!MENU.nextLine().toLowerCase().contains("y"))
@@ -127,7 +183,8 @@ public class Game {
 
         try {
             board = (List<Square>) load.get("Board");
-            players = (List<Player>) (load.get("Players"));
+            players.setPlayers((List<Player>) (load.get("Players")));
+
             System.out.println("L:O:A:D");
 
         } catch (Exception e) {
@@ -188,14 +245,14 @@ public class Game {
                 //trade
                 System.out.println("Which Player would you like to trade with?");
                 int counter = 1;
-                for (Player player : players) {
+                for (Player player : players.getPlayers()) {
                     if (!currentPlayer.getName().equals(player.getName())) {
                         System.out.println(counter + ") " + player.getName());
                     }
                     counter++;
                 }
                 int playerNum = Integer.parseInt(MENU.nextLine()) - 1;
-                trade(currentPlayer, players.get(playerNum));
+                trade(currentPlayer, players.getPlayer(playerNum));
                 break;
 
             case 10:
@@ -227,19 +284,20 @@ public class Game {
 //                currentPlayer.getOwnedSquares().forEach(fs -> {
 //                            fs.getField()
 //
+//
 //                }
 //                );
 //
 //    }
 
     private static void saveGame() {
-        timer60 = Create.timerReset(timer60, T60);
+        timer60 = Idle.timerReset(timer60, T60);
 
         System.out.println("Do you wish to save the game? y/n");
         if (!MENU.nextLine().toLowerCase().contains("y"))
             playGame();
 
-        SaveThePlanet.save(board, players);
+        SaveThePlanet.save(board, players.getPlayers());
         System.out.println("S:A:V:E");
     }
 
@@ -317,11 +375,11 @@ public class Game {
 
     private static void playerOut(Player player) {
 
-        Stats stats = new Stats(players);
+        Stats stats = new Stats(players.getPlayers());
         System.out.println(player.getName() + " is out of the game!");
         player.setTurnsTaken(-1);
 
-        if (players.stream().filter(p -> p.getTurnsTaken() > -1).count() < 2) {
+        if (players.getPlayers().stream().filter(p -> p.getTurnsTaken() > -1).count() < 2) {
             Sounds.play("clap");
             stats.end();
 
