@@ -331,37 +331,21 @@ public class Game  {
         player.setTurnsTaken(-1);
 
         if (players.stream().filter(p -> p.getTurnsTaken() > -1).count() < 2) {
-            audio("clap");
+            clapAudio();
             stats.end();
 
         }
     }
-    private static void audio(String sound) {
+    private static void clapAudio() {
         try {
             File f;
             AudioInputStream ais;
-            switch (sound) {
-//                case "dice":
-//                    f = new File("./sounds/dice.wav");
-//                    ais = AudioSystem.getAudioInputStream(f);
-//                    Clip dice = AudioSystem.getClip();
-//                    dice.open(ais);
-//                    dice.start();
-//                    ais.close();
-//                    break;
-                case "clap":
                     f = new File("./sounds/clap.wav");
                     ais = AudioSystem.getAudioInputStream(f);
                     Clip clap = AudioSystem.getClip();
                     clap.open(ais);
                     clap.start();
                     ais.close();
-                    break;
-
-                default:
-                    break;
-            }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
