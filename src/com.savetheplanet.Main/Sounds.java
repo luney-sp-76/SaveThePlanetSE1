@@ -11,10 +11,8 @@ public class Sounds {
     static AudioInputStream ais;
     static Clip clip;
 
-
     public Sounds() {
     }
-
     static void play(String sound) {
         try {
             f = new File("./sounds/" + sound + ".wav");

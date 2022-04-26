@@ -164,9 +164,7 @@ final class Create {
                     }
                 }
                 // The Player class has further validation checks which would trigger here.
-
                 p = new Player(str);
-
                 return p;
 
             } catch (IllegalArgumentException e) {

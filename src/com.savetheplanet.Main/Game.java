@@ -89,7 +89,6 @@ public class Game {
             }
             playersPreRollOptions(players.get(1));
 
-
             System.out.printf("%n%s moves %d places.%n", players.get(1).getName(), move());
 
             saveGame();
@@ -229,14 +228,12 @@ public class Game {
 //                currentPlayer.getOwnedSquares().forEach(fs -> {
 //                            fs.getField()
 //
-//
 //                }
 //                );
 //
 //    }
 
     private static void saveGame() {
-
         timer60 = Create.timerReset(timer60, T60);
 
         System.out.println("Do you wish to save the game? y/n");
@@ -332,7 +329,6 @@ public class Game {
         }
     }
 
-
     public static void trade(Player traderPlayer, Player requestedPlayer) {
 
         FundableSquare offeredProperty;
@@ -408,58 +404,14 @@ public class Game {
 
     /**
      * @return Returns the value of the dice throw to a Global MOVE Integer
-     * @throws InterruptedException
+     * @
      */
-    public static int move() throws InterruptedException {
+    public static int move() {
         Dice die = new Dice();
-        int die1Result = randomNum();
-        int die2Result = randomNum();
-        die.roll();
-        diceGFX(die1Result, die2Result);
-        MOVE = die1Result + die2Result;
-        TimeUnit.SECONDS.sleep(1);
+        MOVE = die.roll();
         //is y. You will move forward x+y places.”
         System.out.printf("You will move forward %d spaces.%n", MOVE);
         return MOVE;
-    }
-
-    private static void diceGFX(int die1, int die2) throws InterruptedException {
-        String e = "-------";
-        String[] d1 = {"|     |", "|  *  |", "|     |"};
-        String[] d2 = {"|*    |", "|     |", "|    *|"};
-        String[] d3 = {"|*    |", "|  *  |", "|    *|"};
-        String[] d4 = {"|*   *|", "|     |", "|*   *|"};
-        String[] d5 = {"|*   *|", "|  *  |", "|*   *|"};
-        String[] d6 = {"|*   *|", "|*   *|", "|*   *|"};
-
-        String[][] diceGFX = {d1, d2, d3, d4, d5, d6};
-
-        // clearing the console sucks, doesn't work the same way from system to system, I hate this, but it's the most stable I could find.
-        String clear = String.format("%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n");
-
-        for (int i = 0; i < 20; i++) {
-            System.out.printf("%s %s%n", e, e);
-            System.out.printf("%s %s%n", diceGFX[(randomNum()) - 1][((randomNum()) - 1) / 2], diceGFX[(randomNum()) - 1][((randomNum()) - 1) / 2]);
-            System.out.printf("%s %s%n", diceGFX[(randomNum()) - 1][((randomNum()) - 1) / 2], diceGFX[(randomNum()) - 1][((randomNum()) - 1) / 2]);
-            System.out.printf("%s %s%n", diceGFX[(randomNum()) - 1][((randomNum()) - 1) / 2], diceGFX[(randomNum()) - 1][((randomNum()) - 1) / 2]);
-            System.out.printf("%s %s%n", e, e);
-            Thread.sleep(100);
-            System.out.println(clear);
-        }
-
-        // The result
-        System.out.printf(" %-7s  %-7s%n", "Die 1", "Die 2");
-        System.out.printf("%s  %s %n", e, e);
-        for (int i = 0; i < 3; i++) {
-            System.out.printf(diceGFX[die1 - 1][i] + "  " + diceGFX[die2 - 1][i] + "%n");
-        }
-        System.out.printf("%s  %s %n", e, e);
-    }
-
-    private static int randomNum() {
-        int min = 1;
-        int max = 6;
-        return (int) Math.floor(Math.random() * (max - min + 1) + min);
     }
 
     private static FundableSquare selectProperty(Player selector, Player propertyOwner) {
