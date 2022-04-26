@@ -1,14 +1,9 @@
 package com.savetheplanet.Main;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import java.io.File;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
-public class Game  {
+public class Game {
 
     private static List<Square> board = new ArrayList<>();
     private static List<Player> players = new ArrayList<>();
@@ -331,25 +326,12 @@ public class Game  {
         player.setTurnsTaken(-1);
 
         if (players.stream().filter(p -> p.getTurnsTaken() > -1).count() < 2) {
-            clapAudio();
+            Sounds.play("clap");
             stats.end();
 
         }
     }
-    private static void clapAudio() {
-        try {
-            File f;
-            AudioInputStream ais;
-                    f = new File("./sounds/clap.wav");
-                    ais = AudioSystem.getAudioInputStream(f);
-                    Clip clap = AudioSystem.getClip();
-                    clap.open(ais);
-                    clap.start();
-                    ais.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+
 
     public static void trade(Player traderPlayer, Player requestedPlayer) {
 
@@ -425,7 +407,6 @@ public class Game  {
     }
 
     /**
-     *
      * @return Returns the value of the dice throw to a Global MOVE Integer
      * @throws InterruptedException
      */
@@ -435,16 +416,12 @@ public class Game  {
         int die2Result = randomNum();
         die.roll();
         diceGFX(die1Result, die2Result);
-        //A message is then displayed saying “Die 1 is x, Die 2
-        System.out.printf("Die 1 is %d%n", die1Result);
-        System.out.printf("Die 2 is %d%n", die2Result);
         MOVE = die1Result + die2Result;
-        TimeUnit.SECONDS.sleep(2);
+        TimeUnit.SECONDS.sleep(1);
         //is y. You will move forward x+y places.”
         System.out.printf("You will move forward %d spaces.%n", MOVE);
         return MOVE;
-        }
-
+    }
 
     private static void diceGFX(int die1, int die2) throws InterruptedException {
         String e = "-------";
@@ -478,8 +455,6 @@ public class Game  {
         }
         System.out.printf("%s  %s %n", e, e);
     }
-
-
 
     private static int randomNum() {
         int min = 1;
@@ -550,22 +525,22 @@ public class Game  {
         //check the players owned squares to see if they can develop
         for (int i = 0; i < player.getOwnedSquares().size(); i++) {
             if (player.getOwnedSquares().get(i).getField() == 3) {
-                conserve ++;
+                conserve++;
                 if (conserve == 2)
                     ownsArea = true;
             }
             if (player.getOwnedSquares().get(i).getField() == 4) {
-                reduce ++;
+                reduce++;
                 if (reduce == 3)
                     ownsArea = true;
             }
             if (player.getOwnedSquares().get(i).getField() == 5) {
-                reuse ++;
+                reuse++;
                 if (reuse == 3)
                     ownsArea = true;
             }
             if (player.getOwnedSquares().get(i).getField() == 6) {
-                create ++;
+                create++;
                 if (create == 2)
                     ownsArea = true;
             }

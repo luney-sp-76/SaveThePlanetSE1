@@ -16,19 +16,8 @@ import java.util.stream.Stream;
 
 public class SaveThePlanet {
 
-    @SuppressWarnings("InfiniteLoopStatement")
     public static void main(String[] args) {
-
-        try {
-            File f = new File("./sounds/earth.wav");
-            AudioInputStream ais = AudioSystem.getAudioInputStream(f);
-            Clip earth = AudioSystem.getClip();
-            earth.open(ais);
-            earth.start();
-            ais.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Sounds.play("earth");
 
         System.out.printf("%n .oooooo..o                                      ooooooooooooo oooo%n");
         System.out.println("d8P'    `Y8                                      8'   888   `8 `888");
@@ -47,9 +36,10 @@ public class SaveThePlanet {
         System.out.println("  YooooooP  o888o        o888o `Y888\"\"8o o888o o888o `Y8bod8P'   \"888\"   YooooooP ");
         System.out.printf("%n%n%n");
 
-            welcome();
+        welcome();
     }
 
+    @SuppressWarnings("InfiniteLoopStatement")
     static void welcome() {
         System.out.println("Welcome To Save The Planet");
         System.out.println("Would you like to Play? y/n");
