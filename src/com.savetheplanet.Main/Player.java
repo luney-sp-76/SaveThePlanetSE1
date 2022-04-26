@@ -192,6 +192,7 @@ public class Player implements Serializable {
      */
 
     public void setLocation(int location) {
+
         this.location = location;
     }
 
