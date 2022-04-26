@@ -1,9 +1,7 @@
 package com.savetheplanet.Main;
 
 import java.io.Serializable;
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class Player implements Serializable {
