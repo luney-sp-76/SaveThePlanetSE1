@@ -62,6 +62,12 @@ public class Stats {
 
         // this bold ansi escape doesn't work on every OS. Console is so limited man.
         System.out.printf("%-6s\u001B[1m %s!%n%s.%n", "Congratulations", players.get(0).getName(), "Won by " + winCondition);
+        try {
+            Thread.sleep(6000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        SaveThePlanet.welcome();
     }
 
     /**
@@ -98,10 +104,10 @@ public class Stats {
 
         players.sort(Comparator.comparing(Player::getTotalValue).reversed());
 
-        players.forEach(player -> {
-            System.out.printf("|  #%-3d| %-32s | £%-5d|%n", rank.incrementAndGet(), player.getName(), player.getFunding());
+        players.forEach(p -> {
+            System.out.printf("|  #%-3d| %-32s | £%-5d|%n", rank.incrementAndGet(), p.getName(), p.getFunding());
             System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-            System.out.printf("|%6s| %-32s | %-5d |%n", "", "* Total Value:", player.getTotalValue());
+            System.out.printf("|%6s| %-32s | %-5d |%n", "", "* Total Value:", p.getTotalValue());
             System.out.println("---------------------------------------------------");
         });
         System.out.println();

@@ -2,12 +2,11 @@ package com.savetheplanet.Main;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -65,7 +64,6 @@ final class Create {
     static List<Square> board() {
 
         List<Square> board = new ArrayList<>();
-
         // try-with-resources to make sure the streams get closed.
         try (Stream<String> fieldsIn = Files.lines(Paths.get("fields.txt"));
              Stream<String> squares = Files.lines(Paths.get("squares.txt"))) {
@@ -120,10 +118,8 @@ final class Create {
     private static int playerCount() {
 
         Timer timer = timer(60000);
-
         System.out.println("How many players? 2-4");
         String str = Game.MENU.nextLine();
-
 
         while (true) {
             try {
@@ -183,142 +179,6 @@ final class Create {
             }
         }
     }
-
-
-    @SuppressWarnings("unchecked")
-    public static HashMap<String, Object> load() {
-
-        List<File> saves = loadFiles();
-
-        AtomicInteger saveID = new AtomicInteger(0);
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy - hh:mm:ss");
-
-        System.out.println("Which file would you like to load?");
-        saves.forEach(save -> System.out.println(saveID.incrementAndGet() + " " + save.getName() + " " + dateFormat.format(save.lastModified())));
-
-        String gameToLoad = pickGame(saves);
-
-        if (gameToLoad != null)
-            try (FileInputStream fis = new FileInputStream("./saves/" + gameToLoad);
-                 ObjectInputStream ois = new ObjectInputStream(fis)) {
-
-                return (HashMap<String, Object>) ois.readObject();
-
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-
-            }
-        return null;
-    }
-
-    /**
-     * @param saves List of Files
-     * @return name of chosen File
-     */
-    private static String pickGame(List<File> saves) {
-        while (true) {
-
-            switch (Game.MENU.nextLine()) {
-                case "0":
-                    return null;
-                case "1":
-                    return saves.get(0).getName();
-                case "2":
-                    return saves.get(1).getName();
-                case "3":
-                    return saves.get(2).getName();
-                default:
-                    System.out.println("Invalid input, 1-3 only to load a save, or 0 to exit to menu");
-            }
-        }
-    }
-
-    /**
-     * @return saves - List of the most recent 3 files from the save files dir, in chronological order.
-     */
-    public static List<File> loadFiles() {
-        List<File> saves = new ArrayList<>();
-        try (Stream<Path> l = Files.list(Paths.get("./saves/"))) {
-            saves = l.map(Path::toFile)
-                    .filter(f -> f.getName().endsWith(".sav"))
-                    .sorted(Comparator.comparing(File::lastModified))
-                    .collect(Collectors.toList());
-
-            if (saves.size() > 3)
-                saves = saves.subList(saves.size() - 3, saves.size());
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return saves;
-    }
-
-    public static void save(List<Square> board, List<Player> players) {
-
-        HashMap<String, Object> saveGame = new HashMap<>();
-
-        saveGame.put("Board", board);
-        saveGame.put("Players", players);
-
-        List<File> saves = loadFiles();
-
-        String saveName = validateSaveName(saves);
-        boolean write = true;
-
-        if (saves.size() == 3) {
-            write = memoryCardFull(saves);
-        }
-        System.out.println(saves.size());
-
-        if (write)
-            try (FileOutputStream fos = new FileOutputStream("./saves/" + saveName);
-                 ObjectOutputStream oos = new ObjectOutputStream(fos)) {
-                oos.writeObject(saveGame);
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-    }
-
-    private static boolean memoryCardFull(List<File> saves) {
-
-
-        System.out.println("You already have 3 saved games, by continuing the oldest game " + saves.get(0).getName() + " will be removed. Do you want to continue y/n?");
-        if (Game.MENU.nextLine().toLowerCase().contains("y")) {
-            return saves.get(0).delete();
-
-        }
-        return false;
-    }
-
-    private static String validateSaveName(List<File> saves) {
-
-
-        System.out.println("Enter name for the Save Game");
-        String str = Game.MENU.nextLine() + ".sav";
-
-        while (true) {
-            try {
-                System.out.println(str);
-                if (str.matches("^.*[^a-zA-Z\\d.].*$"))
-                    throw new IllegalArgumentException("Name format error. Name contains illegal characters. Alphanumeric only, no spaces.");
-                if (str.length() < 6 || str.length() > 34)
-                    throw new IllegalArgumentException("Name format error. Length must be between 2 and 30 characters.");
-                for (File f : saves) {
-                    if (str.equals(f.getName())) {
-                        throw new IllegalArgumentException("Names must be unique.");
-                    }
-                }
-                return str;
-            } catch (IllegalArgumentException e) {
-                System.err.println(e.getLocalizedMessage());
-                System.out.println("Please enter the name for the Save Game");
-                str = Game.MENU.nextLine() + ".sav";
-            }
-        }
-    }
-
     /**
      * 60-second timer with 2 phases.
      *
@@ -339,7 +199,6 @@ final class Create {
                     System.err.printf("\rYou have been idle for 1 minute.%nIf you are idle for another 1 minute the game will exit.%n");
                     warned = true;
                 }
-
                 if (t == 15000) {
                     if (warned) {
                         System.out.println("You have been idle for 30s - something is happening.");
@@ -352,12 +211,10 @@ final class Create {
         }, t, t);
         return timer;
     }
-
     // Resets the timer.
     static Timer timerReset(Timer timer, int t) {
         timer.cancel();
         timer = timer(t);
         return timer;
     }
-
 }// class

@@ -11,6 +11,7 @@ public class Player implements Serializable {
     String name;
     int funding;
     int totalValue;
+    int turnsTaken;
     List<FundableSquare> ownedSquares = new ArrayList<>();
 
     public Player(String name) {
@@ -114,18 +115,16 @@ public class Player implements Serializable {
     }
 
     private ArrayList<Object> findSquare(List<FundableSquare> ownedSquares, int field) {
-        Boolean developed = false;
+        boolean developed = false;
         ArrayList<Object> results = new ArrayList<Object>();
         FundableSquare undevelopedSquare = null;
         for (FundableSquare square : ownedSquares) {
             if (square.getField() == field) {
                 if (square.getDevLevel() > 0) {
-                    developed = true;
                     results.add(square);
-                    results.add(developed);
+                    results.add(true);
                     return results;
                 } else if (square.getDevLevel() == 0) {
-                    developed = false;
                     undevelopedSquare = square;
                 }
             }
@@ -169,6 +168,14 @@ public class Player implements Serializable {
             throw new IllegalArgumentException("Name format error. Length must be between 2 and 30 characters.");
 
         return true;
+    }
+
+    public int getTurnsTaken() {
+        return turnsTaken;
+    }
+
+    public void setTurnsTaken(int turnsTaken) {
+        this.turnsTaken = turnsTaken;
     }
 
     @Override

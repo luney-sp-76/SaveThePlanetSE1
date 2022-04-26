@@ -1,21 +1,23 @@
 package com.savetheplanet.Main;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class Game implements IDie {
 
     private static List<Square> board = new ArrayList<>();
     private static List<Player> players = new ArrayList<>();
-
-    private static final int T60 = 60000;
-
     // for 30 second with 15 second warning
-    private static final int T15 = 15000;
+    static final int T15 = 15000;
+    // 120 second with 60 seconds warning.
+    static final int T60 = 60000;
 
+    // ticktock motherfucker
     static Timer timer60 = Create.timer(T60);
 
     private static final int COLLECT = 500;
@@ -25,83 +27,17 @@ public class Game implements IDie {
     private static int MOVE;
 
     public Game() {
+        newGame();
         playGame();
     }
 
-    @SuppressWarnings("InfiniteLoopStatement")
+    public Game(HashMap<String, Object> load) {
+        loadGame(load);
+        playGame();
+    }
+
     public static void playGame() {
-
-        System.out.println("Welcome To Save The Planet");
-        System.out.println("Would you like to Play? y/n");
-        timer60 = Create.timerReset(timer60, T60);
-
-        while (true) {
-            switch (MENU.nextLine().toLowerCase()) {
-                case "y":
-                case "yes":
-                    initiateGameOptions();
-                    break;
-                case "n":
-                case "no":
-                    quitOutsideOfGamePlay();
-                    break;
-                default:
-                    System.out.println("Sorry please enter y/yes or n/no");
-            }
-        }
-    }
-
-    private static void quitOutsideOfGamePlay() {
-        System.out.println("See You Next Time!");
-        System.exit(1);
-    }
-
-    private static void initiateGameOptions() {
-        System.out.println("Game Menu");
-        System.out.println("----------");
-
-        timer60 = Create.timerReset(timer60, T60);
-
-        System.out.printf("1) new game%n2) restart game%n3) quit%n");
-        switch (MENU.nextLine()) {
-            case "1":
-                System.out.println("Ok Lets Go!");
-                timer60.cancel();
-                playNewGame();
-                break;
-            case "2":
-                loadGame();
-                // testing
-                System.out.println(players);
-                break;
-            case "3":
-                quitOutsideOfGamePlay();
-                break;
-            default:
-                System.out.println("that's not an option");
-                timer60 = Create.timerReset(timer60, T60);
-                initiateGameOptions();
-        }
-    }
-
-    private static void loadedGame() {
-
-        Stats stats = new Stats(players);
-        stats.full();
-        stats.elide();
-        stats.end();
-
-    }
-
-    private static void playNewGame() {
         try {
-
-
-            // Create Players
-            players = Create.players();
-            // Create Board/Squares
-            board = Create.board();
-
 
             // light demo
             players.get(1).addOwnedSquare((FundableSquare) board.get(14));
@@ -124,52 +60,86 @@ public class Game implements IDie {
 
             ((FundableSquare) board.get(4)).setOwner(players.get(1));
             ((FundableSquare) board.get(4)).setDevLevel(4);
-
-
+//
+//            playerOut(players.get(1));
+//            playerOut(players.get(2));
             //players.get(2).setFunding(600);
+//            developField(players.get(1));
+
 
             //proof of concept testing
             System.out.println("Game initialised: ");// + players.get(0));
             collectFunding(players.get(0));
 
-                playersPreRollOptions(players.get(0));
-                //System.out.printf("%n%s moves %d places.%n", players.get(0).getName(), move());
-                System.out.println("Player passes GO: £" + players.get(0).getFunding());
-                //read all Chance Cards
-                List<ChanceCard> mainDeck = Create.deck();
-                //shuffle chance cards
-                ChanceCard chance = shuffleDeck(mainDeck);
-                System.out.println("Shuffling...\n");
-                //trace statements
-                parseCard(chance, players.get(0));
-                //chance.fullDetails();
-                System.out.println("Proof of concept: " + chance.getAssigned());
-                chance.fullDetails(chance);
-                System.out.println(players.get(0).getName() + " post card: £" + players.get(0).getFunding());
+            playersPreRollOptions(players.get(0));
+            //System.out.printf("%n%s moves %d places.%n", players.get(0).getName(), move());
+            System.out.println("Player passes GO: £" + players.get(0).getFunding());
+            //read all Chance Cards
+            List<ChanceCard> mainDeck = Create.deck();
+            //shuffle chance cards
+            ChanceCard chance = shuffleDeck(mainDeck);
+            System.out.println("Shuffling...\n");
+            //trace statements
+            parseCard(chance, players.get(0));
+            //chance.fullDetails();
+            System.out.println("Proof of concept: " + chance.getAssigned());
+            chance.fullDetails(chance);
+            System.out.println(players.get(0).getName() + " post card: £" + players.get(0).getFunding());
 
-                System.out.println("Real estate test");
-                if (players.get(2).getOwnedSquares().isEmpty()) {
-                    System.out.println("Player " + players.get(2).getName() + " has no property");
-                    System.out.println("This is where his squares would go, IF HE HAD ANY: " + players.get(2).getOwnedSquares());
-                    System.out.println("Size of list of squares: " + players.get(2).getOwnedSquares().size());
-                }
+            System.out.println("Real estate test");
+            if (players.get(2).getOwnedSquares().isEmpty()) {
+                System.out.println("Player " + players.get(2).getName() + " has no property");
+                System.out.println("This is where his squares would go, IF HE HAD ANY: " + players.get(2).getOwnedSquares());
+                System.out.println("Size of list of squares: " + players.get(2).getOwnedSquares().size());
+            }
             playersPreRollOptions(players.get(1));
 
 
-                //System.out.printf("%n%s moves %d places.%n", players.get(1).getName(), move());
+            System.out.printf("%n%s moves %d places.%n", players.get(1).getName(), move());
 
-                //     saveGame();
+            saveGame();
 
-                Stats stats = new Stats(players);
-                stats.full();
-                stats.elide();
-                stats.end();
-                System.exit(1);
+            Stats stats = new Stats(players);
+            stats.full();
+            stats.elide();
+            stats.end();
+            System.exit(1);
 
-            } catch(Exception e){
-                System.out.println(e.getLocalizedMessage());
-            }
+        } catch (
+                Exception e) {
+            e.printStackTrace();
+        }
+    }
 
+    private static void newGame() {
+        try {
+            // Create Players
+            players = Create.players();
+            // Create Board/Squares
+            board = Create.board();
+            playGame();
+        } catch (Exception e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void loadGame(HashMap<String, Object> load) {
+
+        timer60 = Create.timerReset(timer60, T60);
+
+        System.out.println("Do you want to load a Saved Game? y/n");
+        if (!MENU.nextLine().toLowerCase().contains("y"))
+            playGame();
+
+        try {
+            board = (List<Square>) load.get("Board");
+            players = (List<Player>) (load.get("Players"));
+            System.out.println("L:O:A:D");
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     /**
@@ -179,10 +149,10 @@ public class Game implements IDie {
      * or 1 roll dice 2 trade 3 quit
      * or 1 roll dice 2 quit
      *
-     * @param currentPlayer
-     * @throws InterruptedException
+     * @param currentPlayer current player
+     * @throws InterruptedException iae
      */
-    private static void playersPreRollOptions(Player currentPlayer) throws InterruptedException, UnsupportedAudioFileException, LineUnavailableException, IOException {
+    private static void playersPreRollOptions(Player currentPlayer) throws InterruptedException {
         System.out.println("Choose your next move");
         System.out.println("---------------------");
         String option1 = "1) Roll Dice";
@@ -191,7 +161,7 @@ public class Game implements IDie {
         String option4 = "4) Save";
         String option5 = "5) Quit";
 
-        int count = 0;
+        int count;
 
         if (canDevelop(currentPlayer)) {
             count = 7;
@@ -201,7 +171,7 @@ public class Game implements IDie {
             option4 = "3) Save";
             option5 = "4) Quit";
             count = 3;
-            System.out.printf("%n%s%n%s%n%s%n%s%n", option1, option2, option4,option5);
+            System.out.printf("%n%s%n%s%n%s%n%s%n", option1, option2, option4, option5);
 
         } else {
             option4 = "2) Save";
@@ -210,8 +180,7 @@ public class Game implements IDie {
             System.out.printf("%n%s%n%s%n%s%n", option1, option4, option5);
         }
 
-
-        int option = MENU.nextInt() + count;
+        int option = Integer.parseInt(MENU.nextLine()) + count;
         switch (option) {
             case 1:
             case 4:
@@ -232,13 +201,13 @@ public class Game implements IDie {
                     }
                     counter++;
                 }
-                int playerNum = MENU.nextInt() - 1;
+                int playerNum = Integer.parseInt(MENU.nextLine()) - 1;
                 trade(currentPlayer, players.get(playerNum));
                 break;
 
             case 10:
                 System.out.printf("you have chosen %s%n", option3);
-                //develop
+//               developField(currentPlayer);
                 break;
             case 2:
             case 6:
@@ -255,11 +224,21 @@ public class Game implements IDie {
             default:
                 throw new IllegalArgumentException("that's not an option");
                 //timer = Create.timerReset(timer);
-
         }
-
     }
 
+//    private static void developField(Player currentPlayer) {
+//
+////        System.out.println(
+//
+//                currentPlayer.getOwnedSquares().forEach(fs -> {
+//                            fs.getField()
+//
+//
+//                }
+//                );
+//
+//    }
 
     private static void saveGame() {
 
@@ -269,34 +248,8 @@ public class Game implements IDie {
         if (!MENU.nextLine().toLowerCase().contains("y"))
             playGame();
 
-        Create.save(board, players);
+        SaveThePlanet.save(board, players);
         System.out.println("S:A:V:E");
-    }
-
-    @SuppressWarnings("unchecked")
-    private static void loadGame() {
-
-        timer60 = Create.timerReset(timer60, T60);
-
-        System.out.println("Do you want to load a Saved Game? y/n");
-        if (!MENU.nextLine().toLowerCase().contains("y"))
-            playGame();
-
-        try {
-            HashMap<String, Object> load = Create.load();
-
-            if (load == null)
-                playGame();
-
-            assert load != null;
-            board = (List<Square>) load.get("Board");
-            players = (List<Player>) (load.get("Players"));
-            System.out.println("L:O:A:D");
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-
     }
 
     /**
@@ -331,10 +284,9 @@ public class Game implements IDie {
     }
 
     public static void liquidate(Player player) {
-        int cost = 0;
+        int cost;
         FundableSquare square = player.getLowestValueSquare();
-
-        if(square.getDevLevel()>0){
+        if (square.getDevLevel() > 0) {
             square.setDevLevel(square.getDevLevel() - 1);
             cost = square.getDevCost();
             System.out.println("Undoing Development: " + square.getName() + ". You will be credited £" + cost);
@@ -363,7 +315,8 @@ public class Game implements IDie {
                     payRates(player, square);
                 } else {
                     System.out.println("You can't pay your rates bill and have no more property! It looks like someone else will have to save the world...");
-                    //player out
+                    playerOut(player);
+
                 }
             }
         } else {
@@ -371,21 +324,33 @@ public class Game implements IDie {
         }
     }
 
+    private static void playerOut(Player player) {
+
+        Stats stats = new Stats(players);
+        System.out.println(player.getName() + " is out of the game!");
+        player.setTurnsTaken(-1);
+
+        if (players.stream().filter(p -> p.getTurnsTaken() > -1).count() < 2) {
+            audio("clap");
+            stats.end();
+
+        }
+    }
+
     public static void trade(Player traderPlayer, Player requestedPlayer) {
 
-        FundableSquare offeredProperty = null;
-        FundableSquare requestedProperty = null;
+        FundableSquare offeredProperty;
+        FundableSquare requestedProperty;
         boolean correctInput = false;
         boolean confirmTrade = false;
 
         if (!traderPlayer.getOwnedSquares().isEmpty() && !requestedPlayer.getOwnedSquares().isEmpty()) {
             offeredProperty = selectProperty(traderPlayer, traderPlayer);
-
             requestedProperty = selectProperty(traderPlayer, requestedPlayer);
 
             System.out.println(requestedPlayer.getName() + ", do you want to trade " + requestedProperty.getName() + " for " + offeredProperty.getName() + "? y/n");
 
-            while (correctInput == false) {
+            while (!correctInput) {
                 switch (MENU.nextLine().toLowerCase()) {
                     case "y":
                     case "yes":
@@ -394,7 +359,6 @@ public class Game implements IDie {
                         break;
                     case "n":
                     case "no":
-                        confirmTrade = false;
                         correctInput = true;
                         break;
                     default:
@@ -408,8 +372,7 @@ public class Game implements IDie {
 
                 if (offeredPropertyCost == requestedPropertyCost) {
                     swapProperties(traderPlayer, requestedPlayer, offeredProperty, requestedProperty);
-                } else if (offeredPropertyCost != requestedPropertyCost) {
-
+                } else {
                     int diff = offeredPropertyCost - requestedPropertyCost;
 
                     if (diff > 0) {
@@ -421,11 +384,8 @@ public class Game implements IDie {
                         if (payPropertyDifferences(traderPlayer, requestedPlayer, diff)) {
                             swapProperties(traderPlayer, requestedPlayer, offeredProperty, requestedProperty);
                         }
-
                     }
-
                 }
-
             } else {
                 System.out.println("Sorry, " + traderPlayer.getName() + ". " + requestedPlayer.getName() + " doesn't want to trade right now.");
             }
@@ -456,24 +416,18 @@ public class Game implements IDie {
     }
 
     private static int roll() throws InterruptedException {
-
-
         audio("dice");
-
         //A message is displayed saying “Dice Rolling...”
         System.out.println("Dice Rolling...");
-
-
         //The dice roll takes a few seconds.
-
         int die1Result = randomNum();
         int die2Result = randomNum();
         diceGFX(die1Result, die2Result);
-        TimeUnit.SECONDS.sleep(2);
         int totalResult = die1Result + die2Result;
         //A message is then displayed saying “Die 1 is x, Die 2
         //is y. You will move forward x+y places.”
-        System.out.printf("Die 1 is %d, Die 2 is %d...%nYou will move forward %d spaces.%n", die1Result, die2Result, totalResult);
+        System.out.printf("You will move forward %d spaces.%n", totalResult);
+        TimeUnit.SECONDS.sleep(2);
         return totalResult;
     }
 
@@ -487,27 +441,23 @@ public class Game implements IDie {
         String[] d5 = {"|*   *|", "|  *  |", "|*   *|"};
         String[] d6 = {"|*   *|", "|*   *|", "|*   *|"};
 
-        String[] diceParts = {"|*    |", "|*   *|", "|     |", "|  *  |", "|*   *|", "|    *|"};
-
-
         String[][] diceGFX = {d1, d2, d3, d4, d5, d6};
 
-
+        // clearing the console sucks, doesn't work the same way from system to system, I hate this, but it's the most stable I could find.
         String clear = String.format("%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n");
 
-
-        for (int i = 0; i < 15; i++) {
-
-
+        for (int i = 0; i < 20; i++) {
             System.out.printf("%s %s%n", e, e);
-            System.out.printf("%s %s%n", diceParts[(randomNum()) - 1], diceParts[(randomNum()) - 1]);
-            System.out.printf("%s %s%n", diceParts[(randomNum()) - 1], diceParts[(randomNum()) - 1]);
-            System.out.printf("%s %s%n", diceParts[(randomNum()) - 1], diceParts[(randomNum()) - 1]);
+            System.out.printf("%s %s%n", diceGFX[(randomNum()) - 1][((randomNum()) - 1) / 2], diceGFX[(randomNum()) - 1][((randomNum()) - 1) / 2]);
+            System.out.printf("%s %s%n", diceGFX[(randomNum()) - 1][((randomNum()) - 1) / 2], diceGFX[(randomNum()) - 1][((randomNum()) - 1) / 2]);
+            System.out.printf("%s %s%n", diceGFX[(randomNum()) - 1][((randomNum()) - 1) / 2], diceGFX[(randomNum()) - 1][((randomNum()) - 1) / 2]);
             System.out.printf("%s %s%n", e, e);
-
-            Thread.sleep(75);
+            Thread.sleep(100);
             System.out.println(clear);
         }
+
+        // The result
+        System.out.printf(" %-7s  %-7s%n", "Die 1", "Die 2");
         System.out.printf("%s  %s %n", e, e);
         for (int i = 0; i < 3; i++) {
             System.out.printf(diceGFX[die1 - 1][i] + "  " + diceGFX[die2 - 1][i] + "%n");
@@ -517,14 +467,26 @@ public class Game implements IDie {
 
     private static void audio(String sound) {
         try {
+            File f;
+            AudioInputStream ais;
             switch (sound) {
                 case "dice":
-                    File f = new File("./sounds/dice.wav");
-                    AudioInputStream ais = AudioSystem.getAudioInputStream(f);
+                    f = new File("./sounds/dice.wav");
+                    ais = AudioSystem.getAudioInputStream(f);
                     Clip dice = AudioSystem.getClip();
                     dice.open(ais);
                     dice.start();
+                    ais.close();
                     break;
+                case "clap":
+                    f = new File("./sounds/clap.wav");
+                    ais = AudioSystem.getAudioInputStream(f);
+                    Clip clap = AudioSystem.getClip();
+                    clap.open(ais);
+                    clap.start();
+                    ais.close();
+                    break;
+
                 default:
                     break;
             }
@@ -542,8 +504,8 @@ public class Game implements IDie {
 
     private static FundableSquare selectProperty(Player selector, Player propertyOwner) {
 
-        int propertySelection = 0;
-        FundableSquare property = null;
+        int propertySelection;
+        FundableSquare property;
 
         System.out.println(selector.getName() + ", select the number of the property you'd like to trade.");
         for (int i = 0; i < propertyOwner.getOwnedSquares().size(); i++) {
@@ -562,9 +524,7 @@ public class Game implements IDie {
             System.out.println("You have entered an invalid number.");
             selectProperty(selector, propertyOwner);
         }
-
         return null;
-
     }
 
     private static void swapProperties(Player player1, Player player2, FundableSquare property1, FundableSquare
@@ -624,12 +584,7 @@ public class Game implements IDie {
                 if (create == 2)
                     ownsArea = true;
             }
-
-
         }
-
         return ownsArea;
     }
-
-
 }

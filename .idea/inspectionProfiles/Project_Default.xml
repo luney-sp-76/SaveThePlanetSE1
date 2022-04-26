@@ -6,6 +6,8 @@
         <list>
           <option value="unchecked" />
           <option value="InfiniteLoopStatement" />
+          <option value="infniate loop" />
+          <option value="infinite loop" />
         </list>
       </option>
     </inspection_tool>
