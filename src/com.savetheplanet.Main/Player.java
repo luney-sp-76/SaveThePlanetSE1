@@ -10,11 +10,14 @@ public class Player implements Serializable {
     int funding;
     int totalValue;
     int turnsTaken;
+
+    int location;
     List<FundableSquare> ownedSquares = new ArrayList<>();
 
     public Player(String name) {
         setName(name);
         funding = 500;
+        location = 0;
         totalValue = 0;
     }
 
@@ -175,6 +178,27 @@ public class Player implements Serializable {
     public void setTurnsTaken(int turnsTaken) {
         this.turnsTaken = turnsTaken;
     }
+
+    /**
+     * @return the location
+     */
+
+    public int getLocation() {
+        return location;
+    }
+
+    /**
+     * @param location the location to set
+     */
+
+    public void setLocation(int location) {
+        this.location = location;
+    }
+
+    void setLocation() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 
     @Override
     public String toString() {
