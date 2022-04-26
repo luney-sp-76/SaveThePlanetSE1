@@ -89,7 +89,6 @@ public class Game {
             }
             playersPreRollOptions(players.get(1));
 
-
             System.out.printf("%n%s moves %d places.%n", players.get(1).getName(), move());
 
             saveGame();
@@ -229,14 +228,12 @@ public class Game {
 //                currentPlayer.getOwnedSquares().forEach(fs -> {
 //                            fs.getField()
 //
-//
 //                }
 //                );
 //
 //    }
 
     private static void saveGame() {
-
         timer60 = Create.timerReset(timer60, T60);
 
         System.out.println("Do you wish to save the game? y/n");

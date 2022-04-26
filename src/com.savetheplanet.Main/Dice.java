@@ -11,8 +11,6 @@ public class Dice implements IDie {
         int die2Result = randomNum();
         try {
             diceGFX(die1Result, die2Result);
-            //A message is displayed saying “Dice Rolling...”
-
             TimeUnit.SECONDS.sleep(1);
         } catch (InterruptedException e) {
             System.out.println(e.getMessage());
