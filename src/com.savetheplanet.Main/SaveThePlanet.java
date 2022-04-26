@@ -16,19 +16,8 @@ import java.util.stream.Stream;
 
 public class SaveThePlanet {
 
-    @SuppressWarnings("InfiniteLoopStatement")
-    public static void main(String[] args) throws InterruptedException {
-
-        try {
-            File f = new File("./sounds/earth.wav");
-            AudioInputStream ais = AudioSystem.getAudioInputStream(f);
-            Clip earth = AudioSystem.getClip();
-            earth.open(ais);
-            earth.start();
-            ais.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public static void main(String[] args) {
+        Sounds.play("earth");
 
         System.out.printf("%n .oooooo..o                                      ooooooooooooo oooo%n");
         System.out.println("d8P'    `Y8                                      8'   888   `8 `888");
@@ -47,10 +36,11 @@ public class SaveThePlanet {
         System.out.println("  YooooooP  o888o        o888o `Y888\"\"8o o888o o888o `Y8bod8P'   \"888\"   YooooooP ");
         System.out.printf("%n%n%n");
 
-            welcome();
+        welcome();
     }
 
-    static void welcome() throws InterruptedException {
+    @SuppressWarnings("InfiniteLoopStatement")
+    static void welcome() {
         System.out.println("Welcome To Save The Planet");
         System.out.println("Would you like to Play? y/n");
 
@@ -65,7 +55,7 @@ public class SaveThePlanet {
                 default:
                     System.err.println("Invalid input.");
                     System.out.println("Would you like to Play? y/n");
-                    Game.timer60 = Create.timerReset(Game.timer60, Game.T60);
+                    Game.timer60 = Idle.timerReset(Game.timer60, Game.T60);
             }
         }
     }
@@ -75,8 +65,8 @@ public class SaveThePlanet {
         System.exit(1);
     }
 
-    private static void initiateGameOptions() throws InterruptedException {
-        Game.timer60 = Create.timerReset(Game.timer60, Game.T60);
+    private static void initiateGameOptions() {
+        Game.timer60 = Idle.timerReset(Game.timer60, Game.T60);
 
         System.out.println("Game Menu");
         System.out.println("----------");
@@ -96,7 +86,7 @@ public class SaveThePlanet {
                 break;
             default:
                 System.err.printf("Invalid input.%n%n ");
-                Game.timer60 = Create.timerReset(Game.timer60, Game.T60);
+                Game.timer60 = Idle.timerReset(Game.timer60, Game.T60);
                 initiateGameOptions();
         }
     }

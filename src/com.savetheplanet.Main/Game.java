@@ -1,23 +1,21 @@
 package com.savetheplanet.Main;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
-public class Game  {
+public class Game {
 
     private static List<Square> board = new ArrayList<>();
-    private static List<Player> players = new ArrayList<>();
+    private static Players players = new Players();
     // for 30 second with 15 second warning
     static final int T15 = 15000;
     // 120 second with 60 seconds warning.
     static final int T60 = 60000;
 
     // ticktock motherfucker
-    static Timer timer60 = Create.timer(T60);
+    static Timer timer60 = Idle.timer(T60);
 
     private static final int COLLECT = 500;
 
@@ -43,7 +41,10 @@ public class Game  {
 
         try {
 
-            //System.out.println("This board has " + board.size() + " squares");
+            // light demo
+            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(14));
+            ((FundableSquare) board.get(14)).setOwner(players.getPlayer(1));
+            ((FundableSquare) board.get(14)).setDevLevel(4);
 
                 QUIT = false;
 
@@ -85,7 +86,7 @@ public class Game  {
             }
 
 
-            Stats stats = new Stats(players);
+            Stats stats = new Stats(players.getPlayers());
             stats.full();
             stats.elide();
            stats.end();
@@ -133,20 +134,74 @@ public class Game  {
 
     private static void newGame() {
         try {
-            // Create Players
-            players = Create.players();
+            //create players
+            players.create();
+
             // Create Board/Squares
-            board = Create.board();
+            board = createBoard();
             playGame();
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
         }
     }
 
+    /**
+     * @return board - Returns List of Squares as Board.
+     * Jaszon
+     */
+    @SuppressWarnings("unchecked")
+    private static List<Square> createBoard() {
+
+//        List<Square> board = new ArrayList<>();
+//         try-with-resources to make sure the streams get closed.
+//        try (Stream<String> fieldsIn = Files.lines(Paths.get("fields.txt"));
+//             Stream<String> squares = Files.lines(Paths.get("squares.txt"))) {
+//
+//            List<String> fields = fieldsIn.collect(Collectors.toList());
+//
+//            squares.forEach(line -> {
+//                String[] arr = line.split(",");
+//                String name = arr[0];
+//                int field = Integer.parseInt(arr[1]);
+//
+//                if (field >= 3) {
+//                    board.add(new FundableSquare(name, field, fields.get(field).split(",")));
+//                } else {
+//                    board.add(new Square(name, field));
+//                }
+//            });
+
+
+//            try (
+//                    FileOutputStream fos = new FileOutputStream("board.dat");
+//                    ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+//                oos.writeObject(board);
+//
+//
+//            } catch (
+//                    IOException e) {
+//                e.printStackTrace();
+//            }
+        try (FileInputStream fis = new FileInputStream("board.dat");
+             ObjectInputStream ois = new ObjectInputStream(fis)) {
+
+            board = (List<Square>) ois.readObject();
+
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+
+        }
+        return board;
+//
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+    }
+
     @SuppressWarnings("unchecked")
     private static void loadGame(HashMap<String, Object> load) throws InterruptedException {
 
-        timer60 = Create.timerReset(timer60, T60);
+        timer60 = Idle.timerReset(timer60, T60);
 
         System.out.println("Do you want to load a Saved Game? y/n");
         if (!MENU.nextLine().toLowerCase().contains("y"))
@@ -154,7 +209,8 @@ public class Game  {
 
         try {
             board = (List<Square>) load.get("Board");
-            players = (List<Player>) (load.get("Players"));
+            players.setPlayers((List<Player>) (load.get("Players")));
+
             System.out.println("L:O:A:D");
 
         } catch (Exception e) {
@@ -217,14 +273,14 @@ public class Game  {
                 //trade
                 System.out.println("Which Player would you like to trade with?");
                 int counter = 1;
-                for (Player player : players) {
+                for (Player player : players.getPlayers()) {
                     if (!currentPlayer.getName().equals(player.getName())) {
                         System.out.println(counter + ") " + player.getName());
                     }
                     counter++;
                 }
                 int playerNum = Integer.parseInt(MENU.nextLine()) - 1;
-                trade(currentPlayer, players.get(playerNum));
+                trade(currentPlayer, players.getPlayer(playerNum));
                 break;
 
             case 10:
@@ -270,7 +326,7 @@ public class Game  {
         if (!MENU.nextLine().toLowerCase().contains("y"))
             playGame();
 
-        SaveThePlanet.save(board, players);
+        SaveThePlanet.save(board, players.getPlayers());
         System.out.println("S:A:V:E");
     }
 
@@ -348,28 +404,14 @@ public class Game  {
 
     private static void playerOut(Player player) throws InterruptedException {
 
-        Stats stats = new Stats(players);
+        Stats stats = new Stats(players.getPlayers());
         System.out.println(player.getName() + " is out of the game!");
         player.setTurnsTaken(-1);
 
-        if (players.stream().filter(p -> p.getTurnsTaken() > -1).count() < 2) {
-            clapAudio();
+        if (players.getPlayers().stream().filter(p -> p.getTurnsTaken() > -1).count() < 2) {
+            Sounds.play("clap");
             stats.end();
 
-        }
-    }
-    private static void clapAudio() {
-        try {
-            File f;
-            AudioInputStream ais;
-                    f = new File("./sounds/clap.wav");
-                    ais = AudioSystem.getAudioInputStream(f);
-                    Clip clap = AudioSystem.getClip();
-                    clap.open(ais);
-                    clap.start();
-                    ais.close();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -431,27 +473,16 @@ public class Game  {
         }
     }
 
-    /**
-     * shuffles deck and returns the top card (first in List)
-     *
-     * @param deck The Deck of Chance Cards
-     * @return A single Chance Card
-     */
-    static ChanceCard shuffleDeck(List<ChanceCard> deck) {
-        Collections.shuffle(deck);
-        return deck.get(0);
-    }
 
     public static void collectFunding(Player player) {
         player.setFunding((player.getFunding() + COLLECT));
     }
 
     /**
-     *
      * @return Returns the value of the dice throw to a Global MOVE Integer
-     * @throws InterruptedException
+     * @
      */
-    public static int move() throws InterruptedException {
+    public static int move() {
         Dice die = new Dice();
         int die1Result = randomNum();
         int die2Result = randomNum();
@@ -470,48 +501,6 @@ public class Game  {
         //is y. You will move forward x+y places.”
         System.out.printf("You will move forward %d spaces.%n", MOVE);
         return MOVE;
-        }
-
-
-    private static void diceGFX(int die1, int die2) throws InterruptedException {
-        String e = "-------";
-        String[] d1 = {"|     |", "|  *  |", "|     |"};
-        String[] d2 = {"|*    |", "|     |", "|    *|"};
-        String[] d3 = {"|*    |", "|  *  |", "|    *|"};
-        String[] d4 = {"|*   *|", "|     |", "|*   *|"};
-        String[] d5 = {"|*   *|", "|  *  |", "|*   *|"};
-        String[] d6 = {"|*   *|", "|*   *|", "|*   *|"};
-
-        String[][] diceGFX = {d1, d2, d3, d4, d5, d6};
-
-        // clearing the console sucks, doesn't work the same way from system to system, I hate this, but it's the most stable I could find.
-        String clear = String.format("%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n");
-
-        for (int i = 0; i < 20; i++) {
-            System.out.printf("%s %s%n", e, e);
-            System.out.printf("%s %s%n", diceGFX[(randomNum()) - 1][((randomNum()) - 1) / 2], diceGFX[(randomNum()) - 1][((randomNum()) - 1) / 2]);
-            System.out.printf("%s %s%n", diceGFX[(randomNum()) - 1][((randomNum()) - 1) / 2], diceGFX[(randomNum()) - 1][((randomNum()) - 1) / 2]);
-            System.out.printf("%s %s%n", diceGFX[(randomNum()) - 1][((randomNum()) - 1) / 2], diceGFX[(randomNum()) - 1][((randomNum()) - 1) / 2]);
-            System.out.printf("%s %s%n", e, e);
-            Thread.sleep(100);
-            System.out.println(clear);
-        }
-
-        // The result
-        System.out.printf(" %-7s  %-7s%n", "Die 1", "Die 2");
-        System.out.printf("%s  %s %n", e, e);
-        for (int i = 0; i < 3; i++) {
-            System.out.printf(diceGFX[die1 - 1][i] + "  " + diceGFX[die2 - 1][i] + "%n");
-        }
-        System.out.printf("%s  %s %n", e, e);
-    }
-
-
-
-    private static int randomNum() {
-        int min = 1;
-        int max = 6;
-        return (int) Math.floor(Math.random() * (max - min + 1) + min);
     }
 
     private static FundableSquare selectProperty(Player selector, Player propertyOwner) {
@@ -577,22 +566,22 @@ public class Game  {
         //check the players owned squares to see if they can develop
         for (int i = 0; i < player.getOwnedSquares().size(); i++) {
             if (player.getOwnedSquares().get(i).getField() == 3) {
-                conserve ++;
+                conserve++;
                 if (conserve == 2)
                     ownsArea = true;
             }
             if (player.getOwnedSquares().get(i).getField() == 4) {
-                reduce ++;
+                reduce++;
                 if (reduce == 3)
                     ownsArea = true;
             }
             if (player.getOwnedSquares().get(i).getField() == 5) {
-                reuse ++;
+                reuse++;
                 if (reuse == 3)
                     ownsArea = true;
             }
             if (player.getOwnedSquares().get(i).getField() == 6) {
-                create ++;
+                create++;
                 if (create == 2)
                     ownsArea = true;
             }
