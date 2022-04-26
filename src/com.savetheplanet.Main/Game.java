@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class Game  {
+public class Game {
 
     private static List<Square> board = new ArrayList<>();
     private static List<Player> players = new ArrayList<>();
@@ -75,10 +75,9 @@ public class Game  {
             //System.out.printf("%n%s moves %d places.%n", players.get(0).getName(), move());
             System.out.println("Player passes GO: £" + players.get(0).getFunding());
             //read all Chance Cards
-            List<ChanceCard> mainDeck = Create.deck();
+            Deck deck = new Deck();
             //shuffle chance cards
-            ChanceCard chance = shuffleDeck(mainDeck);
-            System.out.println("Shuffling...\n");
+            ChanceCard chance = deck.shuffle();
             //trace statements
             parseCard(chance, players.get(0));
             //chance.fullDetails();
@@ -336,16 +335,17 @@ public class Game  {
 
         }
     }
+
     private static void clapAudio() {
         try {
             File f;
             AudioInputStream ais;
-                    f = new File("./sounds/clap.wav");
-                    ais = AudioSystem.getAudioInputStream(f);
-                    Clip clap = AudioSystem.getClip();
-                    clap.open(ais);
-                    clap.start();
-                    ais.close();
+            f = new File("./sounds/clap.wav");
+            ais = AudioSystem.getAudioInputStream(f);
+            Clip clap = AudioSystem.getClip();
+            clap.open(ais);
+            clap.start();
+            ais.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -409,23 +409,12 @@ public class Game  {
         }
     }
 
-    /**
-     * shuffles deck and returns the top card (first in List)
-     *
-     * @param deck The Deck of Chance Cards
-     * @return A single Chance Card
-     */
-    static ChanceCard shuffleDeck(List<ChanceCard> deck) {
-        Collections.shuffle(deck);
-        return deck.get(0);
-    }
 
     public static void collectFunding(Player player) {
         player.setFunding((player.getFunding() + COLLECT));
     }
 
     /**
-     *
      * @return Returns the value of the dice throw to a Global MOVE Integer
      * @throws InterruptedException
      */
@@ -443,7 +432,7 @@ public class Game  {
         //is y. You will move forward x+y places.”
         System.out.printf("You will move forward %d spaces.%n", MOVE);
         return MOVE;
-        }
+    }
 
 
     private static void diceGFX(int die1, int die2) throws InterruptedException {
@@ -478,7 +467,6 @@ public class Game  {
         }
         System.out.printf("%s  %s %n", e, e);
     }
-
 
 
     private static int randomNum() {
@@ -550,22 +538,22 @@ public class Game  {
         //check the players owned squares to see if they can develop
         for (int i = 0; i < player.getOwnedSquares().size(); i++) {
             if (player.getOwnedSquares().get(i).getField() == 3) {
-                conserve ++;
+                conserve++;
                 if (conserve == 2)
                     ownsArea = true;
             }
             if (player.getOwnedSquares().get(i).getField() == 4) {
-                reduce ++;
+                reduce++;
                 if (reduce == 3)
                     ownsArea = true;
             }
             if (player.getOwnedSquares().get(i).getField() == 5) {
-                reuse ++;
+                reuse++;
                 if (reuse == 3)
                     ownsArea = true;
             }
             if (player.getOwnedSquares().get(i).getField() == 6) {
-                create ++;
+                create++;
                 if (create == 2)
                     ownsArea = true;
             }
