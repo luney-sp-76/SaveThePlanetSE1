@@ -23,22 +23,17 @@ public class Game {
 
     private static int MOVE;
 
-    //initiates an end game option
-    private static boolean QUIT;
-
-    public Game() throws InterruptedException {
+    public Game() {
         newGame();
         playGame();
     }
 
-    public Game(HashMap<String, Object> load) throws InterruptedException {
+    public Game(HashMap<String, Object> load) {
         loadGame(load);
         playGame();
-
     }
 
-    public static void playGame()  {
-
+    public static void playGame() {
         try {
 
             // light demo
@@ -46,91 +41,70 @@ public class Game {
             ((FundableSquare) board.get(14)).setOwner(players.getPlayer(1));
             ((FundableSquare) board.get(14)).setDevLevel(4);
 
-                QUIT = false;
+
+            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(13));
+            ((FundableSquare) board.get(13)).setOwner(players.getPlayer(0));
+            ((FundableSquare) board.get(13)).setDevLevel(4);
+
+            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(2));
+            ((FundableSquare) board.get(2)).setOwner(players.getPlayer(1));
+            ((FundableSquare) board.get(2)).setDevLevel(4);
+
+            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(15));
+            ((FundableSquare) board.get(15)).setOwner(players.getPlayer(1));
+            ((FundableSquare) board.get(15)).setDevLevel(4);
+            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(4));
+
+            ((FundableSquare) board.get(4)).setOwner(players.getPlayer(1));
+            ((FundableSquare) board.get(4)).setDevLevel(4);
+//
+//            playerOut(players.getPlayer(1));
+//            playerOut(players.getPlayer(2));
+            //players.getPlayer(2).setFunding(600);
+//            developField(players.getPlayer(1));
 
 
+            //proof of concept testing
+            System.out.println("Game initialised: ");// + players.getPlayer(0));
+            collectFunding(players.getPlayer(0));
 
-            System.out.println("Game initialised: ");
-            List<ChanceCard> mainDeck = Create.deck();
-            ChanceCard chance = shuffleDeck(mainDeck);
-            System.out.println("Shuffling...\n");
+            playersPreRollOptions(players.getPlayer(0));
+            //System.out.printf("%n%s moves %d places.%n", players.getPlayer(0).getName(), move());
+            System.out.println("Player passes GO: £" + players.getPlayer(0).getFunding());
+            //read all Chance Cards
+            Deck deck = new Deck();
+            //shuffle chance cards
+            ChanceCard chance = deck.shuffle();
+            //trace statements
+            parseCard(chance, players.getPlayer(0));
+            //chance.fullDetails();
+            System.out.println("Proof of concept: " + chance.getAssigned());
+            chance.fullDetails(chance);
+            System.out.println(players.getPlayer(0).getName() + " post card: £" + players.getPlayer(0).getFunding());
 
-                // hand out starting money
-            for(
-                Player newPlayer : players)
-
-                {
-
-                    collectFunding(newPlayer);
-                }
-
-            while(!QUIT) {
-
-                Player currentPlayer = players.get(0);
-
-                playersPreRollOptions(currentPlayer);
-                if (board.indexOf(currentPlayer.getLocation() + MOVE) > board.size()) {
-                    int squareNumber = board.indexOf(currentPlayer.getLocation() + MOVE) - (board.size());
-                    currentPlayer.setLocation(board.indexOf(0 + squareNumber) - 1);
-                    System.out.println(board.get(currentPlayer.getLocation()).getName());
-                } else {
-
-                    currentPlayer.setLocation(board.indexOf(currentPlayer.getLocation() + MOVE));
-                }
-                System.out.println(board.get(currentPlayer.getLocation()).getName());
-
-                String playerOnSquareName = board.get(currentPlayer.getLocation()).getName();
-                System.out.println(currentPlayer.getName() + " is on square " + playerOnSquareName);
-                System.out.println("Do you want to continue the game press y/yes to continue or q/quit to quit");
-                switchOptions(MENU.nextLine().toLowerCase());
+            System.out.println("Real estate test");
+            if (players.getPlayer(1).getOwnedSquares().isEmpty()) {
+                System.out.println("Player " + players.getPlayer(1).getName() + " has no property");
+                System.out.println("This is where his squares would go, IF HE HAD ANY: " + players.getPlayer(1).getOwnedSquares());
+                System.out.println("Size of list of squares: " + players.getPlayer(2).getOwnedSquares().size());
             }
+            playersPreRollOptions(players.getPlayer(1));
 
+            System.out.printf("%n%s moves %d places.%n", players.getPlayer(1).getName(), move());
+
+            saveGame();
 
             Stats stats = new Stats(players.getPlayers());
             stats.full();
             stats.elide();
-           stats.end();
-            //System.exit(1);
+            stats.end();
+            System.exit(1);
 
-            } catch(InterruptedException e){
-                throw new RuntimeException(e);
-            } catch(Exception e){
-                e.printStackTrace();
-            }
+        } catch (
+                Exception e) {
+            e.printStackTrace();
         }
-
-
-
-
-    private static boolean switchOptions(String response){
-        int responseNumber = 1;
-
-        switch (response) {
-            case "y":
-            case "yes":
-                QUIT = false;
-                break;
-            case "q":
-            case "quit":
-                QUIT = true;
-                break;
-            default:
-                while(responseNumber <3) {
-                    System.out.println("attempt " + responseNumber +  "of 3");
-                    System.out.println("Sorry that's not an option");
-                    System.out.println("Do you want to continue the game press y/yes to continue or q/quit to quit");
-                    responseNumber++;
-                    switchOptions(MENU.nextLine().toLowerCase());
-                }
-                QUIT = false;
-        }
-
-
-        return QUIT;
     }
-
-
-
 
     private static void newGame() {
         try {
@@ -199,7 +173,7 @@ public class Game {
     }
 
     @SuppressWarnings("unchecked")
-    private static void loadGame(HashMap<String, Object> load) throws InterruptedException {
+    private static void loadGame(HashMap<String, Object> load) {
 
         timer60 = Idle.timerReset(timer60, T60);
 
@@ -263,9 +237,7 @@ public class Game {
             case 8:
                 //roll dice
                 System.out.printf("you have chosen %s%n", option1);
-                MOVE = move();
-                System.out.printf("%n%s moves %d places.%n", currentPlayer.getName(),MOVE);
-
+                System.out.printf("%n%s moves %d places.%n", currentPlayer.getName(), move());
                 break;
             case 5:
             case 9:
@@ -318,9 +290,8 @@ public class Game {
 //
 //    }
 
-    private static void saveGame() throws InterruptedException {
-
-        timer60 = Create.timerReset(timer60, T60);
+    private static void saveGame() {
+        timer60 = Idle.timerReset(timer60, T60);
 
         System.out.println("Do you wish to save the game? y/n");
         if (!MENU.nextLine().toLowerCase().contains("y"))
@@ -378,7 +349,7 @@ public class Game {
         System.out.println("Balance: £" + player.getFunding());
     }
 
-    public static void payRates(Player player, FundableSquare square) throws InterruptedException {
+    public static void payRates(Player player, FundableSquare square) {
         if (square.getOwner() != null && square.getOwner() != player) {
             Player owner = square.getOwner();
             int rates = square.getRatesBill();
@@ -402,7 +373,7 @@ public class Game {
         }
     }
 
-    private static void playerOut(Player player) throws InterruptedException {
+    private static void playerOut(Player player) {
 
         Stats stats = new Stats(players.getPlayers());
         System.out.println(player.getName() + " is out of the game!");
@@ -410,7 +381,7 @@ public class Game {
 
         if (players.getPlayers().stream().filter(p -> p.getTurnsTaken() > -1).count() < 2) {
             Sounds.play("clap");
-            stats.end();
+           // stats.end();
 
         }
     }
@@ -484,20 +455,7 @@ public class Game {
      */
     public static int move() {
         Dice die = new Dice();
-        int die1Result = randomNum();
-        int die2Result = randomNum();
-        die.roll();
-        diceGFX(die1Result, die2Result);
-        //A message is then displayed saying “Die 1 is x, Die 2
-        System.out.printf("Die 1 is %d%n", die1Result);
-        System.out.printf("Die 2 is %d%n", die2Result);
-        MOVE = die1Result + die2Result;
-        try {
-            TimeUnit.SECONDS.sleep(2);
-        }catch(InterruptedException e){
-            System.err.println("Oops the Dice Broke");
-            System.exit(1);
-        }
+        MOVE = die.roll();
         //is y. You will move forward x+y places.”
         System.out.printf("You will move forward %d spaces.%n", MOVE);
         return MOVE;
