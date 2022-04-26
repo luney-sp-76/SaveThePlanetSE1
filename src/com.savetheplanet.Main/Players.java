@@ -6,10 +6,7 @@ import java.util.List;
 public class Players {
 
     List<Player> players;
-
-    public Players() {
-
-    }
+    public Players() {}
 
     public void create() {
         List<Player> players = new ArrayList<>();
@@ -24,15 +21,12 @@ public class Players {
         }
         this.players = players;
     }
-
     /**
      * @return Checks that the number of players is a valid number between 2 and 4 and keeps asking until it gets one.
      * Jaszon
      */
-
     private static int playerCount() {
         Game.timer60 = Idle.timerReset(Game.timer60, Game.T60);
-
         System.out.println("How many players? 2-4");
         String str = Game.MENU.nextLine();
 
@@ -104,7 +98,5 @@ public class Players {
     public Player getPlayer(int player) {
         return players.get(player);
     }
-
-
 }
 

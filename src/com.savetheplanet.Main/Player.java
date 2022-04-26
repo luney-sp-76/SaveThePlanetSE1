@@ -10,7 +10,6 @@ public class Player implements Serializable {
     int funding;
     int totalValue;
     int turnsTaken;
-
     int location;
     List<FundableSquare> ownedSquares = new ArrayList<>();
 

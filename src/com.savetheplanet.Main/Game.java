@@ -9,11 +9,11 @@ public class Game {
 
     private static List<Square> board = new ArrayList<>();
     private static Players players = new Players();
+    private static Stats stats;
     // for 30 second with 15 second warning
     static final int T15 = 15000;
     // 120 second with 60 seconds warning.
     static final int T60 = 60000;
-
     // ticktock motherfucker
     static Timer timer60 = Idle.timer(T60);
 
@@ -34,33 +34,24 @@ public class Game {
     }
 
     public static void playGame() {
+        stats = new Stats(players.getPlayers());
+
         try {
-
-            // light demo
-
-
-
+            //proof of concept t System.out.println("Game initialised: ");// + players.getPlayer(0));
+            for (Player playerNew : players.getPlayers()) {
+                collectFunding(playerNew);
+            }
 //
-//            playerOut(players.getPlayer(1));
-//            playerOut(players.getPlayer(2));
-            //players.getPlayer(2).setFunding(600);
-//            developField(players.getPlayer(1));
+//           while(true) {
+//               for (Player playerNew : players.getPlayers()) {
+//                   if (playerNew.turnsTaken != -1) {
+//                       playersPreRollOptions(playerNew);
+//                   }
+//               }
+//
+//           }
 
 
-            //proof of concept t System.out.println("Game initialised: ");// + players.getPlayer(0));esting
-           for(Player playerNew : players.getPlayers()) {
-               collectFunding(playerNew);
-
-           }
-
-           while(true) {
-               for (Player playerNew : players.getPlayers()) {
-                   if (playerNew.turnsTaken != -1) {
-                       playersPreRollOptions(playerNew);
-                   }
-               }
-
-           }
             //System.out.printf("%n%s moves %d places.%n", players.getPlayer(0).getName(), move());
 //            System.out.println("Player passes GO: £" + players.getPlayer(0).getFunding());
 //            //read all Chance Cards
@@ -85,15 +76,17 @@ public class Game {
 //            System.out.printf("%n%s moves %d places.%n", players.getPlayer(1).getName(), move());
 
             //saveGame();
-
-           //Stats stats = new Stats(players.getPlayers());
-//            stats.full();
+            players.getPlayer(1).setFunding(players.getPlayer(1).getFunding()+1000);
+            stats.end();
+            System.exit(1);
+//
 //            stats.elide();
+//            stats.full();
+//
 //            stats.end();
 //            System.exit(1);
 
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -102,7 +95,6 @@ public class Game {
         try {
             //create players
             players.create();
-
             // Create Board/Squares
             board = createBoard();
             playGame();
@@ -148,8 +140,7 @@ public class Game {
 //                    IOException e) {
 //                e.printStackTrace();
 //            }
-        try (FileInputStream fis = new FileInputStream("board.dat");
-             ObjectInputStream ois = new ObjectInputStream(fis)) {
+        try (FileInputStream fis = new FileInputStream("board.dat"); ObjectInputStream ois = new ObjectInputStream(fis)) {
 
             board = (List<Square>) ois.readObject();
 
@@ -165,24 +156,20 @@ public class Game {
     }
 
     @SuppressWarnings("unchecked")
-    private static void loadGame(HashMap<String, Object> load) {
-
+    static void loadGame(HashMap<String, Object> load) {
         timer60 = Idle.timerReset(timer60, T60);
 
-        System.out.println("Do you want to load a Saved Game? y/n");
-        if (!MENU.nextLine().toLowerCase().contains("y"))
-            playGame();
-
+        if (load == null) SaveThePlanet.welcome();
         try {
+            assert load != null;
             board = (List<Square>) load.get("Board");
             players.setPlayers((List<Player>) (load.get("Players")));
-
             System.out.println("L:O:A:D");
-
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
+
 
     /**
      * Calculates the options available to a player based on the number of squares owned
@@ -192,9 +179,8 @@ public class Game {
      * or 1 roll dice 2 quit
      *
      * @param currentPlayer current player
-     * @throws InterruptedException iae
      */
-    private static void playersPreRollOptions(Player currentPlayer) throws InterruptedException {
+    private static void playersPreRollOptions(Player currentPlayer) {
         System.out.println("Choose your next move");
         System.out.println("---------------------");
         String option1 = "1) Roll Dice";
@@ -231,9 +217,9 @@ public class Game {
                 System.out.printf("you have chosen %s%n", option1);
                 MOVE = move();
                 System.out.printf("%n%s moves %d places.%n", currentPlayer.getName(), MOVE);
-                int location = currentPlayer.getLocation()+MOVE;
-                if(location >=15){
-                    location -=15;
+                int location = currentPlayer.getLocation() + MOVE;
+                if (location >= 15) {
+                    location -= 15;
                 }
                 currentPlayer.setLocation(location);
                 System.out.println(currentPlayer.getName() + " is on square " + board.get(currentPlayer.getLocation()).getName());
@@ -252,7 +238,7 @@ public class Game {
                         payRates(currentPlayer,(FundableSquare) square);
                     }
         }
-                MOVE =0;
+                MOVE = 0;
 
                 break;
             case 5:
@@ -302,8 +288,6 @@ public class Game {
 //
 //                currentPlayer.getOwnedSquares().forEach(fs -> {
 //                            fs.getField()
-//
-//
 //                }
 //                );
 //
@@ -313,8 +297,7 @@ public class Game {
         timer60 = Idle.timerReset(timer60, T60);
 
         System.out.println("Do you wish to save the game? y/n");
-        if (!MENU.nextLine().toLowerCase().contains("y"))
-            playGame();
+        if (!MENU.nextLine().toLowerCase().contains("y")) playGame();
 
         SaveThePlanet.save(board, players.getPlayers());
         System.out.println("S:A:V:E");
@@ -394,14 +377,12 @@ public class Game {
 
     private static void playerOut(Player player) {
 
-        Stats stats = new Stats(players.getPlayers());
+        stats.setPlayers(players.getPlayers());
         System.out.println(player.getName() + " is out of the game!");
         player.setTurnsTaken(-1);
-
         if (players.getPlayers().stream().filter(p -> p.getTurnsTaken() > -1).count() < 2) {
             Sounds.play("clap");
-           // stats.end();
-
+            stats.end();
         }
     }
 
@@ -505,8 +486,7 @@ public class Game {
         return null;
     }
 
-    private static void swapProperties(Player player1, Player player2, FundableSquare property1, FundableSquare
-            property2) {
+    private static void swapProperties(Player player1, Player player2, FundableSquare property1, FundableSquare property2) {
         player1.ownedSquares.remove(property1);
         property1.setOwner(player2);
         player2.addOwnedSquare(property1);
@@ -544,23 +524,19 @@ public class Game {
         for (int i = 0; i < player.getOwnedSquares().size(); i++) {
             if (player.getOwnedSquares().get(i).getField() == 3) {
                 conserve++;
-                if (conserve == 2)
-                    ownsArea = true;
+                if (conserve == 2) ownsArea = true;
             }
             if (player.getOwnedSquares().get(i).getField() == 4) {
                 reduce++;
-                if (reduce == 3)
-                    ownsArea = true;
+                if (reduce == 3) ownsArea = true;
             }
             if (player.getOwnedSquares().get(i).getField() == 5) {
                 reuse++;
-                if (reuse == 3)
-                    ownsArea = true;
+                if (reuse == 3) ownsArea = true;
             }
             if (player.getOwnedSquares().get(i).getField() == 6) {
                 create++;
-                if (create == 2)
-                    ownsArea = true;
+                if (create == 2) ownsArea = true;
             }
         }
         return ownsArea;

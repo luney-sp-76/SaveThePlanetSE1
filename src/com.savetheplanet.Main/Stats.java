@@ -46,7 +46,7 @@ public class Stats {
         System.out.println();
     }
 
-    void end() throws InterruptedException {
+    void end() {
 
         full();
         String winCondition = drawCheck();
@@ -69,7 +69,6 @@ public class Stats {
         }
         SaveThePlanet.welcome();
     }
-
     /**
      * @return Condition player won by.
      */
