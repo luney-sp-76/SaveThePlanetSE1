@@ -190,12 +190,21 @@ public class Game {
         String option5 = "5) Quit";
 
         int count;
+        boolean goodToTrade = false;
+        for (Player player : players.getPlayers()) {
+            if(player!=currentPlayer) {
+                if (player.getOwnedSquares().size() != 0) {
+                    goodToTrade = true;
+                    break;
+                }
+            }
+        }
 
         if (canDevelop(currentPlayer)) {
             count = 7;
             System.out.printf("%n%s%n%s%n%s%n%s%n%s%n", option1, option2, option3, option4, option5);
 
-        } else if (currentPlayer.getOwnedSquares().size() == 1) {
+        } else if (currentPlayer.getOwnedSquares().size() >= 1 && goodToTrade) {
             option4 = "3) Save";
             option5 = "4) Quit";
             count = 3;
@@ -245,16 +254,24 @@ public class Game {
             case 9:
                 System.out.printf("you have chosen %s%n", option2);
                 //trade
-                System.out.println("Which Player would you like to trade with?");
-                int counter = 1;
+
+                int counter = 0;
                 for (Player player : players.getPlayers()) {
                     if (!currentPlayer.getName().equals(player.getName())) {
-                        System.out.println(counter + ") " + player.getName());
+                        if(player.getOwnedSquares().size()!=0) {
+                            counter++;
+                            System.out.println(counter + ") trade with " + player.getName());
+                        }
                     }
-                    counter++;
+
                 }
-                int playerNum = Integer.parseInt(MENU.nextLine()) - 1;
-                trade(currentPlayer, players.getPlayer(playerNum));
+
+                if(counter >0) {
+                    int playerNum = Integer.parseInt(MENU.nextLine()) - 1;
+                    trade(currentPlayer, players.getPlayer(playerNum));
+                }else{
+                    System.out.println("you have no-one to trade with");
+                }
                 break;
 
             case 10:
