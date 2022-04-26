@@ -408,23 +408,30 @@ public class Game {
 
     /**
      * @return Returns the value of the dice throw to a Global MOVE Integer
-     * @throws InterruptedException
+     * @
      */
-    public static int move() throws InterruptedException {
+    public static int move()  {
         Dice die = new Dice();
         int die1Result = randomNum();
         int die2Result = randomNum();
-        die.roll();
-        diceGFX(die1Result, die2Result);
-        MOVE = die1Result + die2Result;
-        TimeUnit.SECONDS.sleep(1);
+        try {
+            die.roll();
+            diceGFX(die1Result, die2Result);
+            MOVE = die1Result + die2Result;
+            TimeUnit.SECONDS.sleep(1);
+        }catch ( InterruptedException e) {
+            System.out.println(e.getMessage());
+        }
+
         //is y. You will move forward x+y places.”
         System.out.printf("You will move forward %d spaces.%n", MOVE);
         return MOVE;
     }
 
     private static void diceGFX(int die1, int die2) throws InterruptedException {
-        String e = "-------";
+
+
+        String edge = "-------";
         String[] d1 = {"|     |", "|  *  |", "|     |"};
         String[] d2 = {"|*    |", "|     |", "|    *|"};
         String[] d3 = {"|*    |", "|  *  |", "|    *|"};
@@ -438,22 +445,23 @@ public class Game {
         String clear = String.format("%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n");
 
         for (int i = 0; i < 20; i++) {
-            System.out.printf("%s %s%n", e, e);
+            System.out.printf("%s %s%n", edge, edge);
             System.out.printf("%s %s%n", diceGFX[(randomNum()) - 1][((randomNum()) - 1) / 2], diceGFX[(randomNum()) - 1][((randomNum()) - 1) / 2]);
             System.out.printf("%s %s%n", diceGFX[(randomNum()) - 1][((randomNum()) - 1) / 2], diceGFX[(randomNum()) - 1][((randomNum()) - 1) / 2]);
             System.out.printf("%s %s%n", diceGFX[(randomNum()) - 1][((randomNum()) - 1) / 2], diceGFX[(randomNum()) - 1][((randomNum()) - 1) / 2]);
-            System.out.printf("%s %s%n", e, e);
+            System.out.printf("%s %s%n", edge, edge);
+
             Thread.sleep(100);
             System.out.println(clear);
         }
 
         // The result
         System.out.printf(" %-7s  %-7s%n", "Die 1", "Die 2");
-        System.out.printf("%s  %s %n", e, e);
+        System.out.printf("%s  %s %n", edge, edge);
         for (int i = 0; i < 3; i++) {
             System.out.printf(diceGFX[die1 - 1][i] + "  " + diceGFX[die2 - 1][i] + "%n");
         }
-        System.out.printf("%s  %s %n", e, e);
+        System.out.printf("%s  %s %n", edge, edge);
     }
 
     private static int randomNum() {
