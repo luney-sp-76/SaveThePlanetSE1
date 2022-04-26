@@ -237,6 +237,21 @@ public class Game {
                 }
                 currentPlayer.setLocation(location);
                 System.out.println(currentPlayer.getName() + " is on square " + board.get(currentPlayer.getLocation()).getName());
+                Square square = (board.get(currentPlayer.getLocation()));
+                if(square instanceof FundableSquare) {
+                    if(((FundableSquare) square).getOwner() == null) {
+                        System.out.printf("Would you like to purchase %s for £ %d? y/yes or n/no%n", square.getName(), ((FundableSquare) square).getCost());
+                        switch(MENU.nextLine().toLowerCase()){
+                            case "y":
+                            case "yes":
+                                purchaseSquare(currentPlayer, (FundableSquare) square);
+                                break;
+                            default:
+                        }
+                    }else{
+                        payRates(currentPlayer,(FundableSquare) square);
+                    }
+        }
                 MOVE =0;
 
                 break;
@@ -265,6 +280,7 @@ public class Game {
             case 11:
                 //save
                 System.out.printf("you have chosen %s%n", option4);
+                saveGame();
                 break;
             case 3:
             case 7:
