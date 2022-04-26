@@ -1,6 +1,5 @@
 package com.savetheplanet.Main;
 
-import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -15,48 +14,6 @@ final class Create {
     private Create() {
         throw new UnsupportedOperationException();
     }
-
-    /**
-     * Reads in the data from the provided csv and returns a list
-     * - Andrew
-     */
-    static List<ChanceCard> deck() {
-        List<ChanceCard> listFromFile = new ArrayList<>();
-        File file = new File("randomSquareAssignment.csv");
-        try (FileReader fr = new FileReader(file); BufferedReader reader = new BufferedReader(fr)) {
-            reader.readLine();
-            String line = reader.readLine();
-            while (line != null && !line.isEmpty()) {
-                String[] parts = line.split(",");
-                try {
-                    RandomSquareAssignment random = RandomSquareAssignment.valueOf(parts[0].toUpperCase());
-                    if (parts.length == 1) {
-                        ChanceCard card = new ChanceCard(random);
-                        listFromFile.add(card);
-                    } else {
-                        int move = Integer.parseInt(parts[1]);
-                        ChanceCard card = new ChanceCard(random, move);
-                        listFromFile.add(card);
-                    }
-                } catch (IllegalArgumentException illegalArg) {
-                    System.out.println(illegalArg.getMessage());
-                    System.out.println("Skipping this line");
-                }
-                line = reader.readLine();
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found error");
-        } catch (IOException e) {
-            System.out.println("IO Exception");
-        } catch (Exception e) {
-            System.out.println("Exception occurred");
-            System.out.println(listFromFile.size() + " lines read successfully");
-            System.out.println(e.getMessage());
-        }
-        System.out.println(listFromFile.size() + " lines read successfully");
-        return listFromFile;
-    }
-
     /**
      * @return board - Returns List of Squares as Board.
      * Jaszon
@@ -93,6 +50,7 @@ final class Create {
      * Jaszon
      */
     static List<Player> players() {
+
         List<Player> players = new ArrayList<>();
 
         try {
