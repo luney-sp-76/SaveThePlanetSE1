@@ -70,10 +70,9 @@ public class Game {
             //System.out.printf("%n%s moves %d places.%n", players.get(0).getName(), move());
             System.out.println("Player passes GO: £" + players.get(0).getFunding());
             //read all Chance Cards
-            List<ChanceCard> mainDeck = Create.deck();
+            Deck deck = new Deck();
             //shuffle chance cards
-            ChanceCard chance = shuffleDeck(mainDeck);
-            System.out.println("Shuffling...\n");
+            ChanceCard chance = deck.shuffle();
             //trace statements
             parseCard(chance, players.get(0));
             //chance.fullDetails();
@@ -228,6 +227,7 @@ public class Game {
 //                currentPlayer.getOwnedSquares().forEach(fs -> {
 //                            fs.getField()
 //
+//
 //                }
 //                );
 //
@@ -329,6 +329,7 @@ public class Game {
         }
     }
 
+
     public static void trade(Player traderPlayer, Player requestedPlayer) {
 
         FundableSquare offeredProperty;
@@ -387,16 +388,6 @@ public class Game {
         }
     }
 
-    /**
-     * shuffles deck and returns the top card (first in List)
-     *
-     * @param deck The Deck of Chance Cards
-     * @return A single Chance Card
-     */
-    static ChanceCard shuffleDeck(List<ChanceCard> deck) {
-        Collections.shuffle(deck);
-        return deck.get(0);
-    }
 
     public static void collectFunding(Player player) {
         player.setFunding((player.getFunding() + COLLECT));
