@@ -128,17 +128,7 @@ class GameTest {
         assertEquals(s2.getDevLevel(), expectedDevLevel);
     }
 
-    @Test
-    void testRollResultIsWithinMaximumOf12() throws InterruptedException, UnsupportedAudioFileException, LineUnavailableException, IOException {
-        for (int i = 0; i < 20; i++) {
-            int testResult = Game.move();
-            if (testResult < 2) {
-                fail("Number below range 2 - 12");
-            } else if (testResult > 12) {
-                fail("Number above range 2 - 12");
-            }
-        }
-    }
+
 
     @Test
     void testTrade_noProperties() {

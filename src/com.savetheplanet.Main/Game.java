@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class Game implements IDie {
+public class Game  {
 
     private static List<Square> board = new ArrayList<>();
     private static List<Player> players = new ArrayList<>();
@@ -87,9 +87,9 @@ public class Game implements IDie {
             System.out.println(players.get(0).getName() + " post card: £" + players.get(0).getFunding());
 
             System.out.println("Real estate test");
-            if (players.get(2).getOwnedSquares().isEmpty()) {
-                System.out.println("Player " + players.get(2).getName() + " has no property");
-                System.out.println("This is where his squares would go, IF HE HAD ANY: " + players.get(2).getOwnedSquares());
+            if (players.get(1).getOwnedSquares().isEmpty()) {
+                System.out.println("Player " + players.get(1).getName() + " has no property");
+                System.out.println("This is where his squares would go, IF HE HAD ANY: " + players.get(1).getOwnedSquares());
                 System.out.println("Size of list of squares: " + players.get(2).getOwnedSquares().size());
             }
             playersPreRollOptions(players.get(1));
@@ -336,6 +336,36 @@ public class Game implements IDie {
 
         }
     }
+    private static void audio(String sound) {
+        try {
+            File f;
+            AudioInputStream ais;
+            switch (sound) {
+//                case "dice":
+//                    f = new File("./sounds/dice.wav");
+//                    ais = AudioSystem.getAudioInputStream(f);
+//                    Clip dice = AudioSystem.getClip();
+//                    dice.open(ais);
+//                    dice.start();
+//                    ais.close();
+//                    break;
+                case "clap":
+                    f = new File("./sounds/clap.wav");
+                    ais = AudioSystem.getAudioInputStream(f);
+                    Clip clap = AudioSystem.getClip();
+                    clap.open(ais);
+                    clap.start();
+                    ais.close();
+                    break;
+
+                default:
+                    break;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void trade(Player traderPlayer, Player requestedPlayer) {
 
@@ -410,26 +440,26 @@ public class Game implements IDie {
         player.setFunding((player.getFunding() + COLLECT));
     }
 
+    /**
+     *
+     * @return Returns the value of the dice throw to a Global MOVE Integer
+     * @throws InterruptedException
+     */
     public static int move() throws InterruptedException {
-        MOVE = roll();
-        return MOVE;
-    }
-
-    private static int roll() throws InterruptedException {
-        audio("dice");
-        //A message is displayed saying “Dice Rolling...”
-        System.out.println("Dice Rolling...");
-        //The dice roll takes a few seconds.
+        Dice die = new Dice();
         int die1Result = randomNum();
         int die2Result = randomNum();
+        die.roll();
         diceGFX(die1Result, die2Result);
-        int totalResult = die1Result + die2Result;
         //A message is then displayed saying “Die 1 is x, Die 2
-        //is y. You will move forward x+y places.”
-        System.out.printf("You will move forward %d spaces.%n", totalResult);
+        System.out.printf("Die 1 is %d%n", die1Result);
+        System.out.printf("Die 2 is %d%n", die2Result);
+        MOVE = die1Result + die2Result;
         TimeUnit.SECONDS.sleep(2);
-        return totalResult;
-    }
+        //is y. You will move forward x+y places.”
+        System.out.printf("You will move forward %d spaces.%n", MOVE);
+        return MOVE;
+        }
 
 
     private static void diceGFX(int die1, int die2) throws InterruptedException {
@@ -465,36 +495,7 @@ public class Game implements IDie {
         System.out.printf("%s  %s %n", e, e);
     }
 
-    private static void audio(String sound) {
-        try {
-            File f;
-            AudioInputStream ais;
-            switch (sound) {
-                case "dice":
-                    f = new File("./sounds/dice.wav");
-                    ais = AudioSystem.getAudioInputStream(f);
-                    Clip dice = AudioSystem.getClip();
-                    dice.open(ais);
-                    dice.start();
-                    ais.close();
-                    break;
-                case "clap":
-                    f = new File("./sounds/clap.wav");
-                    ais = AudioSystem.getAudioInputStream(f);
-                    Clip clap = AudioSystem.getClip();
-                    clap.open(ais);
-                    clap.start();
-                    ais.close();
-                    break;
 
-                default:
-                    break;
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     private static int randomNum() {
         int min = 1;
@@ -565,22 +566,22 @@ public class Game implements IDie {
         //check the players owned squares to see if they can develop
         for (int i = 0; i < player.getOwnedSquares().size(); i++) {
             if (player.getOwnedSquares().get(i).getField() == 3) {
-                conserve += 1;
+                conserve ++;
                 if (conserve == 2)
                     ownsArea = true;
             }
             if (player.getOwnedSquares().get(i).getField() == 4) {
-                reduce += 1;
+                reduce ++;
                 if (reduce == 3)
                     ownsArea = true;
             }
             if (player.getOwnedSquares().get(i).getField() == 5) {
-                reuse += 1;
+                reuse ++;
                 if (reuse == 3)
                     ownsArea = true;
             }
             if (player.getOwnedSquares().get(i).getField() == 6) {
-                create += 1;
+                create ++;
                 if (create == 2)
                     ownsArea = true;
             }
