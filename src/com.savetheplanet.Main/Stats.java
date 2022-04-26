@@ -46,7 +46,7 @@ public class Stats {
         System.out.println();
     }
 
-    void end() {
+    void end() throws InterruptedException {
 
         full();
         String winCondition = drawCheck();

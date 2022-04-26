@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 public class SaveThePlanet {
 
     @SuppressWarnings("InfiniteLoopStatement")
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         try {
             File f = new File("./sounds/earth.wav");
@@ -50,7 +50,7 @@ public class SaveThePlanet {
             welcome();
     }
 
-    static void welcome() {
+    static void welcome() throws InterruptedException {
         System.out.println("Welcome To Save The Planet");
         System.out.println("Would you like to Play? y/n");
 
@@ -75,7 +75,7 @@ public class SaveThePlanet {
         System.exit(1);
     }
 
-    private static void initiateGameOptions() {
+    private static void initiateGameOptions() throws InterruptedException {
         Game.timer60 = Create.timerReset(Game.timer60, Game.T60);
 
         System.out.println("Game Menu");

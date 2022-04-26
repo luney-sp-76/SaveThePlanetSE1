@@ -73,7 +73,7 @@ class GameTest {
     }
 
     @Test
-    void testPayRates_success() {
+    void testPayRates_success() throws InterruptedException {
         int initialBalance = 500;
         p1.setFunding(initialBalance);
         p2.setFunding(initialBalance);
@@ -87,7 +87,7 @@ class GameTest {
     }
 
     @Test
-    void testPayRates_noFunding() {
+    void testPayRates_noFunding() throws InterruptedException {
         int initialBalance = 5;
         p1.setFunding(initialBalance);
         s1.setOwner(p2);
@@ -237,7 +237,7 @@ class GameTest {
     }
 
     @Test
-    void testPlayersPreRollFourOptions(){
+    void testPlayersPreRollFourOptions() throws InterruptedException {
         int p1InitialBalance = 500;
         int p2InitialBalance = 50;
 
@@ -269,7 +269,7 @@ class GameTest {
     }
 
     @Test
-    void testPlayersPreRollThreeOptions(){
+    void testPlayersPreRollThreeOptions() throws InterruptedException {
         int p1InitialBalance = 500;
         int p2InitialBalance = 50;
 

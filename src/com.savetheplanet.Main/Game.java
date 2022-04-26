@@ -6,7 +6,6 @@ import javax.sound.sampled.Clip;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class Game  {
 
@@ -26,90 +25,111 @@ public class Game  {
 
     private static int MOVE;
 
-    public Game() {
+    //initiates an end game option
+    private static boolean QUIT;
+
+    public Game() throws InterruptedException {
         newGame();
         playGame();
     }
 
-    public Game(HashMap<String, Object> load) {
+    public Game(HashMap<String, Object> load) throws InterruptedException {
         loadGame(load);
         playGame();
+
     }
 
-    public static void playGame() {
+    public static void playGame()  {
+
         try {
 
-            // light demo
-            players.get(1).addOwnedSquare((FundableSquare) board.get(14));
-            ((FundableSquare) board.get(14)).setOwner(players.get(1));
-            ((FundableSquare) board.get(14)).setDevLevel(4);
+            //System.out.println("This board has " + board.size() + " squares");
+
+                QUIT = false;
 
 
-            players.get(0).addOwnedSquare((FundableSquare) board.get(13));
-            ((FundableSquare) board.get(13)).setOwner(players.get(0));
-            ((FundableSquare) board.get(13)).setDevLevel(4);
 
-            players.get(1).addOwnedSquare((FundableSquare) board.get(2));
-            ((FundableSquare) board.get(2)).setOwner(players.get(1));
-            ((FundableSquare) board.get(2)).setDevLevel(4);
-
-            players.get(1).addOwnedSquare((FundableSquare) board.get(15));
-            ((FundableSquare) board.get(15)).setOwner(players.get(1));
-            ((FundableSquare) board.get(15)).setDevLevel(4);
-            players.get(0).addOwnedSquare((FundableSquare) board.get(4));
-
-            ((FundableSquare) board.get(4)).setOwner(players.get(1));
-            ((FundableSquare) board.get(4)).setDevLevel(4);
-//
-//            playerOut(players.get(1));
-//            playerOut(players.get(2));
-            //players.get(2).setFunding(600);
-//            developField(players.get(1));
-
-
-            //proof of concept testing
-            System.out.println("Game initialised: ");// + players.get(0));
-            collectFunding(players.get(0));
-
-            playersPreRollOptions(players.get(0));
-            //System.out.printf("%n%s moves %d places.%n", players.get(0).getName(), move());
-            System.out.println("Player passes GO: £" + players.get(0).getFunding());
-            //read all Chance Cards
+            System.out.println("Game initialised: ");
             List<ChanceCard> mainDeck = Create.deck();
-            //shuffle chance cards
             ChanceCard chance = shuffleDeck(mainDeck);
             System.out.println("Shuffling...\n");
-            //trace statements
-            parseCard(chance, players.get(0));
-            //chance.fullDetails();
-            System.out.println("Proof of concept: " + chance.getAssigned());
-            chance.fullDetails(chance);
-            System.out.println(players.get(0).getName() + " post card: £" + players.get(0).getFunding());
 
-            System.out.println("Real estate test");
-            if (players.get(1).getOwnedSquares().isEmpty()) {
-                System.out.println("Player " + players.get(1).getName() + " has no property");
-                System.out.println("This is where his squares would go, IF HE HAD ANY: " + players.get(1).getOwnedSquares());
-                System.out.println("Size of list of squares: " + players.get(2).getOwnedSquares().size());
+                // hand out starting money
+            for(
+                Player newPlayer : players)
+
+                {
+
+                    collectFunding(newPlayer);
+                }
+
+            while(!QUIT) {
+
+                Player currentPlayer = players.get(0);
+
+                playersPreRollOptions(currentPlayer);
+                if (board.indexOf(currentPlayer.getLocation() + MOVE) > board.size()) {
+                    int squareNumber = board.indexOf(currentPlayer.getLocation() + MOVE) - (board.size());
+                    currentPlayer.setLocation(board.indexOf(0 + squareNumber) - 1);
+                    System.out.println(board.get(currentPlayer.getLocation()).getName());
+                } else {
+
+                    currentPlayer.setLocation(board.indexOf(currentPlayer.getLocation() + MOVE));
+                }
+                System.out.println(board.get(currentPlayer.getLocation()).getName());
+
+                String playerOnSquareName = board.get(currentPlayer.getLocation()).getName();
+                System.out.println(currentPlayer.getName() + " is on square " + playerOnSquareName);
+                System.out.println("Do you want to continue the game press y/yes to continue or q/quit to quit");
+                switchOptions(MENU.nextLine().toLowerCase());
             }
-            playersPreRollOptions(players.get(1));
 
-
-            System.out.printf("%n%s moves %d places.%n", players.get(1).getName(), move());
-
-            saveGame();
 
             Stats stats = new Stats(players);
             stats.full();
             stats.elide();
-            stats.end();
-            System.exit(1);
+           stats.end();
+            //System.exit(1);
 
-        } catch (
-                Exception e) {
-            e.printStackTrace();
+            } catch(InterruptedException e){
+                throw new RuntimeException(e);
+            } catch(Exception e){
+                e.printStackTrace();
+            }
         }
+
+
+
+
+    private static boolean switchOptions(String response){
+        int responseNumber = 1;
+
+        switch (response) {
+            case "y":
+            case "yes":
+                QUIT = false;
+                break;
+            case "q":
+            case "quit":
+                QUIT = true;
+                break;
+            default:
+                while(responseNumber <3) {
+                    System.out.println("attempt " + responseNumber +  "of 3");
+                    System.out.println("Sorry that's not an option");
+                    System.out.println("Do you want to continue the game press y/yes to continue or q/quit to quit");
+                    responseNumber++;
+                    switchOptions(MENU.nextLine().toLowerCase());
+                }
+                QUIT = false;
+        }
+
+
+        return QUIT;
     }
+
+
+
 
     private static void newGame() {
         try {
@@ -124,7 +144,7 @@ public class Game  {
     }
 
     @SuppressWarnings("unchecked")
-    private static void loadGame(HashMap<String, Object> load) {
+    private static void loadGame(HashMap<String, Object> load) throws InterruptedException {
 
         timer60 = Create.timerReset(timer60, T60);
 
@@ -187,7 +207,9 @@ public class Game  {
             case 8:
                 //roll dice
                 System.out.printf("you have chosen %s%n", option1);
-                System.out.printf("%n%s moves %d places.%n", currentPlayer.getName(), move());
+                MOVE = move();
+                System.out.printf("%n%s moves %d places.%n", currentPlayer.getName(),MOVE);
+
                 break;
             case 5:
             case 9:
@@ -240,7 +262,7 @@ public class Game  {
 //
 //    }
 
-    private static void saveGame() {
+    private static void saveGame() throws InterruptedException {
 
         timer60 = Create.timerReset(timer60, T60);
 
@@ -300,7 +322,7 @@ public class Game  {
         System.out.println("Balance: £" + player.getFunding());
     }
 
-    public static void payRates(Player player, FundableSquare square) {
+    public static void payRates(Player player, FundableSquare square) throws InterruptedException {
         if (square.getOwner() != null && square.getOwner() != player) {
             Player owner = square.getOwner();
             int rates = square.getRatesBill();
@@ -324,7 +346,7 @@ public class Game  {
         }
     }
 
-    private static void playerOut(Player player) {
+    private static void playerOut(Player player) throws InterruptedException {
 
         Stats stats = new Stats(players);
         System.out.println(player.getName() + " is out of the game!");
@@ -439,7 +461,12 @@ public class Game  {
         System.out.printf("Die 1 is %d%n", die1Result);
         System.out.printf("Die 2 is %d%n", die2Result);
         MOVE = die1Result + die2Result;
-        TimeUnit.SECONDS.sleep(2);
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        }catch(InterruptedException e){
+            System.err.println("Oops the Dice Broke");
+            System.exit(1);
+        }
         //is y. You will move forward x+y places.”
         System.out.printf("You will move forward %d spaces.%n", MOVE);
         return MOVE;
