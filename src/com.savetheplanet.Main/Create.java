@@ -14,7 +14,6 @@ final class Create {
     private Create() {
         throw new UnsupportedOperationException();
     }
-
     /**
      * @return board - Returns List of Squares as Board.
      * Jaszon

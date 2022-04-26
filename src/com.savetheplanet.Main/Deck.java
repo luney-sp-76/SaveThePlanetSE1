@@ -69,6 +69,4 @@ public class Deck {
         System.out.println("Shuffling...\n");
         return deck.get(0);
     }
-
-
 }
