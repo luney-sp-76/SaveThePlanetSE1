@@ -93,6 +93,12 @@ public class SaveThePlanet {
 
     @SuppressWarnings("unchecked")
     public static HashMap<String, Object> load() {
+
+        System.out.println("Do you want to load a Saved Game? y/n");
+
+        if (!Game.MENU.nextLine().toLowerCase().contains("y"))
+           return null;
+
         List<File> saves = loadFiles();
 
         AtomicInteger saveID = new AtomicInteger(0);
