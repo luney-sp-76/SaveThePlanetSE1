@@ -41,15 +41,15 @@ public class Game {
             for (Player playerNew : players.getPlayers()) {
                 collectFunding(playerNew);
             }
-//
-//           while(true) {
-//               for (Player playerNew : players.getPlayers()) {
-//                   if (playerNew.turnsTaken != -1) {
-//                       playersPreRollOptions(playerNew);
-//                   }
-//               }
-//
-//           }
+
+          while(true) {
+             for (Player playerNew : players.getPlayers()) {
+                 if (playerNew.turnsTaken != -1) {
+                      playersPreRollOptions(playerNew);
+                  }
+              }
+
+           }
 
 
             //System.out.printf("%n%s moves %d places.%n", players.getPlayer(0).getName(), move());
@@ -76,9 +76,9 @@ public class Game {
 //            System.out.printf("%n%s moves %d places.%n", players.getPlayer(1).getName(), move());
 
             //saveGame();
-            players.getPlayer(1).setFunding(players.getPlayer(1).getFunding()+1000);
-            stats.end();
-            System.exit(1);
+            //players.getPlayer(1).setFunding(players.getPlayer(1).getFunding()+1000);
+            //stats.end();
+           // System.exit(1);
 //
 //            stats.elide();
 //            stats.full();
@@ -169,7 +169,22 @@ public class Game {
             System.out.println(e.getMessage());
         }
     }
-
+private static void checkSquareOwnership(Square square, Player currentPlayer) {
+    if (square instanceof FundableSquare) {
+        if (((FundableSquare) square).getOwner() == null) {
+            System.out.printf("Would you like to purchase %s for £ %d? y/yes or n/no%n", square.getName(), ((FundableSquare) square).getCost());
+            switch (MENU.nextLine().toLowerCase()) {
+                case "y":
+                case "yes":
+                    purchaseSquare(currentPlayer, (FundableSquare) square);
+                    break;
+                default:
+            }
+        } else {
+            payRates(currentPlayer, (FundableSquare) square);
+        }
+    }
+}
 
     /**
      * Calculates the options available to a player based on the number of squares owned
@@ -181,7 +196,7 @@ public class Game {
      * @param currentPlayer current player
      */
     private static void playersPreRollOptions(Player currentPlayer) {
-        System.out.println("Choose your next move");
+        System.out.println(currentPlayer.getName() +" choose your next move");
         System.out.println("---------------------");
         String option1 = "1) Roll Dice";
         String option2 = "2) Trade Area";
@@ -233,22 +248,22 @@ public class Game {
                 currentPlayer.setLocation(location);
                 System.out.println(currentPlayer.getName() + " is on square " + board.get(currentPlayer.getLocation()).getName());
                 Square square = (board.get(currentPlayer.getLocation()));
-                if(square instanceof FundableSquare) {
-                    if(((FundableSquare) square).getOwner() == null) {
-                        System.out.printf("Would you like to purchase %s for £ %d? y/yes or n/no%n", square.getName(), ((FundableSquare) square).getCost());
-                        switch(MENU.nextLine().toLowerCase()){
-                            case "y":
-                            case "yes":
-                                purchaseSquare(currentPlayer, (FundableSquare) square);
-                                break;
-                            default:
-                        }
-                    }else{
-                        payRates(currentPlayer,(FundableSquare) square);
-                    }
-        }
+                checkSquareOwnership(square, currentPlayer);
+//                if(square instanceof FundableSquare) {
+//                    if(((FundableSquare) square).getOwner() == null) {
+//                        System.out.printf("Would you like to purchase %s for £ %d? y/yes or n/no%n", square.getName(), ((FundableSquare) square).getCost());
+//                        switch(MENU.nextLine().toLowerCase()){
+//                            case "y":
+//                            case "yes":
+//                                purchaseSquare(currentPlayer, (FundableSquare) square);
+//                                break;
+//                            default:
+//                        }
+//                    }else{
+//                        payRates(currentPlayer,(FundableSquare) square);
+//                    }
+        //}
                 MOVE = 0;
-
                 break;
             case 5:
             case 9:
