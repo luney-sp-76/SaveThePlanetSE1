@@ -48,9 +48,49 @@ public class Game {
                 collectFunding(playerNew);
             }
 
-            // conserve // field 2 x 2/2
-            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(2));
-            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(4));
+          while(true) {
+             for (Player playerNew : players.getPlayers()) {
+                 if (playerNew.turnsTaken != -1) {
+                      playersPreRollOptions(playerNew);
+                  }
+              }
+
+           }
+
+
+            //System.out.printf("%n%s moves %d places.%n", players.getPlayer(0).getName(), move());
+//            System.out.println("Player passes GO: £" + players.getPlayer(0).getFunding());
+//            //read all Chance Cards
+//            Deck deck = new Deck();
+//            //shuffle chance cards
+//            ChanceCard chance = deck.shuffle();
+//            //trace statements
+//            parseCard(chance, players.getPlayer(0));
+//            //chance.fullDetails();
+//            System.out.println("Proof of concept: " + chance.getAssigned());
+//            chance.fullDetails(chance);
+//            System.out.println(players.getPlayer(0).getName() + " post card: £" + players.getPlayer(0).getFunding());
+//
+//            System.out.println("Real estate test");
+//            if (players.getPlayer(1).getOwnedSquares().isEmpty()) {
+//                System.out.println("Player " + players.getPlayer(1).getName() + " has no property");
+//                System.out.println("This is where his squares would go, IF HE HAD ANY: " + players.getPlayer(1).getOwnedSquares());
+//                System.out.println("Size of list of squares: " + players.getPlayer(2).getOwnedSquares().size());
+//            }
+//            playersPreRollOptions(players.getPlayer(1));
+//
+//            System.out.printf("%n%s moves %d places.%n", players.getPlayer(1).getName(), move());
+
+            //saveGame();
+            //players.getPlayer(1).setFunding(players.getPlayer(1).getFunding()+1000);
+            //stats.end();
+           // System.exit(1);
+//
+//            stats.elide();
+//            stats.full();
+//
+//            stats.end();
+//            System.exit(1);
 
             // reduce // field 3x4/4
             players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(5));
@@ -158,6 +198,22 @@ public class Game {
             System.out.println(e.getMessage());
         }
     }
+private static void checkSquareOwnership(Square square, Player currentPlayer) {
+    if (square instanceof FundableSquare) {
+        if (((FundableSquare) square).getOwner() == null) {
+            System.out.printf("Would you like to purchase %s for £ %d? y/yes or n/no%n", square.getName(), ((FundableSquare) square).getCost());
+            switch (MENU.nextLine().toLowerCase()) {
+                case "y":
+                case "yes":
+                    purchaseSquare(currentPlayer, (FundableSquare) square);
+                    break;
+                default:
+            }
+        } else {
+            payRates(currentPlayer, (FundableSquare) square);
+        }
+    }
+}
 
     /**
      * Calculates the options available to a player based on the number of squares owned
@@ -169,7 +225,7 @@ public class Game {
      * @param currentPlayer current player
      */
     private static void playersPreRollOptions(Player currentPlayer) {
-        System.out.println("Choose your next move");
+        System.out.println(currentPlayer.getName() +" choose your next move");
         System.out.println("---------------------");
         String option1 = "1) Roll Dice";
         String option2 = "2) Trade Area";
@@ -254,7 +310,6 @@ public class Game {
                     }
                 }
                 MOVE = 0;
-
                 break;
             case 5:
             case 9:
