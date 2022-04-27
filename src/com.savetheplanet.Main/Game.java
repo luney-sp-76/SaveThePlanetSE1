@@ -393,7 +393,6 @@ public class Game {
     }
 
     private static void playerOut(Player player) {
-
         stats.setPlayers(players.getPlayers());
         System.out.println(player.getName() + " is out of the game!");
         player.setTurnsTaken(-1);
@@ -439,7 +438,10 @@ public class Game {
                 if (offeredPropertyCost == requestedPropertyCost) {
                     swapProperties(traderPlayer, requestedPlayer, offeredProperty, requestedProperty);
                 } else {
-                    int diff = offeredPropertyCost - requestedPropertyCost;
+
+                    int totalOfferedPropertyCost = offeredPropertyCost + (offeredProperty.getDevLevel() * offeredProperty.getDevCost());
+                    int totalRequestedPropertyCost = requestedPropertyCost + (requestedProperty.getDevLevel() * requestedProperty.getDevCost());
+                    int diff = totalOfferedPropertyCost - totalRequestedPropertyCost;
 
                     if (diff > 0) {
                         if (payPropertyDifferences(requestedPlayer, traderPlayer, diff)) {
