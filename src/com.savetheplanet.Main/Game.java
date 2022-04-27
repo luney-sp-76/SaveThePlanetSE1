@@ -93,28 +93,28 @@ public class Game {
 //            System.exit(1);
 
             // reduce // field 3x4/4
-            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(5));
-            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(6));
-            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(8));
-
-            // reuse // field 5 x 2/3
-            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(12));
-            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(13));
-
-            // create // field 6 x 1/2
-            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(15));
-
-            developField(players.getPlayer(1));
-
-            while (true) {
-                for (Player playerNew : players.getPlayers()) {
-                    if (playerNew.turnsTaken != -1) {
-                        playersPreRollOptions(playerNew);
-
-                    }
-                }
+//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(5));
+//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(6));
+//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(8));
 //
-            }
+//            // reuse // field 5 x 2/3
+//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(12));
+//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(13));
+//
+//            // create // field 6 x 1/2
+//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(15));
+//
+//            developField(players.getPlayer(1));
+//
+//            while (true) {
+//                for (Player playerNew : players.getPlayers()) {
+//                    if (playerNew.turnsTaken != -1) {
+//                        playersPreRollOptions(playerNew);
+//
+//                    }
+//                }
+////
+//            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -285,30 +285,13 @@ private static void checkSquareOwnership(Square square, Player currentPlayer) {
 
                 if (square.getField() == 2) {
                     ChanceCard chance = deck.shuffle();
-                    System.out.println("Shuffling...\n");
                     //trace statements
                     parseCard(chance, currentPlayer);
-                    //chance.fullDetails();
-                    System.out.println("Proof of concept: " + chance.getAssigned());
                     chance.fullDetails(chance);
 
-
                 }
 
-                if (square instanceof FundableSquare) {
-                    if (((FundableSquare) square).getOwner() == null) {
-                        System.out.printf("Would you like to purchase %s for £ %d? y/yes or n/no%n", square.getName(), ((FundableSquare) square).getCost());
-                        switch (MENU.nextLine().toLowerCase()) {
-                            case "y":
-                            case "yes":
-                                purchaseSquare(currentPlayer, (FundableSquare) square);
-                                break;
-                            default:
-                        }
-                    } else {
-                        payRates(currentPlayer, (FundableSquare) square);
-                    }
-                }
+                checkSquareOwnership(square, currentPlayer);
                 MOVE = 0;
                 break;
             case 5:
@@ -317,11 +300,13 @@ private static void checkSquareOwnership(Square square, Player currentPlayer) {
                 //trade
 
                 int counter = 0;
+                List<Player> tradablePlayers = new ArrayList<>();
                 for (Player player : players.getPlayers()) {
                     if (!currentPlayer.getName().equals(player.getName())) {
                         if (player.getOwnedSquares().size() != 0) {
                             counter++;
                             System.out.println(counter + ") trade with " + player.getName());
+                            tradablePlayers.add(player);
                         }
                     }
 
@@ -329,7 +314,8 @@ private static void checkSquareOwnership(Square square, Player currentPlayer) {
 
                 if (counter > 0) {
                     int playerNum = Integer.parseInt(MENU.nextLine()) - 1;
-                    trade(currentPlayer, players.getPlayer(playerNum));
+                    Player traderPlayer = tradablePlayers.get(playerNum);
+                    trade(currentPlayer, traderPlayer);
                 } else {
                     System.out.println("you have no-one to trade with");
                 }
@@ -358,7 +344,7 @@ private static void checkSquareOwnership(Square square, Player currentPlayer) {
                 throw new IllegalArgumentException("that's not an option");
                 //timer = Create.timerReset(timer);
         }
-        stats.elide();
+        stats.full();
     }
 
 
@@ -418,10 +404,11 @@ private static void checkSquareOwnership(Square square, Player currentPlayer) {
         } else if (card.getAssigned() == RandomSquareAssignment.BACK){
             int newLocation = player.getLocation() - card.getAction();
             if(newLocation < 0){
-                newLocation += 15;
+                newLocation += 16;
             }
             player.setLocation(newLocation);
-            board.get(player.getLocation());
+            Square updatedLocation = board.get(player.getLocation());
+            checkSquareOwnership(updatedLocation, player);
         }
     }
 
@@ -461,9 +448,11 @@ private static void checkSquareOwnership(Square square, Player currentPlayer) {
         if (square.getOwner() != null && square.getOwner() != player) {
             Player owner = square.getOwner();
             int rates = square.getRatesBill();
+            System.out.println("Rates Bill: £" + rates);
             if (player.getFunding() >= rates) {
                 player.setFunding(player.getFunding() - rates);
                 owner.setFunding(owner.getFunding() + rates);
+                System.out.println("You've paid £" + rates);
             } else {
                 System.out.println("You can't pay your rates bill! Time to liquidate your property.");
 
