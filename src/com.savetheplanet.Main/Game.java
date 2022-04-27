@@ -333,6 +333,22 @@ public class Game {
             player.setFunding(player.getFunding() + card.getAction());
         } else if (card.getAssigned() == RandomSquareAssignment.COLLECT_FUNDING) {
             player.setFunding(player.getFunding() + COLLECT);
+        } else if (card.getAssigned() == RandomSquareAssignment.FORWARD){
+            int newLocation = player.getLocation() + card.getAction();
+            if(newLocation >= 15){
+                newLocation -= 15;
+            }
+            player.setLocation(newLocation);
+            board.get(player.getLocation());
+            //purchase options
+        } else if (card.getAssigned() == RandomSquareAssignment.BACK){
+            int newLocation = player.getLocation() - card.getAction();
+            if(newLocation < 0){
+                newLocation += 15;
+            }
+            player.setLocation(newLocation);
+            board.get(player.getLocation());
+            //purchase options
         }
     }
 
