@@ -4,12 +4,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Game {
-
+    public static Scanner MENU = new Scanner(System.in);
     private static List<Square> board = new ArrayList<>();
-    private static Players players = new Players();
+    private static final Players players = new Players();
     private static Stats stats;
+    private static final Deck deck = new Deck();
+
     // for 30 second with 15 second warning
     static final int T15 = 15000;
     // 120 second with 60 seconds warning.
@@ -19,7 +22,6 @@ public class Game {
 
     private static final int COLLECT = 500;
 
-    public static Scanner MENU = new Scanner(System.in);
 
     private static int MOVE;
 
@@ -33,59 +35,46 @@ public class Game {
         playGame();
     }
 
+    @SuppressWarnings("InfiniteLoopStatement")
     public static void playGame() {
+
+
         stats = new Stats(players.getPlayers());
 
         try {
-            //proof of concept t System.out.println("Game initialised: ");// + players.getPlayer(0));
+            //proof of concept
+            System.out.println("Game initialised: ");
             for (Player playerNew : players.getPlayers()) {
                 collectFunding(playerNew);
             }
-//
-//           while(true) {
-//               for (Player playerNew : players.getPlayers()) {
-//                   if (playerNew.turnsTaken != -1) {
-//                       playersPreRollOptions(playerNew);
-//                   }
-//               }
-//
-//           }
 
+            // conserve // field 2 x 2/2
+            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(2));
+            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(4));
 
-            //System.out.printf("%n%s moves %d places.%n", players.getPlayer(0).getName(), move());
-//            System.out.println("Player passes GO: £" + players.getPlayer(0).getFunding());
-//            //read all Chance Cards
-//            Deck deck = new Deck();
-//            //shuffle chance cards
-//            ChanceCard chance = deck.shuffle();
-//            //trace statements
-//            parseCard(chance, players.getPlayer(0));
-//            //chance.fullDetails();
-//            System.out.println("Proof of concept: " + chance.getAssigned());
-//            chance.fullDetails(chance);
-//            System.out.println(players.getPlayer(0).getName() + " post card: £" + players.getPlayer(0).getFunding());
-//
-//            System.out.println("Real estate test");
-//            if (players.getPlayer(1).getOwnedSquares().isEmpty()) {
-//                System.out.println("Player " + players.getPlayer(1).getName() + " has no property");
-//                System.out.println("This is where his squares would go, IF HE HAD ANY: " + players.getPlayer(1).getOwnedSquares());
-//                System.out.println("Size of list of squares: " + players.getPlayer(2).getOwnedSquares().size());
-//            }
-//            playersPreRollOptions(players.getPlayer(1));
-//
-//            System.out.printf("%n%s moves %d places.%n", players.getPlayer(1).getName(), move());
+            // reduce // field 3x4/4
+            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(5));
+            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(6));
+            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(8));
 
-            //saveGame();
-            players.getPlayer(1).setFunding(players.getPlayer(1).getFunding()+1000);
-            stats.end();
-            System.exit(1);
-//
-//            stats.elide();
-//            stats.full();
-//
-//            stats.end();
-//            System.exit(1);
+            // reuse // field 5 x 2/3
+            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(12));
+            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(13));
 
+            // create // field 6 x 1/2
+            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(15));
+
+            developField(players.getPlayer(1));
+
+            while (true) {
+                for (Player playerNew : players.getPlayers()) {
+                    if (playerNew.turnsTaken != -1) {
+                        playersPreRollOptions(playerNew);
+
+                    }
+                }
+//
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -97,7 +86,7 @@ public class Game {
             players.create();
             // Create Board/Squares
             board = createBoard();
-            playGame();
+
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
         }
@@ -170,7 +159,6 @@ public class Game {
         }
     }
 
-
     /**
      * Calculates the options available to a player based on the number of squares owned
      * distinguishes between 9 variations of menu items numbers
@@ -192,7 +180,7 @@ public class Game {
         int count;
         boolean goodToTrade = false;
         for (Player player : players.getPlayers()) {
-            if(player!=currentPlayer) {
+            if (player != currentPlayer) {
                 if (player.getOwnedSquares().size() != 0) {
                     goodToTrade = true;
                     break;
@@ -233,20 +221,38 @@ public class Game {
                 currentPlayer.setLocation(location);
                 System.out.println(currentPlayer.getName() + " is on square " + board.get(currentPlayer.getLocation()).getName());
                 Square square = (board.get(currentPlayer.getLocation()));
-                if(square instanceof FundableSquare) {
-                    if(((FundableSquare) square).getOwner() == null) {
+
+                if (square.getField() == 0) {
+                    collectFunding(currentPlayer);
+                    break;
+                }
+
+                if (square.getField() == 2) {
+                    ChanceCard chance = deck.shuffle();
+                    System.out.println("Shuffling...\n");
+                    //trace statements
+                    parseCard(chance, currentPlayer);
+                    //chance.fullDetails();
+                    System.out.println("Proof of concept: " + chance.getAssigned());
+                    chance.fullDetails(chance);
+
+
+                }
+
+                if (square instanceof FundableSquare) {
+                    if (((FundableSquare) square).getOwner() == null) {
                         System.out.printf("Would you like to purchase %s for £ %d? y/yes or n/no%n", square.getName(), ((FundableSquare) square).getCost());
-                        switch(MENU.nextLine().toLowerCase()){
+                        switch (MENU.nextLine().toLowerCase()) {
                             case "y":
                             case "yes":
                                 purchaseSquare(currentPlayer, (FundableSquare) square);
                                 break;
                             default:
                         }
-                    }else{
-                        payRates(currentPlayer,(FundableSquare) square);
+                    } else {
+                        payRates(currentPlayer, (FundableSquare) square);
                     }
-        }
+                }
                 MOVE = 0;
 
                 break;
@@ -258,7 +264,7 @@ public class Game {
                 int counter = 0;
                 for (Player player : players.getPlayers()) {
                     if (!currentPlayer.getName().equals(player.getName())) {
-                        if(player.getOwnedSquares().size()!=0) {
+                        if (player.getOwnedSquares().size() != 0) {
                             counter++;
                             System.out.println(counter + ") trade with " + player.getName());
                         }
@@ -266,17 +272,17 @@ public class Game {
 
                 }
 
-                if(counter >0) {
+                if (counter > 0) {
                     int playerNum = Integer.parseInt(MENU.nextLine()) - 1;
                     trade(currentPlayer, players.getPlayer(playerNum));
-                }else{
+                } else {
                     System.out.println("you have no-one to trade with");
                 }
                 break;
 
             case 10:
                 System.out.printf("you have chosen %s%n", option3);
-//               developField(currentPlayer);
+                developField(currentPlayer);
                 break;
             case 2:
             case 6:
@@ -297,18 +303,31 @@ public class Game {
                 throw new IllegalArgumentException("that's not an option");
                 //timer = Create.timerReset(timer);
         }
+        stats.elide();
     }
 
-//    private static void developField(Player currentPlayer) {
-//
-////        System.out.println(
-//
-//                currentPlayer.getOwnedSquares().forEach(fs -> {
-//                            fs.getField()
-//                }
-//                );
-//
-//    }
+
+    private static void developField(Player currentPlayer) {
+
+        String[] fields = {"Conserve", "Reduce", "Reuse", "Create"};
+        boolean[] fieldsReady = {false, false, false, false};
+
+        Map<Integer, Long> map = currentPlayer.getOwnedSquares().stream().collect(Collectors.groupingBy(Square::getField, Collectors.counting()));
+
+        currentPlayer.getOwnedSquares().forEach(fs -> map.forEach((k, v) -> {
+            if (fs.getField() == k && v >= fs.getFieldSize()) {
+                fieldsReady[k - 3] = true;
+            }
+        }));
+
+        System.out.println("Which field do you wish to develop?");
+        for (int i = 0; i < fields.length; i++) {
+            if (fieldsReady[i])
+                System.out.println(fields[i]);
+        }
+
+
+    }
 
     private static void saveGame() {
         timer60 = Idle.timerReset(timer60, T60);
@@ -394,12 +413,12 @@ public class Game {
 
     private static void playerOut(Player player) {
 
-        stats.setPlayers(players.getPlayers());
+
         System.out.println(player.getName() + " is out of the game!");
         player.setTurnsTaken(-1);
         if (players.getPlayers().stream().filter(p -> p.getTurnsTaken() > -1).count() < 2) {
             Sounds.play("clap");
-            stats.end();
+//            stats.end();
         }
     }
 
@@ -463,6 +482,7 @@ public class Game {
 
 
     public static void collectFunding(Player player) {
+        System.out.println("ADD CACHING SOUND EFFECT");
         player.setFunding((player.getFunding() + COLLECT));
     }
 

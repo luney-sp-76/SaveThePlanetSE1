@@ -73,7 +73,7 @@ class GameTest {
     }
 
     @Test
-    void testPayRates_success() throws InterruptedException {
+    void testPayRates_success() {
         int initialBalance = 500;
         p1.setFunding(initialBalance);
         p2.setFunding(initialBalance);
@@ -87,7 +87,7 @@ class GameTest {
     }
 
     @Test
-    void testPayRates_noFunding() throws InterruptedException {
+    void testPayRates_noFunding() {
         int initialBalance = 5;
         p1.setFunding(initialBalance);
         s1.setOwner(p2);
@@ -127,7 +127,6 @@ class GameTest {
         assertEquals(p1.getOwnedSquares(), ownedSquares);
         assertEquals(s2.getDevLevel(), expectedDevLevel);
     }
-
 
 
     @Test
@@ -261,7 +260,7 @@ class GameTest {
         p1Properties.get(2).setOwner(p1);
 
 
-        ByteArrayInputStream fakeScan = new ByteArrayInputStream(("y" + System.lineSeparator() + "1" + System.lineSeparator() + "2" + System.lineSeparator() + "bob" +System.lineSeparator() + "jim" + System.lineSeparator() + "1" + System.lineSeparator() + "n" + System.lineSeparator()).getBytes());
+        ByteArrayInputStream fakeScan = new ByteArrayInputStream(("y" + System.lineSeparator() + "1" + System.lineSeparator() + "2" + System.lineSeparator() + "bob" + System.lineSeparator() + "jim" + System.lineSeparator() + "1" + System.lineSeparator() + "n" + System.lineSeparator()).getBytes());
         Game.MENU = new Scanner(fakeScan);
         Game.playGame();
 
@@ -293,9 +292,7 @@ class GameTest {
         p1Properties.get(2).setOwner(p1);
 
 
-
-
-        ByteArrayInputStream fakeScan = new ByteArrayInputStream(("y" + System.lineSeparator() + "1" + System.lineSeparator() + "2" + System.lineSeparator() + "bob" +System.lineSeparator() + "jim" + System.lineSeparator() + "1" + System.lineSeparator() + "n" + System.lineSeparator()).getBytes());
+        ByteArrayInputStream fakeScan = new ByteArrayInputStream(("y" + System.lineSeparator() + "1" + System.lineSeparator() + "2" + System.lineSeparator() + "bob" + System.lineSeparator() + "jim" + System.lineSeparator() + "1" + System.lineSeparator() + "n" + System.lineSeparator()).getBytes());
         Game.MENU = new Scanner(fakeScan);
         Game.playGame();
     }

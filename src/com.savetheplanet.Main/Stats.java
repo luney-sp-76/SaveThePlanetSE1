@@ -1,11 +1,12 @@
 package com.savetheplanet.Main;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
 
 public class Stats {
 
@@ -13,10 +14,13 @@ public class Stats {
     private AtomicInteger rank;
 
     public Stats(List<Player> players) {
-        setPlayers(players);
+
+        List<Player> statsList = new ArrayList<>(players);
+        setPlayers(statsList);
     }
 
     public void setPlayers(List<Player> players) {
+
         this.players = players;
     }
 
@@ -69,6 +73,7 @@ public class Stats {
         }
         SaveThePlanet.welcome();
     }
+
     /**
      * @return Condition player won by.
      */
