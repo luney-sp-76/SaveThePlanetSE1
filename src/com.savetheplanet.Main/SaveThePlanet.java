@@ -41,6 +41,8 @@ public class SaveThePlanet {
 
     @SuppressWarnings("InfiniteLoopStatement")
     static void welcome() {
+        Game.timer60 = Idle.timerReset(Game.timer60, Game.T60);
+
         System.out.println("Welcome To Save The Planet");
         System.out.println("Would you like to Play? y/n");
 
@@ -53,7 +55,6 @@ public class SaveThePlanet {
                     quitOutsideOfGamePlay();
                     break;
                 default:
-                    System.err.println("Invalid input.");
                     System.out.println("Would you like to Play? y/n");
                     Game.timer60 = Idle.timerReset(Game.timer60, Game.T60);
             }
