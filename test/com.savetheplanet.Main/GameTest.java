@@ -73,7 +73,7 @@ class GameTest {
     }
 
     @Test
-    void testPayRates_success() throws InterruptedException {
+    void testPayRates_success() {
         int initialBalance = 500;
         p1.setFunding(initialBalance);
         p2.setFunding(initialBalance);
@@ -88,9 +88,11 @@ class GameTest {
 
     @Test
     void testPayRates_noFunding() throws InterruptedException {
+        //erroring out - players in playerOut returns null
         int initialBalance = 5;
         p1.setFunding(initialBalance);
         s1.setOwner(p2);
+        p2.addOwnedSquare(s1);
         Game.payRates(p1, s1);
         assertEquals(p1.getFunding(), initialBalance);
     }
@@ -127,7 +129,6 @@ class GameTest {
         assertEquals(p1.getOwnedSquares(), ownedSquares);
         assertEquals(s2.getDevLevel(), expectedDevLevel);
     }
-
 
 
     @Test
@@ -167,11 +168,11 @@ class GameTest {
         List<FundableSquare> p1Properties = new ArrayList<>();
         List<FundableSquare> p2Properties = new ArrayList<>();
 
-        p1.addOwnedSquare(s4);
+        p1.addOwnedSquare(s3);
         p2.addOwnedSquare(s2);
 
         p1Properties.add(s2);
-        p2Properties.add(s4);
+        p2Properties.add(s3);
 
         ByteArrayInputStream fakeScan = new ByteArrayInputStream(("1" + System.lineSeparator() + "1" + System.lineSeparator() + "y" + System.lineSeparator()).getBytes());
         Game.MENU = new Scanner(fakeScan);
@@ -197,7 +198,43 @@ class GameTest {
         p1Properties.add(s2);
         p2Properties.add(s1);
 
-        int costDifference = s1.getCost() - s2.getCost();
+        int s1Cost = s1.getCost() + (s1.getDevCost() * s1.getDevLevel());
+        int s2Cost = s2.getCost() + (s2.getDevCost() * s2.getDevLevel());
+
+        int costDifference = s1Cost - s2Cost;
+
+        ByteArrayInputStream fakeScan = new ByteArrayInputStream(("1" + System.lineSeparator() + "1" + System.lineSeparator() + "y" + System.lineSeparator()).getBytes());
+        Game.MENU = new Scanner(fakeScan);
+
+        Game.trade(p1, p2);
+        assertEquals(p1.getOwnedSquares(), p1Properties);
+        assertEquals(p2.getOwnedSquares(), p2Properties);
+        assertEquals(p1.getFunding(), (initialBalance + costDifference));
+        assertEquals(p2.getFunding(), (initialBalance - costDifference));
+    }
+
+    @Test
+    void testTrade_swapCostDifference_devDifference() {
+        int initialBalance = 500;
+
+        List<FundableSquare> p1Properties = new ArrayList<>();
+        List<FundableSquare> p2Properties = new ArrayList<>();
+
+        p1.setFunding(initialBalance);
+        p2.setFunding(initialBalance);
+
+        p1.addOwnedSquare(s1);
+        p2.addOwnedSquare(s2);
+
+        p1Properties.add(s2);
+        p2Properties.add(s1);
+
+        s2.setDevLevel(2);
+
+        int s1Cost = s1.getCost() + (s1.getDevCost() * s1.getDevLevel());
+        int s2Cost = s2.getCost() + (s2.getDevCost() * s2.getDevLevel());
+
+        int costDifference = s1Cost - s2Cost;
 
         ByteArrayInputStream fakeScan = new ByteArrayInputStream(("1" + System.lineSeparator() + "1" + System.lineSeparator() + "y" + System.lineSeparator()).getBytes());
         Game.MENU = new Scanner(fakeScan);
@@ -261,7 +298,7 @@ class GameTest {
         p1Properties.get(2).setOwner(p1);
 
 
-        ByteArrayInputStream fakeScan = new ByteArrayInputStream(("y" + System.lineSeparator() + "1" + System.lineSeparator() + "2" + System.lineSeparator() + "bob" +System.lineSeparator() + "jim" + System.lineSeparator() + "1" + System.lineSeparator() + "n" + System.lineSeparator()).getBytes());
+        ByteArrayInputStream fakeScan = new ByteArrayInputStream(("y" + System.lineSeparator() + "1" + System.lineSeparator() + "2" + System.lineSeparator() + "bob" + System.lineSeparator() + "jim" + System.lineSeparator() + "1" + System.lineSeparator() + "n" + System.lineSeparator()).getBytes());
         Game.MENU = new Scanner(fakeScan);
         Game.playGame();
 
@@ -293,9 +330,7 @@ class GameTest {
         p1Properties.get(2).setOwner(p1);
 
 
-
-
-        ByteArrayInputStream fakeScan = new ByteArrayInputStream(("y" + System.lineSeparator() + "1" + System.lineSeparator() + "2" + System.lineSeparator() + "bob" +System.lineSeparator() + "jim" + System.lineSeparator() + "1" + System.lineSeparator() + "n" + System.lineSeparator()).getBytes());
+        ByteArrayInputStream fakeScan = new ByteArrayInputStream(("y" + System.lineSeparator() + "1" + System.lineSeparator() + "2" + System.lineSeparator() + "bob" + System.lineSeparator() + "jim" + System.lineSeparator() + "1" + System.lineSeparator() + "n" + System.lineSeparator()).getBytes());
         Game.MENU = new Scanner(fakeScan);
         Game.playGame();
     }
