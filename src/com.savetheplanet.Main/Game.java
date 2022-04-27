@@ -354,8 +354,8 @@ private static void checkSquareOwnership(Square square, Player currentPlayer) {
                 newLocation -= 15;
             }
             player.setLocation(newLocation);
-            board.get(player.getLocation());
-            //purchase options
+            Square updatedLocation = board.get(player.getLocation());
+            checkSquareOwnership(updatedLocation, player);
         } else if (card.getAssigned() == RandomSquareAssignment.BACK){
             int newLocation = player.getLocation() - card.getAction();
             if(newLocation < 0){
@@ -363,7 +363,6 @@ private static void checkSquareOwnership(Square square, Player currentPlayer) {
             }
             player.setLocation(newLocation);
             board.get(player.getLocation());
-            //purchase options
         }
     }
 
