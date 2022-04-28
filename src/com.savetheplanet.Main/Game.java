@@ -37,70 +37,22 @@ public class Game {
 
     @SuppressWarnings("InfiniteLoopStatement")
     public static void playGame() {
-
-
         stats = new Stats(players.getPlayers());
 
 
         try {
-
-
-            //proof of concept
             System.out.println("Game initialised: ");
             for (Player playerNew : players.getPlayers()) {
                 collectFunding(playerNew);
             }
 
-
-            //conserve // field 2 x 2/2
-            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(2));
-            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(4));
-//            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(12));
-
-//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(5));
-            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(6));
-            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(8));
-
-
-//            for (int i = 0; i < 4; i++) {
-//
-//                ChanceCard chance = deck.shuffle();
-//                //trace statements
-//                parseCard(chance, players.getPlayer(0));
-//
-//            }
-
-
-            // reduce // field 3x4/4
-//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(5));
-//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(6));
-//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(8));
-//
-//            // reuse // field 5 x 2/3
-//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(12));
-//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(13));
-//
-//            // create // field 6 x 1/2
-//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(15));
-//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(14));
-//
-//            players.getPlayer(1).setFunding(400);
-//
-//            developField(players.getPlayer(1));
-//
-//            players.getPlayer(1).getOwnedSquares().forEach(fs -> System.out.println((fs.getDevLevel() > 0)));
-
-
             while (true) {
-
                 for (Player playerNew : players.getPlayers()) {
                     stats.full();
                     if (playerNew.turnsTaken != -1) {
-
                         playersPreRollOptions(playerNew);
                     }
                 }
-
             }
 
         } catch (Exception e) {
@@ -607,8 +559,10 @@ public class Game {
 
 
     public static void collectFunding(Player player) {
-        System.out.println("ADD CACHING SOUND EFFECT");
+
+        Sounds.play("cash");
         player.setFunding((player.getFunding() + COLLECT));
+
     }
 
     /**
