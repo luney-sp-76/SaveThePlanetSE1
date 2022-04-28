@@ -57,33 +57,33 @@ public class Game {
             players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(4));
 
 
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 4; i++) {
 
                 ChanceCard chance = deck.shuffle();
                 //trace statements
                 parseCard(chance, players.getPlayer(0));
-                chance.fullDetails(chance);
+         
             }
 
 
             // reduce // field 3x4/4
-            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(5));
-            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(6));
-            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(8));
-
-            // reuse // field 5 x 2/3
-            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(12));
-            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(13));
-
-            // create // field 6 x 1/2
-            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(15));
-            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(14));
-
-            players.getPlayer(1).setFunding(400);
-
-            developField(players.getPlayer(1));
-
-            players.getPlayer(1).getOwnedSquares().forEach(fs -> System.out.println((fs.getDevLevel() > 0)));
+//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(5));
+//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(6));
+//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(8));
+//
+//            // reuse // field 5 x 2/3
+//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(12));
+//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(13));
+//
+//            // create // field 6 x 1/2
+//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(15));
+//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(14));
+//
+//            players.getPlayer(1).setFunding(400);
+//
+//            developField(players.getPlayer(1));
+//
+//            players.getPlayer(1).getOwnedSquares().forEach(fs -> System.out.println((fs.getDevLevel() > 0)));
 
 
             while (true) {
@@ -276,7 +276,7 @@ public class Game {
                     ChanceCard chance = deck.shuffle();
                     //trace statements
                     parseCard(chance, currentPlayer);
-                    chance.fullDetails(chance);
+
 
                 }
 
@@ -434,6 +434,8 @@ public class Game {
      */
     public static void parseCard(ChanceCard card, Player player) {
 
+        System.out.println("CHANCE CARD");
+        card.fullDetails(card);
 
         if (card.getAssigned() == RandomSquareAssignment.PAY) {
             int pay = card.getAction();
@@ -448,13 +450,19 @@ public class Game {
         } else if (card.getAssigned() == RandomSquareAssignment.COLLECT_FUNDING) {
             player.setFunding(player.getFunding() + COLLECT);
         } else if (card.getAssigned() == RandomSquareAssignment.FORWARD) {
+
             int newLocation = player.getLocation() + card.getAction();
+
             if (newLocation >= 15) {
                 newLocation -= 15;
             }
+
+
             player.setLocation(newLocation);
             Square updatedLocation = board.get(player.getLocation());
             checkSquareOwnership(updatedLocation, player);
+
+
         } else if (card.getAssigned() == RandomSquareAssignment.BACK) {
             int newLocation = player.getLocation() - card.getAction();
             if (newLocation < 0) {
@@ -487,7 +495,6 @@ public class Game {
         player.setFunding(player.getFunding() + cost);
         System.out.println("Balance: £" + player.getFunding());
     }
-
 
 
     public static void purchaseSquare(Player player, FundableSquare square) {
