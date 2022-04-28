@@ -556,6 +556,8 @@ public class Game {
     }
 
 
+
+
     public static void collectFunding(Player player) {
 
         Sounds.play("cash");
