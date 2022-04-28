@@ -488,6 +488,8 @@ public class Game {
         System.out.println("Balance: £" + player.getFunding());
     }
 
+
+
     public static void purchaseSquare(Player player, FundableSquare square) {
         if (square.getOwner() == null) {
             if (player.getFunding() >= square.getCost()) {
