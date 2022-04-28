@@ -604,6 +604,8 @@ public class Game {
     }
 
 
+
+
     public static void collectFunding(Player player) {
         System.out.println("ADD CACHING SOUND EFFECT");
         player.setFunding((player.getFunding() + COLLECT));
