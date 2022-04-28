@@ -37,70 +37,22 @@ public class Game {
 
     @SuppressWarnings("InfiniteLoopStatement")
     public static void playGame() {
-
-
         stats = new Stats(players.getPlayers());
 
 
         try {
-
-
-            //proof of concept
             System.out.println("Game initialised: ");
             for (Player playerNew : players.getPlayers()) {
                 collectFunding(playerNew);
             }
 
-
-            //conserve // field 2 x 2/2
-            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(2));
-            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(4));
-            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(12));
-
-            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(5));
-            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(6));
-            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(8));
-
-
-//            for (int i = 0; i < 4; i++) {
-//
-//                ChanceCard chance = deck.shuffle();
-//                //trace statements
-//                parseCard(chance, players.getPlayer(0));
-//
-//            }
-
-
-            // reduce // field 3x4/4
-//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(5));
-//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(6));
-//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(8));
-//
-//            // reuse // field 5 x 2/3
-//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(12));
-//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(13));
-//
-//            // create // field 6 x 1/2
-//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(15));
-//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(14));
-//
-//            players.getPlayer(1).setFunding(400);
-//
-//            developField(players.getPlayer(1));
-//
-//            players.getPlayer(1).getOwnedSquares().forEach(fs -> System.out.println((fs.getDevLevel() > 0)));
-
-
             while (true) {
-
                 for (Player playerNew : players.getPlayers()) {
                     stats.full();
                     if (playerNew.turnsTaken != -1) {
-
                         playersPreRollOptions(playerNew);
                     }
                 }
-
             }
 
         } catch (Exception e) {
@@ -234,7 +186,7 @@ public class Game {
             }
         }
 
-        if (canDevelop(currentPlayer)) {
+        if (getFieldsForDevList(currentPlayer).size() > 0) {
             count = 7;
             System.out.printf("%n%s%n%s%n%s%n%s%n%s%n", option1, option2, option3, option4, option5);
 
@@ -294,9 +246,10 @@ public class Game {
 
                 int counter = 0;
                 List<Player> tradablePlayers = new ArrayList<>();
+
                 for (Player player : players.getPlayers()) {
                     if (!currentPlayer.getName().equals(player.getName())) {
-                        if (player.getOwnedSquares().size() != 0) {
+                        if (!hasNoDevelopments(player).isEmpty()) {
                             counter++;
                             System.out.println(counter + ") trade with " + player.getName());
                             tradablePlayers.add(player);
@@ -346,8 +299,7 @@ public class Game {
         String[] fields = {"Conserve", "Reduce", "Reuse", "Create"};
         int in;
 
-        Map<Integer, Long> fieldSquareCountMap = getFieldSquareCountMap(currentPlayer);
-        List<FundableSquare> fieldsCanDev = getFieldsForDevList(currentPlayer, fieldSquareCountMap);
+        List<FundableSquare> fieldsCanDev = getFieldsForDevList(currentPlayer);
 
         while (true) {
             try {
@@ -402,19 +354,18 @@ public class Game {
 
     }
 
-    private static List<FundableSquare> getFieldsForDevList(Player currentPlayer, Map<Integer, Long> devReq) {
+    private static List<FundableSquare> getFieldsForDevList(Player currentPlayer) {
+
+
+        Map<Integer, Long> getFieldSquareCountMap = currentPlayer.getOwnedSquares().stream().collect(Collectors.groupingBy(Square::getField, Collectors.counting()));
         List<FundableSquare> canDevelop = new ArrayList<>();
 
-        currentPlayer.getOwnedSquares().forEach(fs -> devReq.forEach((k, v) -> {
+        currentPlayer.getOwnedSquares().forEach(fs -> getFieldSquareCountMap.forEach((k, v) -> {
             if (fs.getField() == k && v >= fs.getFieldSize() && canDevelop.stream().noneMatch(s -> s.getField() == k)) {
                 canDevelop.add(fs);
             }
         }));
         return canDevelop;
-    }
-
-    private static Map<Integer, Long> getFieldSquareCountMap(Player currentPlayer) {
-        return currentPlayer.getOwnedSquares().stream().collect(Collectors.groupingBy(Square::getField, Collectors.counting()));
     }
 
     private static void saveGame() {
@@ -511,7 +462,6 @@ public class Game {
         }
     }
 
-
     public static void payRates(Player player, FundableSquare square) {
         if (square.getOwner() != null && square.getOwner() != player) {
             Player owner = square.getOwner();
@@ -551,11 +501,7 @@ public class Game {
         boolean correctInput = false;
         boolean confirmTrade = false;
 
-        List<FundableSquare> requestedPlayerNoDevelopments = hasNoDevelopments(traderPlayer);
-        List<FundableSquare> traderPlayerNoDevelopments = hasNoDevelopments(requestedPlayer);
-
-
-        if (!traderPlayer.getOwnedSquares().isEmpty() && !requestedPlayer.getOwnedSquares().isEmpty() && !requestedPlayerNoDevelopments.isEmpty() && !traderPlayerNoDevelopments.isEmpty()) {
+        if (!hasNoDevelopments(traderPlayer).isEmpty() && !hasNoDevelopments(requestedPlayer).isEmpty()) {
             offeredProperty = selectProperty(traderPlayer, traderPlayer);
             requestedProperty = selectProperty(traderPlayer, requestedPlayer);
 
@@ -611,8 +557,10 @@ public class Game {
 
 
     public static void collectFunding(Player player) {
-        System.out.println("ADD CACHING SOUND EFFECT");
+
+        Sounds.play("cash");
         player.setFunding((player.getFunding() + COLLECT));
+
     }
 
     /**
@@ -634,8 +582,8 @@ public class Game {
 
         List<FundableSquare> hasNoDevelopments = hasNoDevelopments(propertyOwner);
 
-
         System.out.println(selector.getName() + ", select the number of the property you'd like to trade.");
+
         for (int i = 0; i < hasNoDevelopments.size(); i++) {
             int position = i + 1;
             System.out.println(position + ". " + hasNoDevelopments.get(i).getName());
@@ -681,39 +629,5 @@ public class Game {
             System.out.println("Sorry, " + payer.getName() + " cannot afford this trade. Trade cancelled.");
             return false;
         }
-    }
-
-    /**
-     * checks the number of the current players owned Fundable Squares against the maximum number of Fundable Squares in each field
-     *
-     * @param player is the currentPlayer for this turn
-     * @return true if the player owns the maximum number of Fundable Squares in any field
-     */
-    private static boolean canDevelop(Player player) {
-        int conserve = 0;//max 2
-        int create = 0;//max 2
-        int reduce = 0;// max 3
-        int reuse = 0;//max 3
-        boolean ownsArea = false;
-        //check the players owned squares to see if they can develop
-        for (int i = 0; i < player.getOwnedSquares().size(); i++) {
-            if (player.getOwnedSquares().get(i).getField() == 3) {
-                conserve++;
-                if (conserve == 2) ownsArea = true;
-            }
-            if (player.getOwnedSquares().get(i).getField() == 4) {
-                reduce++;
-                if (reduce == 3) ownsArea = true;
-            }
-            if (player.getOwnedSquares().get(i).getField() == 5) {
-                reuse++;
-                if (reuse == 3) ownsArea = true;
-            }
-            if (player.getOwnedSquares().get(i).getField() == 6) {
-                create++;
-                if (create == 2) ownsArea = true;
-            }
-        }
-        return ownsArea;
     }
 }
