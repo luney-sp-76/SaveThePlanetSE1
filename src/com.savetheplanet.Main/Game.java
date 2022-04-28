@@ -55,15 +55,20 @@ public class Game {
             //conserve // field 2 x 2/2
             players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(2));
             players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(4));
+            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(12));
+
+            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(5));
+            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(6));
+            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(8));
 
 
-            for (int i = 0; i < 4; i++) {
-
-                ChanceCard chance = deck.shuffle();
-                //trace statements
-                parseCard(chance, players.getPlayer(0));
-         
-            }
+//            for (int i = 0; i < 4; i++) {
+//
+//                ChanceCard chance = deck.shuffle();
+//                //trace statements
+//                parseCard(chance, players.getPlayer(0));
+//
+//            }
 
 
             // reduce // field 3x4/4
@@ -210,7 +215,6 @@ public class Game {
      */
     private static void playersPreRollOptions(Player currentPlayer) {
 
-        System.out.println(currentPlayer);
         System.out.println(currentPlayer.getName() + " choose your next move");
         System.out.println("---------------------");
         String option1 = "1) Roll Dice";
@@ -342,8 +346,8 @@ public class Game {
         String[] fields = {"Conserve", "Reduce", "Reuse", "Create"};
         int in;
 
-        Map<Integer, Long> devReqMap = getDevReqMap(currentPlayer);
-        List<FundableSquare> fieldsCanDev = getFieldsForDevList(currentPlayer, devReqMap);
+        Map<Integer, Long> fieldSquareCountMap = getFieldSquareCountMap(currentPlayer);
+        List<FundableSquare> fieldsCanDev = getFieldsForDevList(currentPlayer, fieldSquareCountMap);
 
         while (true) {
             try {
@@ -371,12 +375,9 @@ public class Game {
                 if (in == 0) {
                     playersPreRollOptions(currentPlayer);
                     break;
-
                 }
-
                 if (in < 0 || in > fieldsCanDev.size())
                     throw new IllegalArgumentException("");
-
                 if (currentPlayer.getFunding() < fieldsCanDev.get(in - 1).getDevCost())
                     throw new IllegalArgumentException("");
 
@@ -397,7 +398,6 @@ public class Game {
     private static void increaseFieldDevLevel(Player currentPlayer, FundableSquare square) {
 
         currentPlayer.getOwnedSquares().stream().filter(fs -> fs.getField() == square.getField()).forEach(fs -> fs.setDevLevel(fs.getDevLevel() + 1));
-
         currentPlayer.setFunding(currentPlayer.getFunding() - square.getDevCost());
 
     }
@@ -413,8 +413,7 @@ public class Game {
         return canDevelop;
     }
 
-    private static Map<Integer, Long> getDevReqMap(Player currentPlayer) {
-
+    private static Map<Integer, Long> getFieldSquareCountMap(Player currentPlayer) {
         return currentPlayer.getOwnedSquares().stream().collect(Collectors.groupingBy(Square::getField, Collectors.counting()));
     }
 
@@ -552,7 +551,11 @@ public class Game {
         boolean correctInput = false;
         boolean confirmTrade = false;
 
-        if (!traderPlayer.getOwnedSquares().isEmpty() && !requestedPlayer.getOwnedSquares().isEmpty()) {
+        List<FundableSquare> requestedPlayerNoDevelopments = hasNoDevelopments(traderPlayer);
+        List<FundableSquare> traderPlayerNoDevelopments = hasNoDevelopments(requestedPlayer);
+
+
+        if (!traderPlayer.getOwnedSquares().isEmpty() && !requestedPlayer.getOwnedSquares().isEmpty() && !requestedPlayerNoDevelopments.isEmpty() && !traderPlayerNoDevelopments.isEmpty()) {
             offeredProperty = selectProperty(traderPlayer, traderPlayer);
             requestedProperty = selectProperty(traderPlayer, requestedPlayer);
 
@@ -629,11 +632,15 @@ public class Game {
         int propertySelection;
         FundableSquare property;
 
+        List<FundableSquare> hasNoDevelopments = hasNoDevelopments(propertyOwner);
+
+
         System.out.println(selector.getName() + ", select the number of the property you'd like to trade.");
-        for (int i = 0; i < propertyOwner.getOwnedSquares().size(); i++) {
+        for (int i = 0; i < hasNoDevelopments.size(); i++) {
             int position = i + 1;
-            System.out.println(position + ". " + propertyOwner.getOwnedSquares().get(i).getName());
+            System.out.println(position + ". " + hasNoDevelopments.get(i).getName());
         }
+
         try {
             propertySelection = Integer.parseInt(MENU.nextLine());
             if (propertySelection < 1 || propertySelection > propertyOwner.getOwnedSquares().size()) {
@@ -647,6 +654,10 @@ public class Game {
             selectProperty(selector, propertyOwner);
         }
         return null;
+    }
+
+    private static List<FundableSquare> hasNoDevelopments(Player propertyOwner) {
+        return propertyOwner.getOwnedSquares().stream().filter(fs -> fs.getDevLevel() <= 0).collect(Collectors.toList());
     }
 
     private static void swapProperties(Player player1, Player player2, FundableSquare property1, FundableSquare
