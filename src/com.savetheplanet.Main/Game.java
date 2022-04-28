@@ -43,6 +43,8 @@ public class Game {
 
 
         try {
+
+
             //proof of concept
             System.out.println("Game initialised: ");
             for (Player playerNew : players.getPlayers()) {
@@ -50,9 +52,18 @@ public class Game {
             }
 
 
-             //conserve // field 2 x 2/2
+            //conserve // field 2 x 2/2
             players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(2));
             players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(4));
+
+
+            for (int i = 0; i < 5; i++) {
+
+                ChanceCard chance = deck.shuffle();
+                //trace statements
+                parseCard(chance, players.getPlayer(0));
+                chance.fullDetails(chance);
+            }
 
 
             // reduce // field 3x4/4
@@ -363,7 +374,6 @@ public class Game {
 
                 }
 
-
                 if (in < 0 || in > fieldsCanDev.size())
                     throw new IllegalArgumentException("");
 
@@ -424,9 +434,15 @@ public class Game {
      */
     public static void parseCard(ChanceCard card, Player player) {
 
+
         if (card.getAssigned() == RandomSquareAssignment.PAY) {
             int pay = card.getAction();
+
             player.setFunding(player.getFunding() - pay);
+            while (player.getFunding() < 0 && player.getTurnsTaken() != -1) {
+                liquidate(player);
+            }
+
         } else if (card.getAssigned() == RandomSquareAssignment.RECEIVE) {
             player.setFunding(player.getFunding() + card.getAction());
         } else if (card.getAssigned() == RandomSquareAssignment.COLLECT_FUNDING) {
@@ -450,6 +466,30 @@ public class Game {
         }
     }
 
+    public static void liquidate(Player player) {
+        int cost = 0;
+
+        FundableSquare square = player.getLowestValueSquare();
+
+        if (player.getOwnedSquares().isEmpty()) {
+            System.out.println("You can't pay your bill and have no property! It looks like someone else will have to save the world...");
+            playerOut(player);
+        } else if (square.getDevLevel() > 0) {
+            square.setDevLevel(square.getDevLevel() - 1);
+            cost = square.getDevCost();
+            System.out.println("Undoing Development: " + square.getName() + ". You will be credited £" + cost);
+        } else {
+            cost = square.getCost();
+            System.out.println("Seizing: " + square.getName() + ". You will be credited £" + cost);
+            player.ownedSquares.remove(square);
+            square.setOwner(null);
+        }
+        player.setFunding(player.getFunding() + cost);
+        System.out.println("Balance: £" + player.getFunding());
+    }
+
+
+
     public static void purchaseSquare(Player player, FundableSquare square) {
         if (square.getOwner() == null) {
             if (player.getFunding() >= square.getCost()) {
@@ -465,22 +505,6 @@ public class Game {
         }
     }
 
-    public static void liquidate(Player player) {
-        int cost;
-        FundableSquare square = player.getLowestValueSquare();
-        if (square.getDevLevel() > 0) {
-            square.setDevLevel(square.getDevLevel() - 1);
-            cost = square.getDevCost();
-            System.out.println("Undoing Development: " + square.getName() + ". You will be credited £" + cost);
-        } else {
-            cost = square.getCost();
-            System.out.println("Seizing: " + square.getName() + ". You will be credited £" + cost);
-            player.ownedSquares.remove(square);
-            square.setOwner(null);
-        }
-        player.setFunding(player.getFunding() + cost);
-        System.out.println("Balance: £" + player.getFunding());
-    }
 
     public static void payRates(Player player, FundableSquare square) {
         if (square.getOwner() != null && square.getOwner() != player) {
@@ -493,14 +517,9 @@ public class Game {
                 System.out.println("You've paid £" + rates);
             } else {
                 System.out.println("You can't pay your rates bill! Time to liquidate your property.");
-
                 if (!player.getOwnedSquares().isEmpty()) {
                     liquidate(player);
                     payRates(player, square);
-                } else {
-                    System.out.println("You can't pay your rates bill and have no more property! It looks like someone else will have to save the world...");
-                    playerOut(player);
-
                 }
             }
         } else {
@@ -510,11 +529,12 @@ public class Game {
 
     private static void playerOut(Player player) {
         stats.setPlayers(players.getPlayers());
+
         System.out.println(player.getName() + " is out of the game!");
         player.setTurnsTaken(-1);
         if (players.getPlayers().stream().filter(p -> p.getTurnsTaken() > -1).count() < 2) {
             Sounds.play("clap");
-//            stats.end();
+            stats.end();
         }
     }
 
