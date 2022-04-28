@@ -202,95 +202,100 @@ public class Game {
             count = 0;
             System.out.printf("%n%s%n%s%n%s%n", option1, option4, option5);
         }
+        try {
+            int option = Integer.parseInt(MENU.nextLine()) + count;
+            switch (option) {
+                case 1:
+                case 4:
+                case 8:
+                    //roll dice
+                    System.out.printf("you have chosen %s%n", option1);
+                    MOVE = move();
+                    System.out.printf("%n%s moves %d places.%n", currentPlayer.getName(), MOVE);
+                    int location = currentPlayer.getLocation() + MOVE;
+                    if (location >= 15) {
+                        location -= 15;
+                    }
+                    currentPlayer.setLocation(location);
+                    System.out.println(currentPlayer.getName() + " is on square " + board.get(currentPlayer.getLocation()).getName());
+                    Square square = (board.get(currentPlayer.getLocation()));
 
-        int option = Integer.parseInt(MENU.nextLine()) + count;
-        switch (option) {
-            case 1:
-            case 4:
-            case 8:
-                //roll dice
-                System.out.printf("you have chosen %s%n", option1);
-                MOVE = move();
-                System.out.printf("%n%s moves %d places.%n", currentPlayer.getName(), MOVE);
-                int location = currentPlayer.getLocation() + MOVE;
-                if (location >= 15) {
-                    location -= 15;
-                }
-                currentPlayer.setLocation(location);
-                System.out.println(currentPlayer.getName() + " is on square " + board.get(currentPlayer.getLocation()).getName());
-                Square square = (board.get(currentPlayer.getLocation()));
-
-                if (square.getField() == 0) {
-                    collectFunding(currentPlayer);
-                    break;
-                }
-                if (square.getField() == 1) {
-                    break;
-                }
-
-                if (square.getField() == 2) {
-                    ChanceCard chance = deck.shuffle();
-                    //trace statements
-                    parseCard(chance, currentPlayer);
-
-
-                }
-
-                checkSquareOwnership(square, currentPlayer);
-                MOVE = 0;
-                break;
-            case 5:
-            case 9:
-                System.out.printf("you have chosen %s%n", option2);
-                //trade
-
-                int counter = 0;
-                List<Player> tradablePlayers = new ArrayList<>();
-
-                for (Player player : players.getPlayers()) {
-                    if (!currentPlayer.getName().equals(player.getName())) {
-                        if (!hasNoDevelopments(player).isEmpty()) {
-                            counter++;
-                            System.out.println(counter + ") trade with " + player.getName());
-                            tradablePlayers.add(player);
-                        }
+                    if (square.getField() == 0) {
+                        collectFunding(currentPlayer);
+                        break;
+                    }
+                    if (square.getField() == 1) {
+                        break;
                     }
 
-                }
+                    if (square.getField() == 2) {
+                        ChanceCard chance = deck.shuffle();
+                        //trace statements
+                        parseCard(chance, currentPlayer);
 
-                if (counter > 0) {
-                    int playerNum = Integer.parseInt(MENU.nextLine()) - 1;
-                    Player traderPlayer = tradablePlayers.get(playerNum);
-                    trade(currentPlayer, traderPlayer);
-                } else {
-                    System.out.println("you have no-one to trade with");
-                }
-                break;
 
-            case 10:
-                System.out.printf("you have chosen %s%n", option3);
-                developField(currentPlayer);
-                break;
-            case 2:
-            case 6:
-            case 11:
-                //save
-                System.out.printf("you have chosen %s%n", option4);
-                saveGame();
-                break;
-            case 3:
-            case 7:
-            case 12:
-                //quit
-                System.out.printf("you have chosen %s%n", option5);
-                Stats stats = new Stats(players.getPlayers());
-                stats.end();
-                break;
-            default:
-                throw new IllegalArgumentException("that's not an option");
-                //timer = Create.timerReset(timer);
+                    }
+
+                    checkSquareOwnership(square, currentPlayer);
+                    MOVE = 0;
+                    break;
+                case 5:
+                case 9:
+                    System.out.printf("you have chosen %s%n", option2);
+                    //trade
+
+                    int counter = 0;
+                    List<Player> tradablePlayers = new ArrayList<>();
+
+                    for (Player player : players.getPlayers()) {
+                        if (!currentPlayer.getName().equals(player.getName())) {
+                            if (!hasNoDevelopments(player).isEmpty()) {
+                                counter++;
+                                System.out.println(counter + ") trade with " + player.getName());
+                                tradablePlayers.add(player);
+                            }
+                        }
+
+                    }
+
+                    if (counter > 0) {
+                        int playerNum = Integer.parseInt(MENU.nextLine()) - 1;
+                        Player traderPlayer = tradablePlayers.get(playerNum);
+                        trade(currentPlayer, traderPlayer);
+                    } else {
+                        System.out.println("you have no-one to trade with");
+                    }
+                    break;
+
+                case 10:
+                    System.out.printf("you have chosen %s%n", option3);
+                    developField(currentPlayer);
+                    break;
+                case 2:
+                case 6:
+                case 11:
+                    //save
+                    System.out.printf("you have chosen %s%n", option4);
+                    saveGame();
+                    break;
+                case 3:
+                case 7:
+                case 12:
+                    //quit
+                    System.out.printf("you have chosen %s%n", option5);
+                    Stats stats = new Stats(players.getPlayers());
+                    stats.end();
+                    break;
+                default:
+                    throw new IllegalArgumentException("that's not an option");
+                    //timer = Create.timerReset(timer);
+            }
+
+        } catch (NumberFormatException e) {
+            System.out.println("Oops..lets try that again..");
+            playersPreRollOptions(currentPlayer);
+
         }
-
     }
 
 
