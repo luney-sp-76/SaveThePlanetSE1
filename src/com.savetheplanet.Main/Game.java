@@ -41,6 +41,7 @@ public class Game {
 
         stats = new Stats(players.getPlayers());
 
+
         try {
             //proof of concept
             System.out.println("Game initialised: ");
@@ -48,73 +49,44 @@ public class Game {
                 collectFunding(playerNew);
             }
 
-          while(true) {
-             for (Player playerNew : players.getPlayers()) {
-                 if (playerNew.turnsTaken != -1) {
-                      playersPreRollOptions(playerNew);
-                  }
-              }
 
-           }
+             //conserve // field 2 x 2/2
+            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(2));
+            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(4));
 
-
-            //System.out.printf("%n%s moves %d places.%n", players.getPlayer(0).getName(), move());
-//            System.out.println("Player passes GO: £" + players.getPlayer(0).getFunding());
-//            //read all Chance Cards
-//            Deck deck = new Deck();
-//            //shuffle chance cards
-//            ChanceCard chance = deck.shuffle();
-//            //trace statements
-//            parseCard(chance, players.getPlayer(0));
-//            //chance.fullDetails();
-//            System.out.println("Proof of concept: " + chance.getAssigned());
-//            chance.fullDetails(chance);
-//            System.out.println(players.getPlayer(0).getName() + " post card: £" + players.getPlayer(0).getFunding());
-//
-//            System.out.println("Real estate test");
-//            if (players.getPlayer(1).getOwnedSquares().isEmpty()) {
-//                System.out.println("Player " + players.getPlayer(1).getName() + " has no property");
-//                System.out.println("This is where his squares would go, IF HE HAD ANY: " + players.getPlayer(1).getOwnedSquares());
-//                System.out.println("Size of list of squares: " + players.getPlayer(2).getOwnedSquares().size());
-//            }
-//            playersPreRollOptions(players.getPlayer(1));
-//
-//            System.out.printf("%n%s moves %d places.%n", players.getPlayer(1).getName(), move());
-
-            //saveGame();
-            //players.getPlayer(1).setFunding(players.getPlayer(1).getFunding()+1000);
-            //stats.end();
-           // System.exit(1);
-//
-//            stats.elide();
-//            stats.full();
-//
-//            stats.end();
-//            System.exit(1);
 
             // reduce // field 3x4/4
-//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(5));
-//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(6));
-//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(8));
-//
-//            // reuse // field 5 x 2/3
-//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(12));
-//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(13));
-//
-//            // create // field 6 x 1/2
-//            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(15));
-//
-//            developField(players.getPlayer(1));
-//
-//            while (true) {
-//                for (Player playerNew : players.getPlayers()) {
-//                    if (playerNew.turnsTaken != -1) {
-//                        playersPreRollOptions(playerNew);
-//
-//                    }
-//                }
-////
-//            }
+            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(5));
+            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(6));
+            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(8));
+
+            // reuse // field 5 x 2/3
+            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(12));
+            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(13));
+
+            // create // field 6 x 1/2
+            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(15));
+            players.getPlayer(1).addOwnedSquare((FundableSquare) board.get(14));
+
+            players.getPlayer(1).setFunding(400);
+
+            developField(players.getPlayer(1));
+
+            players.getPlayer(1).getOwnedSquares().forEach(fs -> System.out.println((fs.getDevLevel() > 0)));
+
+
+            while (true) {
+
+                for (Player playerNew : players.getPlayers()) {
+                    stats.full();
+                    if (playerNew.turnsTaken != -1) {
+
+                        playersPreRollOptions(playerNew);
+                    }
+                }
+
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -198,22 +170,23 @@ public class Game {
             System.out.println(e.getMessage());
         }
     }
-private static void checkSquareOwnership(Square square, Player currentPlayer) {
-    if (square instanceof FundableSquare) {
-        if (((FundableSquare) square).getOwner() == null) {
-            System.out.printf("Would you like to purchase %s for £ %d? y/yes or n/no%n", square.getName(), ((FundableSquare) square).getCost());
-            switch (MENU.nextLine().toLowerCase()) {
-                case "y":
-                case "yes":
-                    purchaseSquare(currentPlayer, (FundableSquare) square);
-                    break;
-                default:
+
+    private static void checkSquareOwnership(Square square, Player currentPlayer) {
+        if (square instanceof FundableSquare) {
+            if (((FundableSquare) square).getOwner() == null) {
+                System.out.printf("Would you like to purchase %s for £ %d? y/yes or n/no%n", square.getName(), ((FundableSquare) square).getCost());
+                switch (MENU.nextLine().toLowerCase()) {
+                    case "y":
+                    case "yes":
+                        purchaseSquare(currentPlayer, (FundableSquare) square);
+                        break;
+                    default:
+                }
+            } else {
+                payRates(currentPlayer, (FundableSquare) square);
             }
-        } else {
-            payRates(currentPlayer, (FundableSquare) square);
         }
     }
-}
 
     /**
      * Calculates the options available to a player based on the number of squares owned
@@ -225,7 +198,9 @@ private static void checkSquareOwnership(Square square, Player currentPlayer) {
      * @param currentPlayer current player
      */
     private static void playersPreRollOptions(Player currentPlayer) {
-        System.out.println(currentPlayer.getName() +" choose your next move");
+
+        System.out.println(currentPlayer);
+        System.out.println(currentPlayer.getName() + " choose your next move");
         System.out.println("---------------------");
         String option1 = "1) Roll Dice";
         String option2 = "2) Trade Area";
@@ -280,6 +255,9 @@ private static void checkSquareOwnership(Square square, Player currentPlayer) {
 
                 if (square.getField() == 0) {
                     collectFunding(currentPlayer);
+                    break;
+                }
+                if (square.getField() == 1) {
                     break;
                 }
 
@@ -344,30 +322,90 @@ private static void checkSquareOwnership(Square square, Player currentPlayer) {
                 throw new IllegalArgumentException("that's not an option");
                 //timer = Create.timerReset(timer);
         }
-        stats.full();
+
     }
 
 
     private static void developField(Player currentPlayer) {
 
         String[] fields = {"Conserve", "Reduce", "Reuse", "Create"};
-        boolean[] fieldsReady = {false, false, false, false};
+        int in;
 
-        Map<Integer, Long> map = currentPlayer.getOwnedSquares().stream().collect(Collectors.groupingBy(Square::getField, Collectors.counting()));
+        Map<Integer, Long> devReqMap = getDevReqMap(currentPlayer);
+        List<FundableSquare> fieldsCanDev = getFieldsForDevList(currentPlayer, devReqMap);
 
-        currentPlayer.getOwnedSquares().forEach(fs -> map.forEach((k, v) -> {
-            if (fs.getField() == k && v >= fs.getFieldSize()) {
-                fieldsReady[k - 3] = true;
+        while (true) {
+            try {
+                System.out.printf("%nWhich field do you wish to develop?%n%n");
+                for (int i = 0; i < fieldsCanDev.size(); i++) {
+                    if (currentPlayer.getFunding() >= fieldsCanDev.get(i).getDevCost())
+                        System.out.printf("%d: %-10s£%d%n", ++i, fields[fieldsCanDev.get(--i).getField() - 3], fieldsCanDev.get(i).getDevCost());
+                }
+                for (FundableSquare fs : fieldsCanDev) {
+                    if (currentPlayer.getFunding() < fs.getDevCost()) {
+                        // System.err needs this or the way it's being abused breaks.
+                        Thread.sleep(25);
+                        System.out.printf("%c: %-10s", '~', fields[fs.getField() - 3]);
+                        System.err.printf("£%d%n", fs.getDevCost());
+                        Thread.sleep(25);
+
+                    }
+
+                }
+                System.out.println("0: Return to previous menu.");
+
+                in = Integer.parseInt(MENU.nextLine());
+
+//              Negative results.
+                if (in == 0) {
+                    playersPreRollOptions(currentPlayer);
+                    break;
+
+                }
+
+
+                if (in < 0 || in > fieldsCanDev.size())
+                    throw new IllegalArgumentException("");
+
+                if (currentPlayer.getFunding() < fieldsCanDev.get(in - 1).getDevCost())
+                    throw new IllegalArgumentException("");
+
+//               Positive result.
+                increaseFieldDevLevel(currentPlayer, fieldsCanDev.get(in - 1));
+                break;
+
+
+            } catch (IllegalArgumentException e) {
+                System.err.println(e.getMessage().replaceAll(".*", "Please enter a valid option."));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static void increaseFieldDevLevel(Player currentPlayer, FundableSquare square) {
+
+        currentPlayer.getOwnedSquares().stream().filter(fs -> fs.getField() == square.getField()).forEach(fs -> fs.setDevLevel(fs.getDevLevel() + 1));
+
+        currentPlayer.setFunding(currentPlayer.getFunding() - square.getDevCost());
+
+    }
+
+    private static List<FundableSquare> getFieldsForDevList(Player currentPlayer, Map<Integer, Long> devReq) {
+        List<FundableSquare> canDevelop = new ArrayList<>();
+
+        currentPlayer.getOwnedSquares().forEach(fs -> devReq.forEach((k, v) -> {
+            if (fs.getField() == k && v >= fs.getFieldSize() && canDevelop.stream().noneMatch(s -> s.getField() == k)) {
+                canDevelop.add(fs);
             }
         }));
+        return canDevelop;
+    }
 
-        System.out.println("Which field do you wish to develop?");
-        for (int i = 0; i < fields.length; i++) {
-            if (fieldsReady[i])
-                System.out.println(fields[i]);
-        }
+    private static Map<Integer, Long> getDevReqMap(Player currentPlayer) {
 
-
+        return currentPlayer.getOwnedSquares().stream().collect(Collectors.groupingBy(Square::getField, Collectors.counting()));
     }
 
     private static void saveGame() {
@@ -393,17 +431,17 @@ private static void checkSquareOwnership(Square square, Player currentPlayer) {
             player.setFunding(player.getFunding() + card.getAction());
         } else if (card.getAssigned() == RandomSquareAssignment.COLLECT_FUNDING) {
             player.setFunding(player.getFunding() + COLLECT);
-        } else if (card.getAssigned() == RandomSquareAssignment.FORWARD){
+        } else if (card.getAssigned() == RandomSquareAssignment.FORWARD) {
             int newLocation = player.getLocation() + card.getAction();
-            if(newLocation >= 15){
+            if (newLocation >= 15) {
                 newLocation -= 15;
             }
             player.setLocation(newLocation);
             Square updatedLocation = board.get(player.getLocation());
             checkSquareOwnership(updatedLocation, player);
-        } else if (card.getAssigned() == RandomSquareAssignment.BACK){
+        } else if (card.getAssigned() == RandomSquareAssignment.BACK) {
             int newLocation = player.getLocation() - card.getAction();
-            if(newLocation < 0){
+            if (newLocation < 0) {
                 newLocation += 16;
             }
             player.setLocation(newLocation);
@@ -584,7 +622,8 @@ private static void checkSquareOwnership(Square square, Player currentPlayer) {
         return null;
     }
 
-    private static void swapProperties(Player player1, Player player2, FundableSquare property1, FundableSquare property2) {
+    private static void swapProperties(Player player1, Player player2, FundableSquare property1, FundableSquare
+            property2) {
         player1.ownedSquares.remove(property1);
         property1.setOwner(player2);
         player2.addOwnedSquare(property1);

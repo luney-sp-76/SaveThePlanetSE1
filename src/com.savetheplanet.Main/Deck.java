@@ -50,7 +50,6 @@ public class Deck {
             System.out.println(listFromFile.size() + " lines read successfully");
             System.out.println(e.getMessage());
         }
-        System.out.println(listFromFile.size() + " lines read successfully");
 
         this.deck = listFromFile;
     }
