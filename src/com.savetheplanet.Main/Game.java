@@ -494,6 +494,9 @@ public class Game {
         }
     }
 
+
+
+
     public static void trade(Player traderPlayer, Player requestedPlayer) {
 
         FundableSquare offeredProperty;
