@@ -8,8 +8,10 @@ import java.util.stream.Collectors;
 
 public class Game {
     public static Scanner MENU = new Scanner(System.in);
+
     private static List<Square> board = new ArrayList<>();
     private static final Players players = new Players();
+
     private static Stats stats;
     private static final Deck deck = new Deck();
 
@@ -19,9 +21,9 @@ public class Game {
     static final int T60 = 60000;
     // ticktock motherfucker
     static Timer timer60 = Idle.timer(T60);
+    static Timer timer15 = Idle.timer(T15);
 
     private static final int COLLECT = 300;
-
 
     private static int MOVE;
 
@@ -39,32 +41,29 @@ public class Game {
     public static void playGame() {
         stats = new Stats(players.getPlayers());
 
-
         try {
+
             System.out.println("Game initialised: ");
-            for (Player playerNew : players.getPlayers()) {
-                collectFunding(playerNew);
-            }
 
             //conserve // field 2 x 2/2
-            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(2));
-            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(4));
-            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(5));
-            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(6));
-            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(8));
-            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(9));
-            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(12));
-            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(13));
-            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(14));
-            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(15));
-
-
-            setTitle(players.getPlayer(0));
-
-            System.out.println(players.getPlayer(0).getName());
-            System.out.println();
-            System.out.println();
+//            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(2));
+//            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(4));
+//            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(5));
+//            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(6));
+//            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(8));
+//            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(9));
+//            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(12));
+//            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(13));
+//            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(14));
+//            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(15));
 //
+//
+//            setTitle(players.getPlayer(0));
+//
+//            System.out.println(players.getPlayer(0).getName());
+//            System.out.println();
+//            System.out.println();
+////
 //            players.getPlayer(0).ownedSquares.remove((FundableSquare) board.get(2));
 //            players.getPlayer(0).ownedSquares.remove((FundableSquare) board.get(4));
 //            players.getPlayer(0).ownedSquares.remove((FundableSquare) board.get(5));
@@ -76,20 +75,26 @@ public class Game {
 ////            players.getPlayer(0).ownedSquares.remove((FundableSquare) board.get(14));
 ////            players.getPlayer(0).ownedSquares.remove((FundableSquare) board.get(15));
 
-            setTitle(players.getPlayer(0));
-
-            System.out.println(players.getPlayer(0).getTitles());
-
-            setTitle(players.getPlayer(0));
-
-            System.out.println(players.getPlayer(0).getTitles());
+//            setTitle(players.getPlayer(0));
+//
+//            System.out.println(players.getPlayer(0).getTitles());
+//
+//            setTitle(players.getPlayer(0));
+//
+//            System.out.println(players.getPlayer(0).getTitles());
 
 
             while (true) {
-                for (Player playerNew : players.getPlayers()) {
+                for (Player player : players.getPlayers()) {
+
                     stats.full();
-                    if (playerNew.turnsTaken != -1) {
-                        playersPreRollOptions(playerNew);
+
+                    timer15 = Idle.timerReset(timer15, T15);
+
+                    if (player.turnsTaken != -1) {
+
+                        playersPreRollOptions(player);
+                        player.setTurnsTaken(player.getTurnsTaken() + 1);
                     }
                 }
             }
@@ -149,9 +154,7 @@ public class Game {
 //                e.printStackTrace();
 //            }
         try (FileInputStream fis = new FileInputStream("board.dat"); ObjectInputStream ois = new ObjectInputStream(fis)) {
-
             board = (List<Square>) ois.readObject();
-
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
 
@@ -167,18 +170,21 @@ public class Game {
     static void loadGame(HashMap<String, Object> load) {
         timer60 = Idle.timerReset(timer60, T60);
 
-        if (load == null) SaveThePlanet.welcome();
         try {
-            assert load != null;
-            board = (List<Square>) load.get("Board");
-            players.setPlayers((List<Player>) (load.get("Players")));
-            System.out.println("L:O:A:D");
+            if (load != null) {
+                board = (List<Square>) load.get("Board");
+                players.setPlayers((List<Player>) (load.get("Players")));
+                System.out.println("L:O:A:D");
+            } else {
+                SaveThePlanet.welcome();
+            }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
     private static void checkSquareOwnership(Square square, Player currentPlayer) {
+        timer15 = Idle.timerReset(timer15, T15);
         if (square instanceof FundableSquare) {
             if (((FundableSquare) square).getOwner() == null) {
                 System.out.printf("Would you like to purchase %s for £ %d? y/yes or n/no%n", square.getName(), ((FundableSquare) square).getCost());
@@ -205,6 +211,7 @@ public class Game {
      * @param currentPlayer current player
      */
     private static void playersPreRollOptions(Player currentPlayer) {
+        timer15 = Idle.timerReset(timer15, T15);
 
         System.out.println(currentPlayer.getName() + " choose your next move");
         System.out.println("---------------------");
@@ -243,6 +250,7 @@ public class Game {
         }
         try {
             int option = Integer.parseInt(MENU.nextLine()) + count;
+            timer15 = Idle.timerReset(timer15, T15);
             switch (option) {
                 case 1:
                 case 4:
@@ -252,10 +260,10 @@ public class Game {
                     MOVE = move();
                     System.out.printf("%n%s moves %d places.%n", currentPlayer.getName(), MOVE);
                     int location = currentPlayer.getLocation() + MOVE;
-                    if (location >= 15) {
-                        collectFunding(currentPlayer);
-                        location -= 15;
-                    }
+
+
+                    location = collectFundingCheck(currentPlayer, location);
+
                     currentPlayer.setLocation(location);
                     System.out.println(currentPlayer.getName() + " is on square " + board.get(currentPlayer.getLocation()).getName());
                     Square square = (board.get(currentPlayer.getLocation()));
@@ -267,13 +275,9 @@ public class Game {
                     if (square.getField() == 1) {
                         break;
                     }
-
                     if (square.getField() == 2) {
                         ChanceCard chance = deck.shuffle();
-                        //trace statements
                         parseCard(chance, currentPlayer);
-
-
                     }
 
                     checkSquareOwnership(square, currentPlayer);
@@ -316,7 +320,7 @@ public class Game {
                 case 11:
                     //save
                     System.out.printf("you have chosen %s%n", option4);
-                    saveGame();
+                    saveGame(currentPlayer);
                     break;
                 case 3:
                 case 7:
@@ -340,6 +344,7 @@ public class Game {
 
     @SuppressWarnings("BusyWait")
     private static void developField(Player currentPlayer) {
+        timer15 = Idle.timerReset(timer15, T15);
 
         String[] fields = {"Conserve", "Reduce", "Reuse", "Create"};
         int in;
@@ -415,11 +420,16 @@ public class Game {
     }
 
 
-    private static void saveGame() {
+    private static void saveGame(Player currentPlayer) {
+        timer15.cancel();
         timer60 = Idle.timerReset(timer60, T60);
 
         System.out.println("Do you wish to save the game? y/n");
-        if (!MENU.nextLine().toLowerCase().contains("y")) playGame();
+        if (!MENU.nextLine().toLowerCase().contains("y")) {
+            timer60.cancel();
+            playersPreRollOptions(currentPlayer);
+            return;
+        }
 
         SaveThePlanet.save(board, players.getPlayers());
         System.out.println("S:A:V:E");
@@ -448,12 +458,10 @@ public class Game {
             player.setFunding(player.getFunding() + COLLECT);
         } else if (card.getAssigned() == RandomSquareAssignment.FORWARD) {
             int newLocation = player.getLocation() + card.getAction();
-            if (newLocation >= 15) {
 
-                    collectFunding(player);
 
-                newLocation -= 15;
-            }
+            newLocation = collectFundingCheck(player, newLocation);
+
 
             player.setLocation(newLocation);
             Square updatedLocation = board.get(player.getLocation());
@@ -462,9 +470,11 @@ public class Game {
 
         } else if (card.getAssigned() == RandomSquareAssignment.BACK) {
             int newLocation = player.getLocation() - card.getAction();
+
             if (newLocation < 0) {
                 newLocation += 16;
             }
+
             player.setLocation(newLocation);
             Square updatedLocation = board.get(player.getLocation());
             checkSquareOwnership(updatedLocation, player);
@@ -472,8 +482,8 @@ public class Game {
     }
 
     public static void liquidate(Player player) {
+        timer15 = Idle.timerReset(timer15, T15);
         int cost = 0;
-
         FundableSquare square = player.getLowestValueSquare();
 
         if (player.getOwnedSquares().isEmpty()) {
@@ -493,7 +503,6 @@ public class Game {
         player.setFunding(player.getFunding() + cost);
         System.out.println("Balance: £" + player.getFunding());
     }
-
 
     public static void purchaseSquare(Player player, FundableSquare square) {
         if (square.getOwner() == null) {
@@ -534,6 +543,7 @@ public class Game {
 
 
     public static void payRates(Player player, FundableSquare square) {
+
         if (square.getOwner() != null && square.getOwner() != player) {
             Player owner = square.getOwner();
             int rates = square.getRatesBill();
@@ -556,7 +566,6 @@ public class Game {
 
     private static void playerOut(Player player) {
         stats.setPlayers(players.getPlayers());
-
         System.out.println(player.getName() + " is out of the game!");
         player.setTurnsTaken(-1);
         if (players.getPlayers().stream().filter(p -> p.getTurnsTaken() > -1).count() < 2) {
@@ -566,7 +575,7 @@ public class Game {
     }
 
     public static void trade(Player traderPlayer, Player requestedPlayer) {
-
+        timer15.cancel();
         FundableSquare offeredProperty;
         FundableSquare requestedProperty;
         boolean correctInput = false;
@@ -629,11 +638,15 @@ public class Game {
     }
 
 
-    public static void collectFunding(Player player) {
+    public static int collectFundingCheck(Player player, int location) {
 
-        Sounds.play("cash");
-        player.setFunding((player.getFunding() + COLLECT));
+        if (location >= 15) {
+            Sounds.play("cash");
+            player.setFunding((player.getFunding() + COLLECT));
+            location -= 15;
+        }
 
+        return location;
     }
 
     /**
@@ -649,7 +662,7 @@ public class Game {
     }
 
     private static FundableSquare selectProperty(Player selector, Player propertyOwner) {
-
+        timer15 = Idle.timerReset(timer15, T15);
         int propertySelection;
         FundableSquare property;
 
