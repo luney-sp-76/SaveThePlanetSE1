@@ -8,6 +8,8 @@
           <option value="InfiniteLoopStatement" />
           <option value="infniate loop" />
           <option value="infinite loop" />
+          <option value="Busywait" />
+          <option value="BusyWait" />
         </list>
       </option>
     </inspection_tool>

@@ -11,6 +11,7 @@ public class Player implements Serializable {
     int totalValue;
     int turnsTaken;
     int location;
+    List<String> titles = new ArrayList<>();
     List<FundableSquare> ownedSquares = new ArrayList<>();
 
     public Player(String name) {
@@ -18,6 +19,7 @@ public class Player implements Serializable {
         funding = 500;
         location = 0;
         totalValue = 0;
+
     }
 
     public void calcTotalValue() {
@@ -41,8 +43,8 @@ public class Player implements Serializable {
         int reuse = 0;
         int create = 0;
 
-        for(int i=0; i<this.getOwnedSquares().size(); i++){
-            switch(this.getOwnedSquares().get(i).getField()){
+        for (int i = 0; i < this.getOwnedSquares().size(); i++) {
+            switch (this.getOwnedSquares().get(i).getField()) {
                 case 3:
                     conserve++;
                     break;
@@ -60,53 +62,53 @@ public class Player implements Serializable {
         }
 
         //get square from uncontrolled area
-        if(conserve==1){
+        if (conserve == 1) {
             return (FundableSquare) findSquare(this.getOwnedSquares(), 3).get(0);
-        } else if(reduce>0 && reduce<3){
+        } else if (reduce > 0 && reduce < 3) {
             return (FundableSquare) findSquare(this.getOwnedSquares(), 4).get(0);
-        } else if(reuse>0 && reuse<3){
+        } else if (reuse > 0 && reuse < 3) {
             return (FundableSquare) findSquare(this.getOwnedSquares(), 5).get(0);
-        } else if(create==1){
+        } else if (create == 1) {
             return (FundableSquare) findSquare(this.getOwnedSquares(), 6).get(0);
         }
 
         //get square from undeveloped area
-        if(conserve==2){
+        if (conserve == 2) {
             ArrayList<Object> results = findSquare(this.getOwnedSquares(), 3);
-            if(results.get(1).equals(false)){
+            if (results.get(1).equals(false)) {
                 return (FundableSquare) results.get(0);
             }
         }
 
-        if(reduce==3){
+        if (reduce == 3) {
             ArrayList<Object> results = findSquare(this.getOwnedSquares(), 4);
-            if(results.get(1).equals(false)){
+            if (results.get(1).equals(false)) {
                 return (FundableSquare) results.get(0);
             }
         }
 
-        if(reuse==3){
+        if (reuse == 3) {
             ArrayList<Object> results = findSquare(this.getOwnedSquares(), 5);
-            if(results.get(1).equals(false)){
+            if (results.get(1).equals(false)) {
                 return (FundableSquare) results.get(0);
             }
         }
 
-        if(create==2){
+        if (create == 2) {
             ArrayList<Object> results = findSquare(this.getOwnedSquares(), 6);
-            if(results.get(1).equals(false)){
+            if (results.get(1).equals(false)) {
                 return (FundableSquare) results.get(0);
             }
         }
 
         //get developed square
-        if(conserve==2){
+        if (conserve == 2) {
             return (FundableSquare) findSquare(this.getOwnedSquares(), 3).get(0);
-        } else if(reduce==3){
+        } else if (reduce == 3) {
             return (FundableSquare) findSquare(this.getOwnedSquares(), 4).get(0);
-        } else if(reuse==3){
+        } else if (reuse == 3) {
             return (FundableSquare) findSquare(this.getOwnedSquares(), 5).get(0);
-        } else if(create==2){
+        } else if (create == 2) {
             return (FundableSquare) findSquare(this.getOwnedSquares(), 6).get(0);
         }
 
@@ -136,6 +138,7 @@ public class Player implements Serializable {
 
     public void addOwnedSquare(FundableSquare square) {
         this.ownedSquares.add(square);
+
     }
 
     public int getFunding() {
@@ -147,6 +150,10 @@ public class Player implements Serializable {
     }
 
     public String getName() {
+
+        for (String s : titles) {
+            System.out.print(s + ", ");
+        }
         return name;
     }
 
@@ -199,6 +206,17 @@ public class Player implements Serializable {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    public List<String> getTitles() {
+        return titles;
+    }
+
+    public void addTitle(String title) {
+        this.titles.add(title);
+    }
+
+    public void removeTitle(String title) {
+        this.titles.remove(title);
+    }
 
     @Override
     public String toString() {
