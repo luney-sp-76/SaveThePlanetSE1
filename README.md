@@ -1,5 +1,5 @@
 # OUR_TEAM_PROJECT
-Java Project based on the game "Save The Planet"<br>
+Java Project based on the game "Save Our Planet"<br>
 [Have a look at The Original Game!!](https://www.appropedia.org/Save_the_planet_board_game#:~:text=Save%20The%20Planet%20Board%20Game%20is%20free%20and%20open%2Dsource,the%20planet%20in%20real%20life)
 
 The requirements for the game will be as follows:<br>
