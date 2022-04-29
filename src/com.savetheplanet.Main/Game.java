@@ -188,19 +188,19 @@ public class Game {
 
         if (getFieldsForDevList(currentPlayer).size() > 0) {
             count = 7;
-            System.out.printf("%n%s%n%s%n%s%n%s%n%s%n", option1, option2, option3, option4, option5);
+            System.out.printf("%s%n%s%n%s%n%s%n%s%n", option1, option2, option3, option4, option5);
 
         } else if (currentPlayer.getOwnedSquares().size() >= 1 && goodToTrade) {
             option4 = "3) Save";
             option5 = "4) Quit";
             count = 3;
-            System.out.printf("%n%s%n%s%n%s%n%s%n", option1, option2, option4, option5);
+            System.out.printf("%s%n%s%n%s%n%s%n", option1, option2, option4, option5);
 
         } else {
             option4 = "2) Save";
             option5 = "3) Quit";
             count = 0;
-            System.out.printf("%n%s%n%s%n%s%n", option1, option4, option5);
+            System.out.printf("%s%n%s%n%s%n", option1, option4, option5);
         }
         try {
             int option = Integer.parseInt(MENU.nextLine()) + count;
@@ -214,6 +214,7 @@ public class Game {
                     System.out.printf("%n%s moves %d places.%n", currentPlayer.getName(), MOVE);
                     int location = currentPlayer.getLocation() + MOVE;
                     if (location >= 15) {
+                        collectFunding(currentPlayer);
                         location -= 15;
                     }
                     currentPlayer.setLocation(location);
@@ -409,6 +410,9 @@ public class Game {
             int newLocation = player.getLocation() + card.getAction();
 
             if (newLocation >= 15) {
+
+                    collectFunding(player);
+
                 newLocation -= 15;
             }
 
