@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 public class SaveThePlanet {
 
     public static void main(String[] args) {
+
         Sounds.play("earth");
 
         System.out.printf("%n .oooooo..o                                      ooooooooooooo oooo%n");
@@ -42,6 +43,7 @@ public class SaveThePlanet {
     @SuppressWarnings("InfiniteLoopStatement")
     static void welcome() {
         Game.timer60 = Idle.timerReset(Game.timer60, Game.T60);
+        Game.timer15.cancel();
 
         System.out.println("Welcome To Save The Planet");
         System.out.println("Would you like to Play? y/n");
@@ -96,12 +98,10 @@ public class SaveThePlanet {
     public static HashMap<String, Object> load() {
 
         System.out.println("Do you want to load a Saved Game? y/n");
-
         if (!Game.MENU.nextLine().toLowerCase().contains("y"))
-           return null;
+            return null;
 
         List<File> saves = loadFiles();
-
         AtomicInteger saveID = new AtomicInteger(0);
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy - hh:mm:ss");
 
@@ -195,8 +195,6 @@ public class SaveThePlanet {
     }
 
     private static boolean memoryCardFull(List<File> saves) {
-
-
         System.out.println("You already have 3 saved games, by continuing the oldest game " + saves.get(0).getName() + " will be removed. Do you want to continue y/n?");
         if (Game.MENU.nextLine().toLowerCase().contains("y")) {
             return saves.get(0).delete();
@@ -206,7 +204,6 @@ public class SaveThePlanet {
     }
 
     private static String validateSaveName(List<File> saves) {
-
         System.out.println("Enter name for the Save Game");
         String str = Game.MENU.nextLine() + ".sav";
 
