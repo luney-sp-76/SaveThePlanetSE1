@@ -46,6 +46,45 @@ public class Game {
                 collectFunding(playerNew);
             }
 
+            //conserve // field 2 x 2/2
+            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(2));
+            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(4));
+            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(5));
+            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(6));
+            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(8));
+            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(9));
+            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(12));
+            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(13));
+            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(14));
+            players.getPlayer(0).addOwnedSquare((FundableSquare) board.get(15));
+
+
+            setTitle(players.getPlayer(0));
+
+            System.out.println(players.getPlayer(0).getName());
+            System.out.println();
+            System.out.println();
+//
+//            players.getPlayer(0).ownedSquares.remove((FundableSquare) board.get(2));
+//            players.getPlayer(0).ownedSquares.remove((FundableSquare) board.get(4));
+//            players.getPlayer(0).ownedSquares.remove((FundableSquare) board.get(5));
+//            players.getPlayer(0).ownedSquares.remove((FundableSquare) board.get(6));
+//            players.getPlayer(0).ownedSquares.remove((FundableSquare) board.get(8));
+//            players.getPlayer(0).ownedSquares.remove((FundableSquare) board.get(9));
+//            players.getPlayer(0).ownedSquares.remove((FundableSquare) board.get(12));
+//            players.getPlayer(0).ownedSquares.remove((FundableSquare) board.get(13));
+////            players.getPlayer(0).ownedSquares.remove((FundableSquare) board.get(14));
+////            players.getPlayer(0).ownedSquares.remove((FundableSquare) board.get(15));
+
+            setTitle(players.getPlayer(0));
+
+            System.out.println(players.getPlayer(0).getTitles());
+
+            setTitle(players.getPlayer(0));
+
+            System.out.println(players.getPlayer(0).getTitles());
+
+
             while (true) {
                 for (Player playerNew : players.getPlayers()) {
                     stats.full();
@@ -186,7 +225,7 @@ public class Game {
             }
         }
 
-        if (getFieldsForDevList(currentPlayer).size() > 0) {
+        if (getCompleteFieldsList(currentPlayer).size() > 0) {
             count = 7;
             System.out.printf("%s%n%s%n%s%n%s%n%s%n", option1, option2, option3, option4, option5);
 
@@ -299,13 +338,13 @@ public class Game {
         }
     }
 
-
+    @SuppressWarnings("BusyWait")
     private static void developField(Player currentPlayer) {
 
         String[] fields = {"Conserve", "Reduce", "Reuse", "Create"};
         int in;
 
-        List<FundableSquare> fieldsCanDev = getFieldsForDevList(currentPlayer);
+        List<FundableSquare> fieldsCanDev = getCompleteFieldsList(currentPlayer);
 
         while (true) {
             try {
@@ -354,25 +393,27 @@ public class Game {
     }
 
     private static void increaseFieldDevLevel(Player currentPlayer, FundableSquare square) {
-
         currentPlayer.getOwnedSquares().stream().filter(fs -> fs.getField() == square.getField()).forEach(fs -> fs.setDevLevel(fs.getDevLevel() + 1));
         currentPlayer.setFunding(currentPlayer.getFunding() - square.getDevCost());
-
     }
 
-    private static List<FundableSquare> getFieldsForDevList(Player currentPlayer) {
-
-
-        Map<Integer, Long> getFieldSquareCountMap = currentPlayer.getOwnedSquares().stream().collect(Collectors.groupingBy(Square::getField, Collectors.counting()));
-        List<FundableSquare> canDevelop = new ArrayList<>();
+    private static List<FundableSquare> getCompleteFieldsList(Player currentPlayer) {
+        Map<Integer, Long> getFieldSquareCountMap = getFieldSquareCountMap(currentPlayer);
+        List<FundableSquare> completeFields = new ArrayList<>();
 
         currentPlayer.getOwnedSquares().forEach(fs -> getFieldSquareCountMap.forEach((k, v) -> {
-            if (fs.getField() == k && v >= fs.getFieldSize() && canDevelop.stream().noneMatch(s -> s.getField() == k)) {
-                canDevelop.add(fs);
+            if (fs.getField() == k && v >= fs.getFieldSize() && completeFields.stream().noneMatch(s -> s.getField() == k)) {
+                completeFields.add(fs);
             }
         }));
-        return canDevelop;
+
+        return completeFields;
     }
+
+    private static Map<Integer, Long> getFieldSquareCountMap(Player currentPlayer) {
+        return currentPlayer.getOwnedSquares().stream().collect(Collectors.groupingBy(Square::getField, Collectors.counting()));
+    }
+
 
     private static void saveGame() {
         timer60 = Idle.timerReset(timer60, T60);
@@ -406,16 +447,13 @@ public class Game {
         } else if (card.getAssigned() == RandomSquareAssignment.COLLECT_FUNDING) {
             player.setFunding(player.getFunding() + COLLECT);
         } else if (card.getAssigned() == RandomSquareAssignment.FORWARD) {
-
             int newLocation = player.getLocation() + card.getAction();
-
             if (newLocation >= 15) {
 
                     collectFunding(player);
 
                 newLocation -= 15;
             }
-
 
             player.setLocation(newLocation);
             Square updatedLocation = board.get(player.getLocation());
@@ -450,6 +488,7 @@ public class Game {
             System.out.println("Seizing: " + square.getName() + ". You will be credited £" + cost);
             player.ownedSquares.remove(square);
             square.setOwner(null);
+            setTitle(player);
         }
         player.setFunding(player.getFunding() + cost);
         System.out.println("Balance: £" + player.getFunding());
@@ -460,9 +499,11 @@ public class Game {
         if (square.getOwner() == null) {
             if (player.getFunding() >= square.getCost()) {
                 square.setOwner(player);
+                setTitle(player);
                 player.setFunding(player.getFunding() - square.getCost());
                 player.addOwnedSquare(square);
                 System.out.println("Congratulations! You are the proud owner of " + square.getName() + ".");
+                setTitle(player);
             } else {
                 System.out.println("Sorry, you don't have enough money to purchase this.");
             }
@@ -470,6 +511,27 @@ public class Game {
             System.out.println("Sorry! " + square.getName() + " is not for sale.");
         }
     }
+
+    private static void setTitle(Player currentPlayer) {
+        String[] titles = {"Custodian of Conserve", "Ruler of Reduce", "Regent of Reuse", "Commander of Create"};
+
+        for (FundableSquare fs : getCompleteFieldsList(currentPlayer)) {
+            if (!currentPlayer.getTitles().contains(titles[fs.getField() - 3])) {
+                currentPlayer.addTitle((titles[fs.getField() - 3]));
+                System.out.println("Player " + currentPlayer.getName() + " has earned the " + titles[fs.getField() - 3] + " title!");
+            }
+        }
+
+        board.stream()
+                .filter(sq -> sq instanceof FundableSquare && !currentPlayer.getOwnedSquares().contains((FundableSquare) sq))
+                .forEach(sq -> {
+                    if (currentPlayer.getTitles().contains(titles[sq.getField() - 3])) {
+                        currentPlayer.removeTitle(titles[sq.getField() - 3]);
+                        System.out.println("Player " + currentPlayer.getName() + " has lost the " + titles[sq.getField() - 3] + " title!");
+                    }
+                });
+    }
+
 
     public static void payRates(Player player, FundableSquare square) {
         if (square.getOwner() != null && square.getOwner() != player) {
@@ -503,9 +565,6 @@ public class Game {
         }
     }
 
-
-
-
     public static void trade(Player traderPlayer, Player requestedPlayer) {
 
         FundableSquare offeredProperty;
@@ -517,6 +576,8 @@ public class Game {
             offeredProperty = selectProperty(traderPlayer, traderPlayer);
             requestedProperty = selectProperty(traderPlayer, requestedPlayer);
 
+            assert requestedProperty != null;
+            assert offeredProperty != null;
             System.out.println(requestedPlayer.getName() + ", do you want to trade " + requestedProperty.getName() + " for " + offeredProperty.getName() + "? y/n");
 
             while (!correctInput) {
@@ -566,8 +627,6 @@ public class Game {
             System.out.println("Sorry, you and " + requestedPlayer.getName() + " do not have enough properties to trade.");
         }
     }
-
-
 
 
     public static void collectFunding(Player player) {
@@ -630,6 +689,10 @@ public class Game {
         player2.ownedSquares.remove(property2);
         property2.setOwner(player1);
         player1.addOwnedSquare(property2);
+
+        setTitle(player1);
+        setTitle(player2);
+
     }
 
     private static boolean payPropertyDifferences(Player payer, Player payee, int cost) {
