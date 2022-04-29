@@ -23,7 +23,7 @@ public class Game {
     static Timer timer60 = Idle.timer(T60);
     static Timer timer15 = Idle.timer(T15);
 
-    private static final int COLLECT = 500;
+    private static final int COLLECT = 300;
 
     private static int MOVE;
 
@@ -268,9 +268,10 @@ public class Game {
                     System.out.println(currentPlayer.getName() + " is on square " + board.get(currentPlayer.getLocation()).getName());
                     Square square = (board.get(currentPlayer.getLocation()));
 
-                    if (square.getField() == 0) {
-                        break;
-                    }
+//                    if (square.getField() == 0) {
+//                        collectFunding(currentPlayer);
+//                        break;
+//                    }
                     if (square.getField() == 1) {
                         break;
                     }

@@ -16,7 +16,7 @@ public class Player implements Serializable {
 
     public Player(String name) {
         setName(name);
-        funding = 500;
+        funding = 0;
         location = 0;
         totalValue = 0;
 
