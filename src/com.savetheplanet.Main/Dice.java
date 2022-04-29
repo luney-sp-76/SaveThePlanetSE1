@@ -15,12 +15,13 @@ public class Dice implements IDie {
         } catch (InterruptedException e) {
             System.out.println(e.getMessage());
         }
-        return die1Result + die2Result;
+        return (int) Math.ceil((double) (die1Result + die2Result)/2);
     }
 
     private static int randomNum() {
         int min = 1;
         int max = 6;
+
         return (int) Math.floor(Math.random() * (max - min + 1) + min);
     }
 
