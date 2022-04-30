@@ -195,6 +195,7 @@ public class Game {
 
     /**
      * Paul
+     * (w/ assistance from Jaszon and Sophie for movement and trade options)
      *
      * Calculates the options available to a player based on the number of squares owned
      * distinguishes between 9 variations of menu items numbers
@@ -336,6 +337,8 @@ public class Game {
     /**
      * Sophie
      *
+     * Method to allow two players to 'swap' ownership of properties.
+     * Calls a number of sub-methods to allow player to select their own property and the property of another player.
      * @param traderPlayer    tp
      * @param requestedPlayer rp
      */
@@ -405,6 +408,8 @@ public class Game {
     /**
      * Sophie
      *
+     * Method to allow player to select a property from a player's list of owned properties for use in the 'trade' method.
+     * Ensures a player is not able to select a developed property.
      * @param selector      s
      * @param propertyOwner po
      * @return FundableSquare
@@ -450,6 +455,7 @@ public class Game {
     /**
      * Sophie
      *
+     * Method to swap the ownership of two properties between players.
      * @param player1   p1
      * @param player2   p2
      * @param property1 fs1
@@ -471,7 +477,8 @@ public class Game {
 
     /**
      * Sophie
-     *
+     * Method to calculate property value differences during trade.
+     * Player funds are adjusted, with the owner of the lower value property having to pay the difference in value to the other player.
      * @param payer payer
      * @param payee payee
      * @param cost  cost
@@ -694,7 +701,7 @@ public class Game {
 
     /**
      * Sophie
-     *
+     * Method to allow a player to purchase an unowned square for its listed cost.
      * @param player p
      * @param square s
      */
@@ -718,6 +725,8 @@ public class Game {
     /**
      * Sophie
      *
+     * Method to reduce a player's balance when landing on a square owned by another player.
+     * This method triggers the 'liquidate' method if a player has insufficient funds.
      * @param player p
      * @param square s
      */
@@ -746,6 +755,9 @@ public class Game {
     /**
      * Sophie
      *
+     * Method to remove a player's properties when a bill cannot be paid.
+     * Properties are removed based on their development level, with undeveloped and uncontrolled areas being removed first.
+     * The player is reimbursed for the associated cost of the lost property or development.
      * @param player p
      */
     public static void liquidate(Player player) {

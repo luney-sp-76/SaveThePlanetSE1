@@ -87,6 +87,10 @@ class PlayerTest {
         assertEquals(p1.getOwnedSquares().get(0), s1);
     }
 
+    /**
+     * Sophie
+     * Test the getLowestValueSquare method, when the player owns a property for which they don't control the area.
+     */
     @Test
     void getLowestValueSquare_uncontrolledArea() {
 
@@ -106,6 +110,10 @@ class PlayerTest {
         assertEquals(p1.getLowestValueSquare(), s5);
     }
 
+    /**
+     * Sophie
+     * Test the getLowestValueSquare method, when the player only owns controlled undeveloped areas and above.
+     */
     @Test
     void getLowestValueSquare_controlledUndevelopedArea() {
 
@@ -123,6 +131,10 @@ class PlayerTest {
         assertEquals(p1.getLowestValueSquare(), s4);
     }
 
+    /**
+     * Sophie
+     * Test the getLowestValueSquare method, when the player only owns developed areas.
+     */
     @Test
     void getLowestValueSquare_controlledDevelopedArea() {
 

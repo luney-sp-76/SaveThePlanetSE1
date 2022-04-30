@@ -39,6 +39,14 @@ public class Player implements Serializable {
         return ownedSquares;
     }
 
+    /**
+     * Sophie
+     *
+     * Method to get a player's lowest value square for use in the 'liquidate' method.
+     * Properties are returned in the following order, where applicable:
+     * property from uncontrolled area, undeveloped properties from controlled areas, developed properties.
+     * @return FundableSquare
+     */
     public FundableSquare getLowestValueSquare() {
 
         int conserve = 0;
@@ -119,6 +127,14 @@ public class Player implements Serializable {
 
     }
 
+    /**
+     * Sophie
+     *
+     * Method to return square for use in 'getLowestValueSquare' method.
+     * @param ownedSquares
+     * @param field
+     * @return ArrayList<Object> - returns a list of squares, with an associated boolean flag indicating if the square has been developed.
+     */
     private ArrayList<Object> findSquare(List<FundableSquare> ownedSquares, int field) {
         boolean developed = false;
         ArrayList<Object> results = new ArrayList<>();

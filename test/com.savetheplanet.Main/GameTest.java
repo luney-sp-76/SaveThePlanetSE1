@@ -34,6 +34,10 @@ class GameTest {
 
     }
 
+    /**
+     * Sophie
+     * Test the successful purchasing a square, when the player has sufficient funding.
+     */
     @Test
     void testPurchaseSquare_success() {
         int initialBalance = 500;
@@ -46,6 +50,10 @@ class GameTest {
         assertEquals(p1.getOwnedSquares(), ownedSquares);
     }
 
+    /**
+     * Sophie
+     * Test the rejected purchasing a square, when the player has insufficient funding.
+     */
     @Test
     void testPurchaseSquare_noFunding() {
         int initialBalance = 50;
@@ -56,6 +64,10 @@ class GameTest {
         assertEquals(p1.getOwnedSquares(), ownedSquares);
     }
 
+    /**
+     * Sophie
+     * Test the rejected purchasing a square, when the player attempts to purchase an owned square.
+     */
     @Test
     void testPurchaseSquare_owned() {
         int initialBalance = 500;
@@ -67,6 +79,10 @@ class GameTest {
         assertEquals(p1.getOwnedSquares(), ownedSquares);
     }
 
+    /**
+     * Sophie
+     * Test the successful payment of a rates bill when a player lands on a square owned by another player, when the player has sufficient funding.
+     */
     @Test
     void testPayRates_success() {
         int initialBalance = 500;
@@ -81,6 +97,10 @@ class GameTest {
         assertEquals(p2.getFunding(), p2_expectedBalance);
     }
 
+    /**
+     * Sophie
+     * Test the rejected payment of a rates bill when a player lands on a square owned by another player, when the player has insufficient funding.
+     */
     @Test
     void testPayRates_noFunding() {
         int initialBalance = 5;
@@ -91,6 +111,11 @@ class GameTest {
         assertEquals(p1.getFunding(), initialBalance);
     }
 
+    /**
+     * Sophie
+     * Test the removal of undeveloped property in the liquidation method, to ensure the property is removed from the player's owned properties.
+     * The player should also be reimbursed for the property cost.
+     */
     @Test
     void testLiquidate_propertyRemoval() {
         int initialBalance = 100;
@@ -105,6 +130,11 @@ class GameTest {
         assertEquals(p1.getOwnedSquares(), ownedSquares);
     }
 
+    /**
+     * Sophie
+     * Test the removal of a property's development level in the liquidation method, to ensure the property's dev level is reduced by 1.
+     * The player should also be reimbursed for the development cost.
+     */
     @Test
     void testLiquidate_developmentRemoval() {
         int initialBalance = 100;
@@ -125,6 +155,10 @@ class GameTest {
     }
 
 
+    /**
+     * Sophie
+     * Test the rejection of the trade method, when either selected player doesn't own a property.
+     */
     @Test
     void testTrade_noProperties() {
         List<FundableSquare> p1Properties = new ArrayList<>();
@@ -138,6 +172,10 @@ class GameTest {
         assertEquals(p2.getOwnedSquares(), p2Properties);
     }
 
+    /**
+     * Sophie
+     * Test the rejection of the trade method, when the requested player declines to trade.
+     */
     @Test
     void testTrade_rejectRequest() {
         List<FundableSquare> p1Properties = new ArrayList<>();
@@ -157,6 +195,10 @@ class GameTest {
         assertEquals(p2.getOwnedSquares(), p2Properties);
     }
 
+    /**
+     * Sophie
+     * Test the successful trade of properties, when both properties have the same value.
+     */
     @Test
     void testTrade_directSwap() {
         List<FundableSquare> p1Properties = new ArrayList<>();
@@ -176,6 +218,10 @@ class GameTest {
         assertEquals(p2.getOwnedSquares(), p2Properties);
     }
 
+    /**
+     * Sophie
+     * Test the successful trade of properties, when both properties have differing values.
+     */
     @Test
     void testTrade_swapCostDifference() {
         int initialBalance = 500;
@@ -207,39 +253,10 @@ class GameTest {
         assertEquals(p2.getFunding(), (initialBalance - costDifference));
     }
 
-    @Test
-    void testTrade_swapCostDifference_devDifference() {
-        int initialBalance = 500;
-
-        List<FundableSquare> p1Properties = new ArrayList<>();
-        List<FundableSquare> p2Properties = new ArrayList<>();
-
-        p1.setFunding(initialBalance);
-        p2.setFunding(initialBalance);
-
-        p1.addOwnedSquare(s1);
-        p2.addOwnedSquare(s3);
-
-        p1Properties.add(s1);
-        p2Properties.add(s3);
-
-        s3.setDevLevel(2);
-
-        int s1Cost = s1.getCost() + (s1.getDevCost() * s1.getDevLevel());
-        int s2Cost = s3.getCost() + (s3.getDevCost() * s3.getDevLevel());
-
-        int costDifference = s1Cost - s2Cost;
-
-        ByteArrayInputStream fakeScan = new ByteArrayInputStream(("1" + System.lineSeparator() + "1" + System.lineSeparator() + "y" + System.lineSeparator()).getBytes());
-        Game.MENU = new Scanner(fakeScan);
-
-        Game.trade(p1, p2);
-        assertEquals(p1.getOwnedSquares(), p1Properties);
-        assertEquals(p2.getOwnedSquares(), p2Properties);
-        assertEquals(p1.getFunding(), (initialBalance + costDifference));
-        assertEquals(p2.getFunding(), (initialBalance - costDifference));
-    }
-
+    /**
+     * Sophie
+     * Test the trade method, when properties have a difference in value but the owner of the lowest value property has insufficient funding.
+     */
     @Test
     void testTrade_swapCostDifference_noFunding() {
         int p1InitialBalance = 500;
