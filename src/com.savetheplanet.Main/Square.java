@@ -2,6 +2,9 @@ package com.savetheplanet.Main;
 
 import java.io.Serializable;
 
+/**
+ * Jaszon
+ */
 public class Square implements Serializable {
     private String name;
     private int field;

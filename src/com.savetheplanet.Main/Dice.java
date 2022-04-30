@@ -2,8 +2,14 @@ package com.savetheplanet.Main;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Paul
+ */
+
 public class Dice implements IDie {
     @Override
+
+
     public int roll() {
         System.out.println("Dice Rolling...");
         Sounds.play("dice");
@@ -25,6 +31,16 @@ public class Dice implements IDie {
         return (int) Math.floor(Math.random() * (max - min + 1) + min);
     }
 
+    /**
+     *  Jaszon
+     *
+     * @param die1 d1
+     * @param die2 d2
+     * @throws InterruptedException is caught in roll();
+     *
+     * Attempts to animate two dice rolling, with sound effects.
+     * Displays the result in graphical ascii form.
+     */
     private static void diceGFX(int die1, int die2) throws InterruptedException {
         String edge = "-------";
         String[] d1 = {"|     |", "|  *  |", "|     |"};
@@ -37,6 +53,7 @@ public class Dice implements IDie {
         String[][] diceGFX = {d1, d2, d3, d4, d5, d6};
 
         // clearing the console sucks, doesn't work the same way from system to system, I hate this, but it's the most stable I could find.
+        // The "drag" effect ended up not looking too bad- a bit like dice moving up a table.
         String clear = String.format("%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n%n");
 
         // simulates a rolling animation. (kinda).
@@ -54,6 +71,7 @@ public class Dice implements IDie {
         // The result
         System.out.printf(" %-7s  %-7s%n", "Die 1", "Die 2");
         System.out.printf("%s  %s %n", edge, edge);
+
         for (int i = 0; i < 3; i++) {
             System.out.printf(diceGFX[die1 - 1][i] + "  " + diceGFX[die2 - 1][i] + "%n");
         }
