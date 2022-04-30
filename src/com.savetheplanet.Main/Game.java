@@ -627,7 +627,7 @@ public class Game {
      */
     public static int collectFundingCheck(Player player, int location) {
 
-        if (location >= 15 || location == 0) {
+        if (location > 15 || location == 0) {
             Sounds.play("cash");
             player.setFunding((player.getFunding() + COLLECT));
             location -= 15;
@@ -665,6 +665,7 @@ public class Game {
 
             player.setLocation(newLocation);
             Square updatedLocation = board.get(player.getLocation());
+            System.out.println(player.getName() + " is on square " + board.get(player.getLocation()).getName());
             checkSquareOwnership(updatedLocation, player);
 
         } else if (card.getAssigned() == RandomSquareAssignment.BACK) {
@@ -676,6 +677,7 @@ public class Game {
 
             player.setLocation(newLocation);
             Square updatedLocation = board.get(player.getLocation());
+            System.out.println(player.getName() + " is on square " + board.get(player.getLocation()).getName());
             checkSquareOwnership(updatedLocation, player);
         }
     }
