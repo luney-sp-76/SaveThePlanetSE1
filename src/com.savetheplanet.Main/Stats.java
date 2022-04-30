@@ -8,6 +8,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * Jaszon
+ *
+ */
 public class Stats {
 
     private List<Player> players;

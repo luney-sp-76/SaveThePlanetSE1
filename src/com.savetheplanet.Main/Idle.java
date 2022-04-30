@@ -3,6 +3,9 @@ package com.savetheplanet.Main;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * Jaszon
+ */
 final class Idle {
 
     private Idle() {
@@ -10,7 +13,8 @@ final class Idle {
     }
 
     /**
-     * 60-second timer with 2 phases.
+     * Custom Timer/TimerTask with two phases, a warning and an action if the player remains idle.
+     * They should never be running at the same time.
      *
      * @return Jaszon
      */
@@ -31,8 +35,9 @@ final class Idle {
                 }
                 if (t == 15000) {
                     if (warned) {
-                        System.out.println("You have been idle for 30s - something is happening.");
-                        // action call.
+                        System.out.println("You have been idle for 30s, you lose your turn");
+
+//                        Game.turnSkip();
                     }
                     System.err.printf("\rYou have been idle for 15 seconds.%nIf you are idle for another 15 seconds, something will happen%n");
                     warned = true;
@@ -41,6 +46,7 @@ final class Idle {
         }, t, t);
         return timer;
     }
+
     // Resets the timer.
     static Timer timerReset(Timer timer, int t) {
         timer.cancel();

@@ -14,6 +14,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Jaszon
+ *
+ * The driver class that handles all the not-in-game requirements- the save/load.
+ * As well as the title screen, and the intro audio.
+ */
 public class SaveThePlanet {
 
     public static void main(String[] args) {
@@ -166,12 +172,13 @@ public class SaveThePlanet {
         return saves;
     }
 
-    public static void save(List<Square> board, List<Player> players) {
+    public static void save(List<Square> board, List<Player> players, Deck deck) {
 
         HashMap<String, Object> saveGame = new HashMap<>();
 
         saveGame.put("Board", board);
         saveGame.put("Players", players);
+        saveGame.put("Deck", deck);
 
         List<File> saves = loadFiles();
 

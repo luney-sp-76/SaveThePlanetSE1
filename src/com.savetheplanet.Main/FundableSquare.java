@@ -2,6 +2,9 @@ package com.savetheplanet.Main;
 
 import java.util.Arrays;
 
+/**
+ * Jaszon
+ */
 public class FundableSquare extends Square {
 
     private int fieldSize;

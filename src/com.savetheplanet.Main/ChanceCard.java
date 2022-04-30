@@ -3,10 +3,12 @@
  */
 package com.savetheplanet.Main;
 
+import java.io.Serializable;
+
 /**
- *
+ * Andrew
  */
-public class ChanceCard {
+public class ChanceCard implements Serializable {
 	
 	private static final int MINMOVEMENT = 1; 
 	private static final int MAXMOVEMENT = 5;

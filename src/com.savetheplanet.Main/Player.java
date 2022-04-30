@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Jaszon & Sophie
+ */
 public class Player implements Serializable {
 
     String name;
@@ -16,7 +19,7 @@ public class Player implements Serializable {
 
     public Player(String name) {
         setName(name);
-        funding = 0;
+        funding = 300;
         location = 0;
         totalValue = 0;
 
@@ -118,7 +121,7 @@ public class Player implements Serializable {
 
     private ArrayList<Object> findSquare(List<FundableSquare> ownedSquares, int field) {
         boolean developed = false;
-        ArrayList<Object> results = new ArrayList<Object>();
+        ArrayList<Object> results = new ArrayList<>();
         FundableSquare undevelopedSquare = null;
         for (FundableSquare square : ownedSquares) {
             if (square.getField() == field) {
@@ -158,7 +161,6 @@ public class Player implements Serializable {
     }
 
     public void setName(String name) throws IllegalArgumentException {
-
         name = name.trim();
         if (validateName(name)) {
             this.name = name;
@@ -168,7 +170,6 @@ public class Player implements Serializable {
     }
 
     private boolean validateName(String name) throws IllegalArgumentException {
-
         if (name.matches("^.*[^a-zA-Z\\d].*$"))
             throw new IllegalArgumentException("Name format error. Name contains illegal characters. Alphanumeric only, no spaces.");
         if (name.length() < 2 || name.length() > 30)
@@ -198,7 +199,6 @@ public class Player implements Serializable {
      */
 
     public void setLocation(int location) {
-
         this.location = location;
     }
 
