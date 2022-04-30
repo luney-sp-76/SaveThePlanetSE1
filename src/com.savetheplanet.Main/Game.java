@@ -292,8 +292,6 @@ public class Game {
                             }
                         }
                     }
-
-                    // no error checking
                     if (counter > 0) {
                         int playerNum = Integer.parseInt(MENU.nextLine()) - 1;
                         Player traderPlayer = tradablePlayers.get(playerNum);
@@ -323,11 +321,19 @@ public class Game {
                     stats.end();
                     break;
                 default:
-                    throw new IllegalArgumentException("that's not an option");
-                    //timer = Create.timerReset(timer);
+                    System.out.println("Oops..lets try that again..");
+                    playersPreRollOptions(currentPlayer);
             }
 
         } catch (NumberFormatException e) {
+            System.out.println("Oops..lets try that again..");
+            playersPreRollOptions(currentPlayer);
+
+        }catch (IllegalArgumentException e){
+            System.out.println("Oops..lets try that again..");
+            playersPreRollOptions(currentPlayer);
+
+        }catch (Exception e){
             System.out.println("Oops..lets try that again..");
             playersPreRollOptions(currentPlayer);
 
@@ -612,7 +618,7 @@ public class Game {
     }
 
     /**
-     * Jaszon
+     * Jaszon and Paul and Sophie
      *
      * @param player   The Player
      * @param location Where They Are At
