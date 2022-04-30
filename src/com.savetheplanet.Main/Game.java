@@ -406,7 +406,7 @@ public class Game {
      *
      * @param selector      s
      * @param propertyOwner po
-     * @return something
+     * @return FundableSquare
      */
     private static FundableSquare selectProperty(Player selector, Player propertyOwner) {
         timer15 = Idle.timerReset(timer15, T15);
@@ -623,7 +623,7 @@ public class Game {
 
     /**
      * Andrew
-     *
+     * Paul and Sophie
      * @param card   - Chance Card player has chosen
      * @param player - Current actor
      */
@@ -667,7 +667,7 @@ public class Game {
     }
 
     /**
-     * ?? Paul? Sophie?
+     *  Paul Sophie
      *
      * @param square        s
      * @param currentPlayer c

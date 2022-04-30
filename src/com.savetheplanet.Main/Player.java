@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Jaszon & Sophie
+ * Jaszon & Sophie & Paul
  */
 public class Player implements Serializable {
 
