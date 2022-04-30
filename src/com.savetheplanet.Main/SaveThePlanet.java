@@ -46,6 +46,9 @@ public class SaveThePlanet {
         welcome();
     }
 
+    /**
+     * Jaszon and Paul
+     */
     @SuppressWarnings("InfiniteLoopStatement")
     static void welcome() {
         Game.timer60 = Idle.timerReset(Game.timer60, Game.T60);
@@ -74,6 +77,9 @@ public class SaveThePlanet {
         System.exit(1);
     }
 
+    /**
+     * Paul and Jaszon
+     */
     private static void initiateGameOptions() {
         Game.timer60 = Idle.timerReset(Game.timer60, Game.T60);
 
@@ -100,6 +106,10 @@ public class SaveThePlanet {
         }
     }
 
+    /**
+     * Jaszon
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public static HashMap<String, Object> load() {
 
@@ -130,6 +140,7 @@ public class SaveThePlanet {
     }
 
     /**
+     * Jaszon
      * @param saves List of Files
      * @return name of chosen File
      */
@@ -153,6 +164,7 @@ public class SaveThePlanet {
     }
 
     /**
+     * Jaszon
      * @return saves - List of the most recent 3 files from the save files dir, in chronological order.
      */
     public static List<File> loadFiles() {

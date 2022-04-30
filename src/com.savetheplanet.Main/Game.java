@@ -201,6 +201,7 @@ public class Game {
      * 1 roll dice 2 trade 3 develop 4 quit
      * or 1 roll dice 2 trade 3 quit
      * or 1 roll dice 2 quit
+     * Provides Logic to call trade or allow development and offers options to quit or save
      *
      * @param currentPlayer current player
      */
