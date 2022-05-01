@@ -39,7 +39,7 @@ public class Game {
     @SuppressWarnings("InfiniteLoopStatement")
     public static void playGame(int nextPlayer) {
 
-        MENU = new Scanner(System.in);
+
         stats = new Stats(PLAYERS.getPlayers());
 
         stats.full();
