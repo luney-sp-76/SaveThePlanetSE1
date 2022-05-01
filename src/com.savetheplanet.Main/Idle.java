@@ -52,7 +52,7 @@ final class Idle {
                     this.cancel();
                     timer.cancel();
 
-                    Game.turnSkip(player);
+//                    Game.turnSkip(player);
                 }
                 System.err.printf("\rYou have been idle for 15 seconds.%n");
                 warned = true;
