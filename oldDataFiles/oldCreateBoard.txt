@@ -1,0 +1,56 @@
+  /**
+     * Jaszon
+     *
+     * Pulls the new-game data out of game.dat and sets up the board. The logic for deciphering the Deck data
+     * is in Deck, and the old version of this method for the board data is in /oldDataFiles/oldCreateBoard.txt and this method. By using a serialized stream, rather than txt or csv files,
+     * it stops the player altering the game files and generally looks neater.
+     *
+     * The relevant files are in ./oldDataFiles/
+     */
+    @SuppressWarnings("unchecked")
+    private static void createBoard() {
+
+//                 try-with-resources to make sure the streams get closed.
+//        try (Stream<String> fieldsIn = Files.lines(Paths.get("./oldDataFiles/fields.txt"));
+//             Stream<String> squares = Files.lines(Paths.get("./oldDataFiles/squares.txt"))) {
+//
+//            List<String> fields = fieldsIn.collect(Collectors.toList());
+//
+//            squares.forEach(line -> {
+//                String[] arr = line.split(",");
+//                String name = arr[0];
+//                int field = Integer.parseInt(arr[1]);
+//
+//                if (field >= 3) {
+//                    board.add(new FundableSquare(name, field, fields.get(field).split(",")));
+//                } else {
+//                    board.add(new Square(name, field));
+//                }
+//            });
+//
+//        } catch (
+//                IOException e) {
+//            e.printStackTrace();
+//        }
+
+//        HashMap<String, Object> gameDataOut = new HashMap<>();
+//
+//        try (FileOutputStream fos = new FileOutputStream("game.dat");
+//             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+//
+//            gameDataOut.put("Board", board);
+//            gameDataOut.put("Deck", deck);
+//
+//            oos.writeObject(gameDataOut);
+//        } catch (
+//                IOException e) {
+//            e.printStackTrace();
+//        }
+        try (FileInputStream fis = new FileInputStream("game.dat"); ObjectInputStream ois = new ObjectInputStream(fis)) {
+            HashMap<String, Object> gameData = (HashMap<String, Object>) ois.readObject();
+            board = (List<Square>) gameData.get("Board");
+            deck = (Deck) gameData.get("Deck");
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }

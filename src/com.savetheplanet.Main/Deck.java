@@ -12,8 +12,6 @@ public class Deck implements Serializable {
 
     List<ChanceCard> deck;
 
-
-    // deck is included in game.dat, but the data generating code has been retained for demonstration purposes.
     public Deck() {
 //        makeDeck();
     }
@@ -21,6 +19,8 @@ public class Deck implements Serializable {
     /**
      * Reads in the data from the provided csv and returns a list
      * - Andrew
+     *
+     * Deck is now included in game.dat, but the Object generating code has been retained for demonstration purposes.
      */
 //    private void makeDeck() {
 //        List<ChanceCard> listFromFile = new ArrayList<>();
@@ -70,7 +70,6 @@ public class Deck implements Serializable {
      */
     public ChanceCard shuffle() {
         Collections.shuffle(deck);
-        System.out.println("Shuffling...\n");
         return deck.get(0);
     }
 }

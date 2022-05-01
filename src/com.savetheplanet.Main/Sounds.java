@@ -8,6 +8,7 @@ import java.io.IOException;
  * Jaszon
  *
  * Parameter-based player for all the wavs your heart could desire.
+ * And probably a lot more.
  */
 public class Sounds {
 
@@ -15,11 +16,9 @@ public class Sounds {
     static AudioInputStream ais;
     static Clip clip;
 
-    public Sounds() {
-    }
-
     /**
      * @param sound the filename of the clip wanted, without the .wav
+     *              This is mostly boilerplate tbh, but it does work really nicely.
      */
     static void play(String sound) {
         try {
