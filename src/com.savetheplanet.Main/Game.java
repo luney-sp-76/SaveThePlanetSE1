@@ -23,12 +23,12 @@ public class Game {
 
     public Game() {
         newGame();
-        playGame(0);
+        playGame();
     }
 
     public Game(HashMap<String, Object> load) {
         loadGame(load);
-        playGame(resumePlay());
+        playGame();
     }
 
     /**
@@ -37,31 +37,25 @@ public class Game {
      * Main game loop, runs until the game is over or saved/quit.
      */
     @SuppressWarnings("InfiniteLoopStatement")
-    public static void playGame(int nextPlayer) {
+    public static void playGame() {
 
 
         stats = new Stats(PLAYERS.getPlayers());
 
         stats.full();
 
+
         while (true) {
-//            for (Player player : PLAYERS.getPlayers()) {
+            for (Player player : PLAYERS.getPlayers()) {
 
-            for (int i = 0; i < PLAYERS.getPlayers().size(); i++) {
 
-                if (nextPlayer > 0)
-                    i = nextPlayer;
-
-                if (PLAYERS.getPlayer(i).turnsTaken != -1) {
-
-                    playersPreRollOptions(PLAYERS.getPlayer(i));
-                    PLAYERS.getPlayer(i).setTurnsTaken(PLAYERS.getPlayer(i).getTurnsTaken() + 1);
-
+                if (player.turnsTaken != -1) {
+                    playersPreRollOptions(player);
+                    player.setTurnsTaken(player.getTurnsTaken() + 1);
                     stats.full();
-
-                    System.out.print(PLAYERS.getPlayer(i).getName());
+                    System.out.print(player.getTitles() + " " + player.getName());
                     loadingMessage("'s turn has ended!");
-                    nextPlayer = 0;
+
                 }
             }
         }
@@ -498,6 +492,8 @@ public class Game {
 
         List<FundableSquare> completeFieldsList = getCompleteFieldsList(player);
 
+        completeFieldsList.removeIf(fs -> fs.getDevLevel() >= 4);
+
         while (true) {
             try {
                 System.out.printf("%nWhich field do you wish to develop?%n%n");
@@ -576,14 +572,23 @@ public class Game {
     /**
      * Jaszon
      *
-     * @param player a player whose has chosen to develop their field.
-     * @param square a square of the field they are upgraded.
-     *               Uses the one square to gather the other squares of the same field and increases their dev level by 1.
-     *               Charges the player the cost of said development.
+     * @param p a player whose has chosen to develop their field.
+     * @param s a square of the field they are upgraded.
+     *          Uses the one square to gather the other squares of the same field and increases their dev level by 1.
+     *          Charges the player the cost of said development.
      */
-    private static void increaseFieldDevLevel(Player player, FundableSquare square) {
-        player.getOwnedSquares().stream().filter(fs -> fs.getField() == square.getField()).forEach(fs -> fs.setDevLevel(fs.getDevLevel() + 1));
-        player.setFunding(player.getFunding() - square.getDevCost());
+    private static void increaseFieldDevLevel(Player p, FundableSquare s) {
+        p.getOwnedSquares().stream().filter(fs -> fs.getField() == s.getField()).forEach(fs -> fs.setDevLevel(fs.getDevLevel() + 1));
+        p.setFunding(p.getFunding() - s.getDevCost());
+
+        if (s.getDevLevel() < 4) {
+            System.out.printf("%n" + p.getTitles() + " " + p.getName() + " has completed a ");
+            loadingMessage("minor development!");
+        } else if (s.getDevLevel() == 4) {
+            System.out.printf("%n" + p.getTitles() + " " + p.getName() + " has completed a ");
+            loadingMessage("major development!");
+        }
+
     }
 
     /**
@@ -826,26 +831,26 @@ public class Game {
         }
     }
 
-    static void turnSkip(Player player) {
+//    static void turnSkip(Player player) {
+//
+//        player.setTurnsTaken(player.getTurnsTaken() + 1);
+//        playGame();
+//    }
 
-        player.setTurnsTaken(player.getTurnsTaken() + 1);
-        playGame(resumePlay());
-    }
-
-
-    static int resumePlay() {
-        System.out.println("Resume?");
-
-        int turn = PLAYERS.getPlayer(0).getTurnsTaken();
-
-        for (Player p : PLAYERS.getPlayers()) {
-            if (p.getTurnsTaken() < turn) {
-                System.out.println(p.getName() + " "+  p.getTurnsTaken());
-                return PLAYERS.getPlayers().indexOf(p);
-            }
-        }
-        return 0;
-    }
+//
+//    static int resumePlay() {
+//        System.out.println("Resume?");
+//
+//        int turn = PLAYERS.getPlayer(0).getTurnsTaken();
+//
+//        for (Player p : PLAYERS.getPlayers()) {
+//            if (p.getTurnsTaken() < turn) {
+//                System.out.println(p.getName() + " " + p.getTurnsTaken());
+//                return PLAYERS.getPlayers().indexOf(p);
+//            }
+//        }
+//        return 0;
+//    }
 
 
     /**
