@@ -13,44 +13,65 @@ final class Idle {
     }
 
     /**
-     * Custom Timer/TimerTask with two phases, a warning and an action if the player remains idle.
-     * They should never be running at the same time.
+     * Custom 60s Timer with two phases, a warning and an action if the player remains idle.
      *
      * @return Jaszon
      */
-    static Timer timer(int t) {
-        java.util.Timer timer = new java.util.Timer();
+    static Timer menuTimer() {
+
+        Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             boolean warned = false;
 
             public void run() {
-
-                if (t == 60000) {
-                    if (warned) {
-                        System.out.println("You have been idle for 2 minutes. The Game will now exit.");
-                        System.exit(0);
-                    }
-                    System.err.printf("\rYou have been idle for 1 minute.%nIf you are idle for another 1 minute the game will exit.%n");
-                    warned = true;
+                if (warned) {
+                    System.out.println("You have been idle for 2 minutes. The Game will now exit.");
+                    System.exit(0);
                 }
-                if (t == 15000) {
-                    if (warned) {
-                        System.out.println("You have been idle for 30s, you lose your turn");
-
-//                        Game.turnSkip();
-                    }
-                    System.err.printf("\rYou have been idle for 15 seconds.%nIf you are idle for another 15 seconds, something will happen%n");
-                    warned = true;
-                }
+                System.err.printf("\rYou have been idle for 1 minute.%nIf you are idle for another 1 minute the game will exit.%n");
+                warned = true;
             }
-        }, t, t);
+        }, 60000, 60000);
+        return timer;
+    }
+
+    /**
+     * Custom Timer/TimerTask with two phases, a warning and an action if the player remains idle.
+     *
+     * @return Jaszon
+     */
+    static Timer gameplayTimer(Player player) {
+        Timer timer = new Timer();
+
+        timer.schedule(new TimerTask() {
+            boolean warned = false;
+
+            public void run() {
+                if (warned) {
+                    System.out.println("You have been idle for 30s, you lose your turn");
+                    this.cancel();
+                    timer.cancel();
+
+                    Game.turnSkip(player);
+                }
+                System.err.printf("\rYou have been idle for 15 seconds.%n");
+                warned = true;
+            }
+        }, 3000, 3000);
         return timer;
     }
 
     // Resets the timer.
-    static Timer timerReset(Timer timer, int t) {
+    static Timer timerReset(Timer timer, Player player) {
         timer.cancel();
-        timer = timer(t);
+        timer = gameplayTimer(player);
+        return timer;
+    }
+
+    // Resets the timer.
+    static Timer timerReset(Timer timer) {
+        timer.cancel();
+        timer = menuTimer();
         return timer;
     }
 }// class

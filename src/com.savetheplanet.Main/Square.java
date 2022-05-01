@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 /**
  * Jaszon
+ * It's a S Q U A R E [] < Like that.
  */
 public class Square implements Serializable {
     private String name;
@@ -30,11 +31,4 @@ public class Square implements Serializable {
         this.field = group;
     }
 
-    @Override
-    public String toString() {
-        return "Square{" +
-                "name='" + name + '\'' +
-                ", field=" + field +
-                '}';
-    }
-}
+}//class

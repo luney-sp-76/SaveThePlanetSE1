@@ -22,17 +22,14 @@ public class Player implements Serializable {
         funding = 300;
         location = 0;
         totalValue = 0;
-
     }
 
     public void calcTotalValue() {
         this.totalValue = getOwnedSquares().stream().mapToInt(FundableSquare::getValue).sum();
-
     }
 
     public int getTotalValue() {
         return totalValue;
-
     }
 
     public List<FundableSquare> getOwnedSquares() {
@@ -45,10 +42,10 @@ public class Player implements Serializable {
      * Method to get a player's lowest value square for use in the 'liquidate' method.
      * Properties are returned in the following order, where applicable:
      * property from uncontrolled area, undeveloped properties from controlled areas, developed properties.
+     *
      * @return FundableSquare
      */
     public FundableSquare getLowestValueSquare() {
-
         int conserve = 0;
         int reduce = 0;
         int reuse = 0;
@@ -124,13 +121,13 @@ public class Player implements Serializable {
         }
 
         return null;
-
     }
 
     /**
      * Sophie
      *
      * Method to return square for use in 'getLowestValueSquare' method.
+     *
      * @param ownedSquares
      * @param field
      * @return ArrayList<Object> - returns a list of squares, with an associated boolean flag indicating if the square has been developed.
@@ -169,10 +166,6 @@ public class Player implements Serializable {
     }
 
     public String getName() {
-
-        for (String s : titles) {
-            System.out.print(s + ", ");
-        }
         return name;
     }
 
@@ -185,6 +178,13 @@ public class Player implements Serializable {
         }
     }
 
+    /**
+     * Jaszon
+     *
+     * @param name from Player
+     * @return boolean, true if the name passes the requirements.
+     * @throws IllegalArgumentException if the requirements are not met an IAE is thrown. This is handled in Players.validateName();
+     */
     private boolean validateName(String name) throws IllegalArgumentException {
         if (name.matches("^.*[^a-zA-Z\\d].*$"))
             throw new IllegalArgumentException("Name format error. Name contains illegal characters. Alphanumeric only, no spaces.");
@@ -202,28 +202,23 @@ public class Player implements Serializable {
         this.turnsTaken = turnsTaken;
     }
 
-    /**
-     * @return the location
-     */
-
     public int getLocation() {
         return location;
     }
-
-    /**
-     * @param location the location to set
-     */
 
     public void setLocation(int location) {
         this.location = location;
     }
 
-    void setLocation() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     public List<String> getTitles() {
         return titles;
+    }
+
+    public void printTitles() {
+
+        for (String s : titles) {
+            System.out.print(s + ", ");
+        }
     }
 
     public void addTitle(String title) {
@@ -233,13 +228,4 @@ public class Player implements Serializable {
     public void removeTitle(String title) {
         this.titles.remove(title);
     }
-
-    @Override
-    public String toString() {
-        return "Player{" +
-                "name='" + name + '\'' +
-                ", funding=" + funding +
-                ", totalValue=" + totalValue +
-                '}';
-    }
-}
+} //class

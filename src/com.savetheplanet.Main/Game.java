@@ -14,12 +14,7 @@ public class Game {
     // Collect Funding reward
     private static final int COLLECT = 300;
 
-    // for 30 second with 15 second warning
-    static final int T15 = 15000;
-    static Timer timer15 = Idle.timer(T15);
-    // 120 second with 60 seconds warning.
-    static final int T60 = 60000;
-    static Timer timer60 = Idle.timer(T60);
+    static Timer timer60 = Idle.menuTimer();
 
 
     private static List<Square> board = new ArrayList<>();
@@ -28,12 +23,12 @@ public class Game {
 
     public Game() {
         newGame();
-        playGame();
+        playGame(0);
     }
 
     public Game(HashMap<String, Object> load) {
         loadGame(load);
-        playGame();
+        playGame(resumePlay());
     }
 
     /**
@@ -42,86 +37,48 @@ public class Game {
      * Main game loop, runs until the game is over or saved/quit.
      */
     @SuppressWarnings("InfiniteLoopStatement")
-    public static void playGame() {
+    public static void playGame(int nextPlayer) {
+
+
         stats = new Stats(PLAYERS.getPlayers());
 
+        stats.full();
+
         while (true) {
-            for (Player player : PLAYERS.getPlayers()) {
+//            for (Player player : PLAYERS.getPlayers()) {
 
-                pause(500);
-                stats.full();
-                pause(1500);
-                timer15 = Idle.timerReset(timer15, T15);
+            for (int i = 0; i < PLAYERS.getPlayers().size(); i++) {
 
-                if (player.turnsTaken != -1) {
-                    playersPreRollOptions(player);
-                    player.setTurnsTaken(player.getTurnsTaken() + 1);
+                if (nextPlayer > 0)
+                    i = nextPlayer;
+
+                if (PLAYERS.getPlayer(i).turnsTaken != -1) {
+
+                    playersPreRollOptions(PLAYERS.getPlayer(i));
+                    PLAYERS.getPlayer(i).setTurnsTaken(PLAYERS.getPlayer(i).getTurnsTaken() + 1);
+
+                    stats.full();
+
+                    System.out.print(PLAYERS.getPlayer(i).getName());
+                    loadingMessage("'s turn has ended!");
+                    nextPlayer = 0;
                 }
             }
         }
     }
 
-
     /**
      * Jaszon
      *
-     * @param length length of time to pause.
+     * @param s The message to print.
      */
-    private static void pause(int length) {
-        try {
-            Thread.sleep(length);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+    private static void loadingMessage(String s) {
+        int loadTime = 2000;
+        for (char c : s.toCharArray()) {
+            System.out.print(c);
+            pause(loadTime / s.length());
         }
-    }
-
-    /**
-     * Jaszon
-     *
-     * @param load the hashmap generated in SaveThePlanet.load();
-     *             if the data comes back not-null it puts the game-state back to when where it was then game was saved
-     *             including which player goes next and the specific deck that was last shuffled.
-     *             Otherwise, it bumps to player to the welcome screen, as they have chosen not to load a file.
-     */
-    @SuppressWarnings("unchecked")
-    static void loadGame(HashMap<String, Object> load) {
-
-        timer60 = Idle.timerReset(timer60, T60);
-
-        if (load != null) {
-            board = (List<Square>) load.get("Board");
-            deck = (Deck) load.get("Deck");
-            PLAYERS.setPlayers((List<Player>) (load.get("Players")));
-            System.out.println("L:O:A:D");
-            timer60.cancel();
-        } else {
-            SaveThePlanet.welcome();
-        }
-    }
-
-    /**
-     * Jaszon
-     *
-     * @param player - the player who chose to save.
-     *               Confirms if they want to save or not.
-     *               if they do, it sends the current Board, Deck and Player data to SaveThePlanet.save()
-     */
-    private static void saveGame(Player player) {
-        timer15.cancel();
-        timer60 = Idle.timerReset(timer60, T60);
-
-        System.out.println("Do you wish to save the game? y/n");
-
-        if (!MENU.nextLine().toLowerCase().contains("y")) {
-            timer60.cancel();
-            playersPreRollOptions(player);
-            return;
-        }
-
-        SaveThePlanet.save(board, PLAYERS.getPlayers(), deck);
-        System.out.println("S:A:V:E");
-        timer60.cancel();
-        playersPreRollOptions(player);
+        System.out.printf("%n%n");
     }
 
     /**
@@ -139,8 +96,8 @@ public class Game {
     /**
      * Jaszon
      *
-     * Pulls the new-game data out of game.dat and sets up the board. The logic for deciphering the data originally
-     * is in Deck and this method. By using a serialized stream, rather tha txt or csv files,
+     * Pulls the new-game data out of game.dat and sets up the board. The logic for deciphering the Deck data
+     * is in Deck, and the old version of this method for the board data is in /oldDataFiles/oldCreateBoard.txt and this method. By using a serialized stream, rather than txt or csv files,
      * it stops the player altering the game files and generally looks neater.
      *
      * The relevant files are in ./oldDataFiles/
@@ -170,7 +127,7 @@ public class Game {
 //                IOException e) {
 //            e.printStackTrace();
 //        }
-
+//
 //        HashMap<String, Object> gameDataOut = new HashMap<>();
 //
 //        try (FileOutputStream fos = new FileOutputStream("game.dat");
@@ -193,6 +150,7 @@ public class Game {
         }
     }
 
+
     /**
      * Paul
      * (w/ assistance from Jaszon and Sophie for movement and trade options)
@@ -207,7 +165,7 @@ public class Game {
      * @param currentPlayer current player
      */
     private static void playersPreRollOptions(Player currentPlayer) {
-        timer15 = Idle.timerReset(timer15, T15);
+//        Timer timer = Idle.gameplayTimer(currentPlayer);
 
         int move;
 
@@ -246,16 +204,23 @@ public class Game {
             count = 0;
             System.out.printf("%s%n%s%n%s%n", option1, option4, option5);
         }
+
         try {
+            pause(1000);
             int option = Integer.parseInt(MENU.nextLine()) + count;
-            timer15 = Idle.timerReset(timer15, T15);
+//            timer = Idle.timerReset(timer, currentPlayer);
+
             switch (option) {
                 case 1:
                 case 4:
                 case 8:
                     //roll dice
+//                    timer.cancel();
                     System.out.printf("you have chosen %s%n", option1);
+
                     move = move();
+
+
                     System.out.printf("%n%s moves %d places.%n", currentPlayer.getName(), move);
                     int location = currentPlayer.getLocation() + move;
 
@@ -270,14 +235,16 @@ public class Game {
                     }
 
                     if (square.getField() == 2) {
+                        System.out.println("Chance!");
                         ChanceCard chance = deck.shuffle();
+                        loadingMessage("Shuffling...");
                         parseCard(chance, currentPlayer);
                     }
-
                     checkSquareOwnership(square, currentPlayer);
                     break;
                 case 5:
                 case 9:
+//                    timer = Idle.timerReset(timer, currentPlayer);
                     //trade
                     System.out.printf("you have chosen %s%n", option2);
                     int counter = 0;
@@ -295,13 +262,16 @@ public class Game {
                     if (counter > 0) {
                         int playerNum = Integer.parseInt(MENU.nextLine()) - 1;
                         Player traderPlayer = tradablePlayers.get(playerNum);
+//                        timer.cancel();
                         trade(currentPlayer, traderPlayer);
                     } else {
                         System.out.println("you have no-one to trade with");
                     }
+//                    timer.cancel();
                     break;
 
                 case 10:
+//                    timer.cancel();
                     System.out.printf("you have chosen %s%n", option3);
                     developField(currentPlayer);
                     break;
@@ -309,6 +279,7 @@ public class Game {
                 case 6:
                 case 11:
                     //save
+//                    timer.cancel();
                     System.out.printf("you have chosen %s%n", option4);
                     saveGame(currentPlayer);
                     break;
@@ -316,24 +287,20 @@ public class Game {
                 case 7:
                 case 12:
                     //quit
+//                    timer.cancel();
                     System.out.printf("you have chosen %s%n", option5);
-                    Stats stats = new Stats(PLAYERS.getPlayers());
                     stats.end();
                     break;
+                case -1:
+                    break;
                 default:
+//                    timer = Idle.timerReset(timer, currentPlayer);
                     System.out.println("Oops..lets try that again..");
                     playersPreRollOptions(currentPlayer);
             }
+//            timer.cancel();
 
-        } catch (NumberFormatException e) {
-            System.out.println("Oops..lets try that again..");
-            playersPreRollOptions(currentPlayer);
-
-        }catch (IllegalArgumentException e){
-            System.out.println("Oops..lets try that again..");
-            playersPreRollOptions(currentPlayer);
-
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Oops..lets try that again..");
             playersPreRollOptions(currentPlayer);
 
@@ -345,19 +312,26 @@ public class Game {
      *
      * Method to allow two players to 'swap' ownership of properties.
      * Calls a number of sub-methods to allow player to select their own property and the property of another player.
+     *
      * @param traderPlayer    tp
      * @param requestedPlayer rp
      */
     public static void trade(Player traderPlayer, Player requestedPlayer) {
-        timer15.cancel();
+
+//        Timer timer = Idle.gameplayTimer(traderPlayer);
+
+
         FundableSquare offeredProperty;
         FundableSquare requestedProperty;
         boolean correctInput = false;
         boolean confirmTrade = false;
 
         if (!hasNoDevelopments(traderPlayer).isEmpty() && !hasNoDevelopments(requestedPlayer).isEmpty()) {
+//            timer.cancel();
             offeredProperty = selectProperty(traderPlayer, traderPlayer);
             requestedProperty = selectProperty(traderPlayer, requestedPlayer);
+
+//            timer = Idle.timerReset(timer, traderPlayer);
 
             assert requestedProperty != null;
             assert offeredProperty != null;
@@ -376,8 +350,10 @@ public class Game {
                         break;
                     default:
                         System.out.println("Sorry please enter y/yes or n/no");
+//                        timer = Idle.timerReset(timer, traderPlayer);
                 }
             }
+//            Idle.timerReset(timer, traderPlayer);
 
             if (confirmTrade) {
                 int offeredPropertyCost = offeredProperty.getCost();
@@ -409,6 +385,7 @@ public class Game {
         } else {
             System.out.println("Sorry, you and " + requestedPlayer.getName() + " do not have enough properties to trade.");
         }
+//        timer.cancel();
     }
 
     /**
@@ -416,12 +393,12 @@ public class Game {
      *
      * Method to allow player to select a property from a player's list of owned properties for use in the 'trade' method.
      * Ensures a player is not able to select a developed property.
+     *
      * @param selector      s
      * @param propertyOwner po
      * @return FundableSquare
      */
     private static FundableSquare selectProperty(Player selector, Player propertyOwner) {
-        timer15 = Idle.timerReset(timer15, T15);
         int propertySelection;
         FundableSquare property;
 
@@ -462,6 +439,7 @@ public class Game {
      * Sophie
      *
      * Method to swap the ownership of two properties between players.
+     *
      * @param player1   p1
      * @param player2   p2
      * @param property1 fs1
@@ -485,6 +463,7 @@ public class Game {
      * Sophie
      * Method to calculate property value differences during trade.
      * Player funds are adjusted, with the owner of the lower value property having to pay the difference in value to the other player.
+     *
      * @param payer payer
      * @param payee payee
      * @param cost  cost
@@ -512,7 +491,7 @@ public class Game {
      *               Allows the player to choose a field to upgrade from the list and calls increaseFieldDevLevel();
      */
     private static void developField(Player player) {
-        timer15 = Idle.timerReset(timer15, T15);
+//        Timer timer = Idle.gameplayTimer(player);
 
         String[] fields = {"Conserve", "Reduce", "Reuse", "Create"};
         int in;
@@ -537,12 +516,14 @@ public class Game {
                 }
                 System.out.println("0: Return to previous menu.");
 
+//                timer = Idle.timerReset(timer, player);
 
                 in = Integer.parseInt(MENU.nextLine());
 
 //              Negative results.
                 if (in == 0) {
                     playersPreRollOptions(player);
+//                    timer.cancel();
                     break;
                 }
                 if (in < 0 || in > completeFieldsList.size())
@@ -551,11 +532,13 @@ public class Game {
                     throw new IllegalArgumentException("");
 
 //              Positive result.
+//                timer.cancel();
                 increaseFieldDevLevel(player, completeFieldsList.get(in - 1));
                 break;
 
             } catch (IllegalArgumentException e) {
                 System.err.println(e.getMessage().replaceAll(".*", "Please enter a valid option."));
+//                timer = Idle.timerReset(timer, player);
 
             }
 
@@ -606,14 +589,14 @@ public class Game {
     /**
      * Paul
      *
-     * @return Returns the value of the dice throw.
+     * @return Returns the value of the dice throw. Player moves the AVERAGE of the two dice, rounded up.
      * @
      */
     public static int move() {
         Dice die = new Dice();
         int move = die.roll();
         //is y. You will move forward x+y places.”
-        System.out.printf("You will move forward %d spaces.%n", move);
+        System.out.printf("You will move forward the average amount of %d spaces.%n", move);
         return move;
     }
 
@@ -627,10 +610,10 @@ public class Game {
      */
     public static int collectFundingCheck(Player player, int location) {
 
-        if (location > 15 || location == 0) {
+        if (location >= 16 || location == 0) {
             Sounds.play("cash");
             player.setFunding((player.getFunding() + COLLECT));
-            location -= 15;
+            location -= 16;
         }
         return location;
     }
@@ -638,6 +621,7 @@ public class Game {
     /**
      * Andrew
      * Paul and Sophie
+     *
      * @param card   - Chance Card player has chosen
      * @param player - Current actor
      */
@@ -683,24 +667,27 @@ public class Game {
     }
 
     /**
-     *  Paul Sophie
+     * Paul Sophie
      *
      * @param square        s
      * @param currentPlayer c
      */
     private static void checkSquareOwnership(Square square, Player currentPlayer) {
-        timer15 = Idle.timerReset(timer15, T15);
+//        Timer timer = Idle.gameplayTimer(currentPlayer);
+
         if (square instanceof FundableSquare) {
             if (((FundableSquare) square).getOwner() == null) {
                 System.out.printf("Would you like to purchase %s for £ %d? y/yes or n/no%n", square.getName(), ((FundableSquare) square).getCost());
                 switch (MENU.nextLine().toLowerCase()) {
                     case "y":
                     case "yes":
+//                        timer.cancel();
                         purchaseSquare(currentPlayer, (FundableSquare) square);
                         break;
                     default:
                 }
             } else {
+//                timer.cancel();
                 payRates(currentPlayer, (FundableSquare) square);
             }
         }
@@ -710,6 +697,7 @@ public class Game {
     /**
      * Sophie
      * Method to allow a player to purchase an unowned square for its listed cost.
+     *
      * @param player p
      * @param square s
      */
@@ -735,6 +723,7 @@ public class Game {
      *
      * Method to reduce a player's balance when landing on a square owned by another player.
      * This method triggers the 'liquidate' method if a player has insufficient funds.
+     *
      * @param player p
      * @param square s
      */
@@ -766,11 +755,10 @@ public class Game {
      * Method to remove a player's properties when a bill cannot be paid.
      * Properties are removed based on their development level, with undeveloped and uncontrolled areas being removed first.
      * The player is reimbursed for the associated cost of the lost property or development.
+     *
      * @param player p
      */
     public static void liquidate(Player player) {
-
-        timer15 = Idle.timerReset(timer15, T15);
 
         int cost = 0;
         FundableSquare square = player.getLowestValueSquare();
@@ -807,9 +795,9 @@ public class Game {
         // woohoo
         for (FundableSquare fs : getCompleteFieldsList(player)) {
             if (!player.getTitles().contains(titles[fs.getField() - 3])) {
-                player.addTitle((titles[fs.getField() - 3]));
                 Sounds.play("woohoo");
                 System.out.println("Player " + player.getName() + " has earned the " + titles[fs.getField() - 3] + " title!");
+                player.addTitle((titles[fs.getField() - 3]));
             }
         }
 
@@ -834,9 +822,92 @@ public class Game {
         System.out.println(player.getName() + " is out of the game!");
         player.setTurnsTaken(-1);
         if (PLAYERS.getPlayers().stream().filter(p -> p.getTurnsTaken() > -1).count() < 2) {
-            Sounds.play("clap");
             stats.end();
         }
+    }
+
+    static void turnSkip(Player player) {
+
+        player.setTurnsTaken(player.getTurnsTaken() + 1);
+        playGame(resumePlay());
+    }
+
+
+    static int resumePlay() {
+        System.out.println("Resume?");
+
+        int turn = PLAYERS.getPlayer(0).getTurnsTaken();
+
+        for (Player p : PLAYERS.getPlayers()) {
+            if (p.getTurnsTaken() < turn) {
+                System.out.println(p.getName() + " "+  p.getTurnsTaken());
+                return PLAYERS.getPlayers().indexOf(p);
+            }
+        }
+        return 0;
+    }
+
+
+    /**
+     * Jaszon
+     *
+     * @param length length of time to pause.
+     */
+    static void pause(int length) {
+        try {
+            Thread.sleep(length);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Jaszon
+     *
+     * @param load the hashmap generated in SaveThePlanet.load();
+     *             if the data comes back not-null it puts the game-state back to when where it was then game was saved
+     *             including which player goes next and the specific deck that was last shuffled.
+     *             Otherwise, it bumps to player to the welcome screen, as they have chosen not to load a file.
+     */
+    @SuppressWarnings("unchecked")
+    static void loadGame(HashMap<String, Object> load) {
+
+        timer60 = Idle.timerReset(timer60);
+
+        if (load != null) {
+            board = (List<Square>) load.get("Board");
+            deck = (Deck) load.get("Deck");
+            PLAYERS.setPlayers((List<Player>) (load.get("Players")));
+            System.out.println("L:O:A:D");
+            timer60.cancel();
+        } else {
+            SaveThePlanet.welcome();
+        }
+    }
+
+    /**
+     * Jaszon
+     *
+     * @param player - the player who chose to save.
+     *               Confirms if they want to save or not.
+     *               if they do, it sends the current Board, Deck and Player data to SaveThePlanet.save()
+     */
+    private static void saveGame(Player player) {
+        timer60 = Idle.timerReset(timer60);
+
+        System.out.println("Do you wish to save the game? y/n");
+
+        if (!MENU.nextLine().toLowerCase().contains("y")) {
+            timer60.cancel();
+
+            playersPreRollOptions(player);
+
+        }
+
+        SaveThePlanet.save(board, PLAYERS.getPlayers(), deck);
+        System.out.println("S:A:V:E");
+        timer60.cancel();
+        playersPreRollOptions(player);
     }
 
 } //class

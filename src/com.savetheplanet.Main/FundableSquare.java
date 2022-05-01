@@ -4,6 +4,8 @@ import java.util.Arrays;
 
 /**
  * Jaszon
+ *
+ * Class for Fundable Square, nothing exciting here. It works.
  */
 public class FundableSquare extends Square {
 
@@ -22,6 +24,7 @@ public class FundableSquare extends Square {
         setDevCost(Integer.parseInt(data[4]));
         setValue(Integer.parseInt(data[5]));
         setRatesCosts(Arrays.stream(data[6].split("\\D")).mapToInt(Integer::parseInt).toArray());
+
         setOwner(null);
     }
 
@@ -33,6 +36,10 @@ public class FundableSquare extends Square {
         this.cost = cost;
     }
 
+    /**
+     *
+     * @return Dev Cost, or Major Dev, whichever is relevant.
+     */
     public int getDevCost() {
         if (this.getDevLevel() >= 3) {
             return (int) (Math.round((devCost * 2.4) / 100) * 100);
@@ -41,8 +48,10 @@ public class FundableSquare extends Square {
         }
     }
 
+    /**
+     * @return Calculated Value, including Developments and Major Developements.
+     */
     public int getValue() {
-
         if (devLevel < 4)
             return value + this.devLevel;
 
@@ -64,8 +73,6 @@ public class FundableSquare extends Square {
     }
 
     public void setDevLevel(int devLevel) {
-
-
         this.devLevel = devLevel;
     }
 
@@ -97,16 +104,4 @@ public class FundableSquare extends Square {
         this.owner = owner;
     }
 
-    @Override
-    public String toString() {
-        return "FundableSquare{" +
-                super.toString() +
-                "fieldSize=" + fieldSize +
-                ", cost=" + cost +
-                ", devCost=" + devCost +
-                ", devLevel=" + devLevel +
-                ", rates=" + getRatesBill() +
-                ", owner='" + owner + '\'' +
-                "} ";
-    }
 }

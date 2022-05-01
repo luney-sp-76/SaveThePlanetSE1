@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Jaszon
+ * Jaszon & Paul
  *
  * The driver class that handles all the not-in-game requirements- the save/load.
  * As well as the title screen, and the intro audio.
@@ -47,18 +47,17 @@ public class SaveThePlanet {
     }
 
     /**
-     * Jaszon and Paul
+     * Paul & Jaszon
      */
     @SuppressWarnings("InfiniteLoopStatement")
     static void welcome() {
-        Game.timer60 = Idle.timerReset(Game.timer60, Game.T60);
-        Game.timer15.cancel();
+        Game.timer60 = Idle.timerReset(Game.timer60);
 
         System.out.println("Welcome To Save The Planet");
         System.out.println("Would you like to Play? y/n");
 
         while (true) {
-            switch (Game.MENU.nextLine()) {
+            switch (Game.MENU.nextLine().toLowerCase()) {
                 case "y":
                     initiateGameOptions();
                     break;
@@ -67,21 +66,24 @@ public class SaveThePlanet {
                     break;
                 default:
                     System.out.println("Would you like to Play? y/n");
-                    Game.timer60 = Idle.timerReset(Game.timer60, Game.T60);
+                    Game.timer60 = Idle.timerReset(Game.timer60);
             }
         }
     }
 
+    /**
+     * Paul
+     */
     private static void quitOutsideOfGamePlay() {
         System.out.println("See You Next Time!");
         System.exit(1);
     }
 
     /**
-     * Paul and Jaszon
+     * Paul & Jaszon
      */
     private static void initiateGameOptions() {
-        Game.timer60 = Idle.timerReset(Game.timer60, Game.T60);
+        Game.timer60 = Idle.timerReset(Game.timer60);
 
         System.out.println("Game Menu");
         System.out.println("----------");
@@ -101,15 +103,19 @@ public class SaveThePlanet {
                 break;
             default:
                 System.err.printf("Invalid input.%n%n ");
-                Game.timer60 = Idle.timerReset(Game.timer60, Game.T60);
+                Game.timer60 = Idle.timerReset(Game.timer60);
                 initiateGameOptions();
         }
     }
 
     /**
      * Jaszon
-     * @return
+     *
+     * @return A HashMap of the saved game data, or null.
+     *
+     * Asks the player if what file they want to load, then pulls the data in. The nulls are handled.
      */
+
     @SuppressWarnings("unchecked")
     public static HashMap<String, Object> load() {
 
@@ -118,7 +124,7 @@ public class SaveThePlanet {
             return null;
 
         List<File> saves = loadFiles();
-        AtomicInteger saveID = new AtomicInteger(0);
+        AtomicInteger saveID = new AtomicInteger(0); // why yes, I am willing to import AtomicInteger just so I can use the prettier .forEach Lambda.
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy - hh:mm:ss");
 
         System.out.println("Which file would you like to load?");
@@ -141,13 +147,14 @@ public class SaveThePlanet {
 
     /**
      * Jaszon
+     *
      * @param saves List of Files
      * @return name of chosen File
+     * It's a menu.
      */
     private static String pickGame(List<File> saves) {
 
         while (true) {
-
             switch (Game.MENU.nextLine()) {
                 case "0":
                     return null;
@@ -165,6 +172,7 @@ public class SaveThePlanet {
 
     /**
      * Jaszon
+     *
      * @return saves - List of the most recent 3 files from the save files dir, in chronological order.
      */
     public static List<File> loadFiles() {
@@ -184,6 +192,19 @@ public class SaveThePlanet {
         return saves;
     }
 
+    /**
+     * Jaszon
+     *
+     * @param board   list of squares as board
+     * @param players list of players
+     * @param deck    list of Chance cards
+     *
+     *                Makes a new HashMap and puts the 3 lists in as values, with their name as the keys.
+     *                This could also be done with a List of Lists, but I felt like getting some more practice with maps.
+     *
+     *                Calls loadFiles to get a list of current saves, validateSaveName to check that the name is valid,
+     *                memoryCardFull to see if there are already 3 save files and if the go ahead is given writes a new save to file.
+     */
     public static void save(List<Square> board, List<Player> players, Deck deck) {
 
         HashMap<String, Object> saveGame = new HashMap<>();
@@ -206,22 +227,32 @@ public class SaveThePlanet {
             try (FileOutputStream fos = new FileOutputStream("./saves/" + saveName);
                  ObjectOutputStream oos = new ObjectOutputStream(fos)) {
                 oos.writeObject(saveGame);
-
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
     }
 
+    /**
+     * Jaszon
+     *
+     * @param saves list of save files
+     * @return boolean if there are 3 saves already or not.
+     * Checks if they want to overwrite a save.
+     */
     private static boolean memoryCardFull(List<File> saves) {
         System.out.println("You already have 3 saved games, by continuing the oldest game " + saves.get(0).getName() + " will be removed. Do you want to continue y/n?");
         if (Game.MENU.nextLine().toLowerCase().contains("y")) {
             return saves.get(0).delete();
-
         }
         return false;
     }
 
+    /**
+     * @param saves list of save files
+     * @return a String that passes the name checks.
+     *
+     * O B A Y (same rules as player names).
+     */
     private static String validateSaveName(List<File> saves) {
         System.out.println("Enter name for the Save Game");
         String str = Game.MENU.nextLine() + ".sav";
@@ -231,7 +262,7 @@ public class SaveThePlanet {
                 System.out.println(str);
                 if (str.matches("^.*[^a-zA-Z\\d.].*$"))
                     throw new IllegalArgumentException("Name format error. Name contains illegal characters. Alphanumeric only, no spaces.");
-                if (str.length() < 6 || str.length() > 34)
+                if (str.length() < 6 || str.length() > 34) // .sav
                     throw new IllegalArgumentException("Name format error. Length must be between 2 and 30 characters.");
                 for (File f : saves) {
                     if (str.equals(f.getName())) {
